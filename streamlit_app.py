@@ -3,11 +3,12 @@ import math
 import numpy as np
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 import requests
 import streamlit as st
 
 # ---------------------------------------------------------
-# 1. SAYFA YAPILANDIRMASI (MUTLAKA EN ÜSTTE OLMALI)
+# 1. SAYFA YAPILANDIRMASI
 # ---------------------------------------------------------
 st.set_page_config(
     page_title="MG BRAND OFFICE | Influencer Intelligence",
@@ -49,11 +50,54 @@ st.markdown(
         margin-bottom: 25px;
     }
 
+    div[data-testid="stPopover"] > button {
+        background: #f8fafc !important;
+        border: 1px solid #cbd5e1 !important;
+        color: #0f172a !important;
+        font-size: 0.95rem !important;
+        border-radius: 8px !important;
+    }
+
     [data-testid="stMetric"] {
         background-color: #f8fafc !important;
         border: 1px solid #e2e8f0 !important;
         border-radius: 12px !important;
         padding: 16px !important;
+    }
+
+    .wask-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 15px;
+    }
+
+    .wask-status-high {
+        background-color: #dcfce7;
+        color: #166534;
+        font-weight: 700;
+        padding: 6px 12px;
+        border-radius: 20px;
+        display: inline-block;
+    }
+
+    .wask-status-avg {
+        background-color: #fef9c3;
+        color: #854d0e;
+        font-weight: 700;
+        padding: 6px 12px;
+        border-radius: 20px;
+        display: inline-block;
+    }
+
+    .wask-status-low {
+        background-color: #fee2e2;
+        color: #991b1b;
+        font-weight: 700;
+        padding: 6px 12px;
+        border-radius: 20px;
+        display: inline-block;
     }
 
     .stButton>button {
@@ -124,8 +168,40 @@ def fetch_apify_instagram_data(username, max_posts=12):
     except Exception:
         return None
 
+def calculate_wask_metrics(followers, likes_list, comments_list):
+    avg_likes = np.mean(likes_list) if likes_list else 0
+    avg_comments = np.mean(comments_list) if comments_list else 0
+    total_eng = avg_likes + avg_comments
+    er = (total_eng / max(followers, 1)) * 100.0
+
+    if followers < 10000:
+        benchmark = {"düşük": 1.5, "yuksek": 4.0, "seviye": "Micro-Influencer"}
+    elif followers < 100000:
+        benchmark = {"düşük": 1.0, "yuksek": 2.5, "seviye": "Mid-Influencer"}
+    else:
+        benchmark = {"düşük": 0.8, "yuksek": 1.8, "seviye": "Macro/Mega-Influencer"}
+
+    if er >= benchmark["yuksek"]:
+        status = "Yüksek (İyi)"
+        status_class = "wask-status-high"
+    elif er >= benchmark["düşük"]:
+        status = "Ortalama"
+        status_class = "wask-status-avg"
+    else:
+        status = "Düşük"
+        status_class = "wask-status-low"
+
+    return {
+        "er": er,
+        "avg_likes": avg_likes,
+        "avg_comments": avg_comments,
+        "status": status,
+        "status_class": status_class,
+        "benchmark": benchmark
+    }
+
 # ---------------------------------------------------------
-# 4. ARAYÜZ VE BAŞLIK
+# 4. ARAYÜZ BAŞLIĞI VE SİSTEM BİLGİSİ
 # ---------------------------------------------------------
 col_top_left, col_top_right = st.columns([6, 1])
 
@@ -136,17 +212,23 @@ with col_top_right:
         st.markdown("---")
         st.markdown("**1. HypeAuditor (AQS):** ER, Yorum Oranı ve İçerik İstikrarı.")
         st.markdown("**2. Modash:** Takipçi ölçeğine göre beklenen ER sapması.")
-        st.markdown("**3. Kıyaslama:** Çoklu hesapların ER karşılaştırması.")
+        st.markdown("**3. WASK Calculator:** Takipçi ölçeğine göre benchmark kıyası ve etkileşim performansı.")
 
 st.markdown('<div class="brand-header">MG BRAND OFFICE</div>', unsafe_allow_html=True)
 st.markdown('<div class="brand-sub">All-in-One Influencer Tracker & Intelligence Suite</div>', unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 5. SEKMELER
+# 5. SEKMELER (WASK ARAYÜZÜ DAHİL EDİLDİ)
 # ---------------------------------------------------------
-tab_single, tab_compare = st.tabs(["👤 Tekil Profil Analizi", "⚖️ Kıyaslama Paneli"])
+tab_single, tab_wask, tab_compare = st.tabs([
+    "👤 Tekil Profil Analizi", 
+    "📊 WASK Etkileşim Hesaplayıcı", 
+    "⚖️ Kıyaslama Paneli"
+])
 
-# TEKİL ANALİZ
+# =========================================================
+# SEKMELER 1: TEKİL PROFİL ANALİZİ
+# =========================================================
 with tab_single:
     c_left, c_mid, c_right = st.columns([1, 2, 1])
     with c_mid:
@@ -235,7 +317,96 @@ with tab_single:
             else:
                 st.error("❌ Profil bulunamadı veya veriler çekilemedi.")
 
-# KIYASLAMA
+# =========================================================
+# SEKMELER 2: WASK ETKİLEŞİM HESAPLAYICI (UYARLANAN ARAYÜZ)
+# =========================================================
+with tab_wask:
+    st.subheader("📊 WASK Tarzı Etkileşim Oranı Hesaplayıcı")
+    st.caption("Instagram hesabının takipçi ve etkileşim verilerine göre benchmark durum analizi.")
+
+    wask_user = st.text_input("Analiz Edilecek Kullanıcı Adı", placeholder="Örn: instagram_kullanici", key="wask_user_input").strip()
+    btn_wask = st.button("WASK Metriklerini Hesapla ⚡", key="btn_wask")
+
+    if btn_wask and wask_user:
+        if wask_user.startswith("@"):
+            wask_user = wask_user[1:]
+
+        with st.spinner(f"⏳ @{wask_user} hesabı için WASK verileri taranıyor..."):
+            prof = fetch_apify_instagram_data(wask_user, max_posts=12)
+
+            if prof and "latestPosts" in prof:
+                fol = int(clean_number(prof.get("followersCount", prof.get("followers", 0)), default=1))
+                fol = max(fol, 1)
+
+                posts = prof.get("latestPosts", [])
+                likes = [clean_number(p.get("likesCount"), 0) for p in posts]
+                comments = [clean_number(p.get("commentsCount"), 0) for p in posts]
+
+                metrics = calculate_wask_metrics(fol, likes, comments)
+
+                col_w1, col_w2 = st.columns([1, 1])
+
+                with col_w1:
+                    st.markdown(f"""
+                    <div class="wask-card">
+                        <h3>@{wask_user}</h3>
+                        <p><strong>Kategori:</strong> {metrics['benchmark']['seviye']}</p>
+                        <p><strong>Takipçi Sayısı:</strong> {fol:,}</p>
+                        <p><strong>Etkileşim Statüsü:</strong> <span class="{metrics['status_class']}">{metrics['status']}</span></p>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                    wm1, wm2, wm3 = st.columns(3)
+                    wm1.metric("Etkileşim Oranı (ER)", f"%{metrics['er']:.2f}")
+                    wm2.metric("Ort. Beğeni", f"{int(metrics['avg_likes']):,}")
+                    wm3.metric("Ort. Yorum", f"{int(metrics['avg_comments']):,}")
+
+                with col_w2:
+                    fig_gauge = go.Figure(go.Indicator(
+                        mode="gauge+number",
+                        value=metrics['er'],
+                        title={'text': "WASK Etkileşim Seviyesi (ER %)"},
+                        gauge={
+                            'axis': {'range': [0, max(5.0, metrics['er'] * 1.5)]},
+                            'bar': {'color': "#2563eb"},
+                            'steps': [
+                                {'range': [0, metrics['benchmark']['düşük']], 'color': "#fee2e2"},
+                                {'range': [metrics['benchmark']['düşük'], metrics['benchmark']['yuksek']], 'color': "#fef9c3"},
+                                {'range': [metrics['benchmark']['yuksek'], 10], 'color': "#dcfce7"}
+                            ]
+                        }
+                    ))
+                    fig_gauge.update_layout(height=260, margin=dict(l=20, r=20, t=40, b=20))
+                    st.plotly_chart(fig_gauge, use_container_width=True)
+
+                st.markdown("### 📈 Sektör Benchmark Karşılaştırması")
+                benchmark_data = pd.DataFrame({
+                    "Kategori": ["Düşük Performans", "Ortalama (Sektör Standardı)", "Hesabınızın Performansı", "Yüksek Performans"],
+                    "Etkileşim Oranı (ER %)": [
+                        metrics['benchmark']['düşük'] * 0.5,
+                        metrics['benchmark']['düşük'],
+                        metrics['er'],
+                        metrics['benchmark']['yuksek']
+                    ]
+                })
+
+                fig_bmark = px.bar(
+                    benchmark_data,
+                    x="Kategori",
+                    y="Etkileşim Oranı (ER %)",
+                    color="Kategori",
+                    text="Etkileşim Oranı (ER %)",
+                    template="plotly_white"
+                )
+                fig_bmark.update_traces(texttemplate='%{text:.2f}%', textposition='outside')
+                st.plotly_chart(fig_bmark, use_container_width=True)
+
+            else:
+                st.error("❌ WASK hesabı için veriler çekilemedi.")
+
+# =========================================================
+# SEKMELER 3: KIYASLAMA PANENLİ
+# =========================================================
 with tab_compare:
     st.subheader("⚖️ 4 Hesap Karşılaştırmalı Analiz Paneli")
     col_u1, col_u2, col_u3, col_u4 = st.columns(4)
