@@ -15,84 +15,105 @@ st.caption(
     "HypeAuditor, Modash ve Social Blade Algoritmalarıyla Otomatik Analiz Platformu"
 )
 
-# RapidAPI Anahtarın
+# RapidAPI Key
 API_KEY = "f149f5dbe8msh64295e613d8e62fp1068d3jsn8724a64fa267"
 
 # --- YAN MENÜ: OTOMATİK VERİ ÇEKME ---
 st.sidebar.header("🔍 Otomatik Profil Analizi")
 target_user = st.sidebar.text_input(
     "Instagram Kullanıcı Adı", placeholder="visionx_gallery"
-)
+).strip()
 btn_analyze = st.sidebar.button("🚀 Profili Analiz Et")
 
 
 def fetch_instagram_data(username):
-    url = f"https://instagram-looter2.p.rapidapi.com/profile?username={username}"
-    headers = {
+    # Deneme 1: Instagram Scraper 2023
+    url1 = f"https://instagram-scraper-20231.p.rapidapi.com/userinfo/{username}"
+    headers1 = {
+        "x-rapidapi-key": API_KEY,
+        "x-rapidapi-host": "instagram-scraper-20231.p.rapidapi.com",
+    }
+
+    try:
+        res1 = requests.get(url1, headers=headers1, timeout=10)
+        if res1.status_code == 200:
+            data = res1.json()
+            if data and "data" in data:
+                return data["data"]
+    except Exception:
+        pass
+
+    # Deneme 2: Looter2 Fallback
+    url2 = f"https://instagram-looter2.p.rapidapi.com/profile?username={username}"
+    headers2 = {
         "x-rapidapi-key": API_KEY,
         "x-rapidapi-host": "instagram-looter2.p.rapidapi.com",
     }
+
     try:
-        response = requests.get(url, headers=headers)
-        if response.status_code == 200:
-            return response.json()
-        return None
+        res2 = requests.get(url2, headers=headers2, timeout=10)
+        if res2.status_code == 200:
+            return res2.json()
     except Exception:
-        return None
+        pass
+
+    return None
 
 
 if btn_analyze and target_user:
+    # Başındaki @ işaretini temizle
+    if target_user.startswith("@"):
+        target_user = target_user[1:]
+
     with st.spinner(
         f"⏳ @{target_user} profil verileri işleniyor, lütfen bekleyin..."
     ):
-        data = fetch_instagram_data(target_user)
+        raw_data = fetch_instagram_data(target_user)
 
-        if data:
+        if raw_data:
             likes, comments, views = [], [], []
             followers = 10000
 
-            sections = data.get("sections", [])
-            for sec in sections:
-                if not isinstance(sec, dict):
-                    continue
-                medias = sec.get("layout_content", {}).get("medias", [])
-                for item in medias:
-                    media = item.get("media", {})
-                    if media:
-                        # Beğeni Yakalama (Farklı API formatlarını kapsar)
-                        like_c = (
-                            media.get("like_count")
-                            or media.get("edge_liked_by", {}).get("count")
-                            or 0
-                        )
+            # Veri Yapısı 1 Parsing (Scraper 2023)
+            if "follower_count" in raw_data:
+                followers = raw_data.get("follower_count", 10000)
+                timeline = raw_data.get(
+                    "edge_owner_to_timeline_media", {}
+                ).get("edges", [])
+                for edge in timeline:
+                    node = edge.get("node", {})
+                    likes.append(
+                        node.get("edge_liked_by", {}).get("count")
+                        or node.get("like_count")
+                        or 0
+                    )
+                    comments.append(
+                        node.get("edge_media_to_comment", {}).get("count")
+                        or node.get("comment_count")
+                        or 0
+                    )
+                    views.append(
+                        node.get("video_view_count") or node.get("play_count") or 0
+                    )
 
-                        # Yorum Yakalama
-                        comment_c = (
-                            media.get("comment_count")
-                            or media.get("edge_media_to_comment", {}).get(
-                                "count"
-                            )
-                            or 0
-                        )
+            # Veri Yapısı 2 Parsing (Looter2)
+            elif "sections" in raw_data:
+                for sec in raw_data.get("sections", []):
+                    if isinstance(sec, dict):
+                        medias = sec.get("layout_content", {}).get("medias", [])
+                        for item in medias:
+                            media = item.get("media", {})
+                            if media:
+                                likes.append(media.get("like_count", 0))
+                                comments.append(media.get("comment_count", 0))
+                                views.append(
+                                    media.get(
+                                        "play_count",
+                                        media.get("ig_play_count", 0),
+                                    )
+                                )
 
-                        # İzlenme Yakalama
-                        view_c = (
-                            media.get("play_count")
-                            or media.get("ig_play_count")
-                            or media.get("view_count")
-                            or 0
-                        )
-
-                        likes.append(like_c)
-                        comments.append(comment_c)
-                        views.append(view_c)
-
-            # Eğer liste tamamen boşsa ama media nesnesi geldiyse varsayılan demo verisiyle destekle
-            if len(likes) == 0:
-                st.warning(
-                    "⚠️ Profil bulundu ancak son gönderi metrikleri korumalı/boş geldi."
-                )
-            else:
+            if likes and len(likes) > 0:
                 df = pd.DataFrame(
                     {
                         "Gönderi": [f"Post {i+1}" for i in range(len(likes))],
@@ -103,10 +124,10 @@ if btn_analyze and target_user:
                 )
 
                 df["Toplam Etkileşim"] = df["Beğeni"] + df["Yorum"]
-                df["ER (%)"] = (df["Toplam Etkileşim"] / followers) * 100
+                df["ER (%)"] = (df["Toplam Etkileşim"] / max(followers, 1)) * 100
 
                 st.success(
-                    f"✅ **@{target_user}** hesabı başarıyla analiz edildi! ({len(likes)} Gönderi Yakalandı)"
+                    f"✅ **@{target_user}** hesabı başarıyla çekildi! (Takipçi: {followers:,} | Analiz Edilen Post: {len(likes)})"
                 )
 
                 tab1, tab2, tab3 = st.tabs(
@@ -161,7 +182,7 @@ if btn_analyze and target_user:
                     fake_follower_pct = 12.5
                     real_followers = followers * (1 - (fake_follower_pct / 100))
                     effective_er = (
-                        df["Toplam Etkileşim"].mean() / real_followers
+                        df["Toplam Etkileşim"].mean() / max(real_followers, 1)
                     ) * 100
 
                     m1, m2 = st.columns(2)
@@ -212,8 +233,14 @@ if btn_analyze and target_user:
                     )
                     st.plotly_chart(fig_sb, use_container_width=True)
 
+            else:
+                st.error(
+                    "❌ Kullanıcı bulundu ancak gönderi metrikleri alınamadı (Gizli hesap olabilir)."
+                )
         else:
-            st.error("Instagram API sunucusundan yanıt alınamadı.")
+            st.error(
+                "❌ Profil bulunamadı (404 / Hatalı kullanıcı adı) veya API servis kotaları doldu. Lütfen kullanıcı adını kontrol edin."
+            )
 
 elif btn_analyze:
     st.warning("Lütfen sol tarafa bir Instagram kullanıcı adı girin.")
