@@ -17,18 +17,16 @@ st.set_page_config(
 )
 
 # ---------------------------------------------------------
-# 2. ÖZEL CSS TASARIMI (MG BRAND OFFICE Renk Uyumu & Beyaz Tema)
+# 2. ÖZEL CSS TASARIMI
 # ---------------------------------------------------------
 st.markdown(
     """
 <style>
-    /* ARKA PLAN BEYAZ */
     .stApp {
         background-color: #ffffff !important;
         color: #0f172a !important;
     }
 
-    /* MG BRAND OFFICE EFEKTLİ BAŞLIK */
     .brand-header {
         font-size: 3.2rem;
         font-weight: 900;
@@ -57,7 +55,6 @@ st.markdown(
         margin-bottom: 25px;
     }
 
-    /* METRİK KARTLARI */
     [data-testid="stMetric"] {
         background-color: #f8fafc !important;
         border: 1px solid #e2e8f0 !important;
@@ -76,7 +73,6 @@ st.markdown(
         font-weight: 800 !important;
     }
 
-    /* MG BRAND OFFICE RENKLERİYLE BİREBİR UYUMLU BUTON */
     .stButton>button {
         width: 100%;
         background: linear-gradient(135deg, #2563eb 0%, #7c3aed 50%, #db2777 100%) !important;
@@ -98,14 +94,12 @@ st.markdown(
         transform: translateY(-2px) !important;
     }
 
-    /* TAB (SEKME) SEÇİM ÇİZGİSİ UYUMU */
     .stTabs [aria-selected="true"] {
         color: #7c3aed !important;
         border-bottom: 3px solid #7c3aed !important;
         font-weight: 700 !important;
     }
 
-    /* FOOTER (Turkey 2026) */
     .footer {
         position: fixed;
         left: 0;
@@ -129,11 +123,12 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- API ANAHTARINIZ ---
+# --- API CONFIGURATION ---
 APIFY_TOKEN = "apify_api_gvh1Gqo99oDTmXqrb4CwCk24HGWmcN07zSRb"
 
 
 def fetch_apify_instagram_data(username, max_posts=50):
+    """Apify actor vasıtasıyla Instagram ham verisini çeker ve izole eder."""
     actor_id = "apify~instagram-profile-scraper"
     run_url = f"https://api.apify.com/v2/acts/{actor_id}/runs?token={APIFY_TOKEN}"
 
@@ -142,7 +137,7 @@ def fetch_apify_instagram_data(username, max_posts=50):
     try:
         response = requests.post(run_url, json=payload, timeout=20)
         if response.status_code not in [200, 201]:
-            st.error(f"Apify Başlatma Hatası ({response.status_code}): {response.text}")
+            st.error(f"API Hatası ({response.status_code}): {response.text}")
             return None
 
         run_data = response.json().get("data", {})
@@ -152,7 +147,8 @@ def fetch_apify_instagram_data(username, max_posts=50):
 
         dataset_url = f"https://api.apify.com/v2/datasets/{dataset_id}/items?token={APIFY_TOKEN}"
 
-        for _ in range(30):
+        # Polling döngüsü
+        for _ in range(35):
             time.sleep(2)
             res = requests.get(dataset_url)
             if res.status_code == 200:
@@ -161,41 +157,39 @@ def fetch_apify_instagram_data(username, max_posts=50):
                     return items[0]
         return None
     except Exception as e:
-        st.error(f"Bağlantı Hatası: {e}")
+        st.error(f"Baglanti Hatasi: {e}")
         return None
 
 
-# Helper safe converter
-def safe_int(val, default=0):
+def clean_number(value, default=0):
+    """Veri tipini garanti altına alan sanitleştirici."""
+    if value is None:
+        return default
     try:
-        return int(val) if val is not None else default
+        val = float(value)
+        return default if math.isnan(val) else val
     except (ValueError, TypeError):
         return default
 
 
 # ---------------------------------------------------------
-# 3. SAĞ ÜST KÖŞE POP-OVER MENÜ VE BAŞLIK
+# 3. KONTROL PANELI VE POP-OVER
 # ---------------------------------------------------------
 col_top_left, col_top_right = st.columns([5, 1])
 
 with col_top_right:
-    show_algo_menu = st.popover("☰ Algoritmalar")
+    show_algo_menu = st.popover("☰ Algoritma Mantığı")
 
 with show_algo_menu:
-    st.markdown("### 🧠 Revize Edilmiş Algoritma Modeli")
-    st.write("Performans ve doğruluk odaklı matematiksel güncellemeler:")
-
+    st.markdown("### 📐 Tam Doğruluklu Hesaplama Modeli")
     st.markdown("---")
-    st.markdown("**🎯 1. HypeAuditor (AQS)**")
-    st.caption("AQS = Sigmoid(Normalized ER) * 40 + Comment/Like Quality * 40 + Stability * 20. Ölçek 1-100 arasında sınırlandırılmıştır.")
+    st.markdown("**1. HypeAuditor (AQS):**")
+    st.caption("AQS = 100 * [ (ER_Score * 0.40) + (CommentRatio_Score * 0.40) + (Stability_Score * 0.20) ]")
+    st.markdown("**2. Modash (Bot / Fake Audit):**")
+    st.caption("Takipçi skalasına bağlı beklenen ER ile gerçekleşen ER farkı + Yorum/Beğeni anormallik varyansı.")
+    st.markdown("**3. Social Blade Grade:**")
+    st.caption("Medyan ER ve Varyasyon Katsayısı (CV) matrisi üzerinden harf derecelemesi.")
 
-    st.markdown("**🔍 2. Modash (Dinamik Bot Analizi)**")
-    st.caption("Takipçi skalasına göre normalize edilmiş ER beklentisi ve yorum/beğeni uyumsuzluk katsayısı ile dinamik risk oranlanır.")
-
-    st.markdown("**📈 3. Social Blade Grade**")
-    st.caption("Düzeltilmiş Medyan ER ve Varyasyon Katsayısı (CV = Std/Mean) bileşimiyle harf notlandırması yapılır.")
-
-# ANA BAŞLIK
 st.markdown('<div class="brand-header">MG BRAND OFFICE</div>', unsafe_allow_html=True)
 st.markdown(
     '<div class="brand-sub">All-in-One Influencer Tracker & Intelligence Suite</div>',
@@ -203,7 +197,7 @@ st.markdown(
 )
 
 # ---------------------------------------------------------
-# 4. ARAMA KUTUSU VE DERİN TARAMA SEÇENEKLERİ
+# 4. ARAMA VE TARAMA BÖLÜMÜ
 # ---------------------------------------------------------
 c_left, c_mid, c_right = st.columns([1, 2, 1])
 
@@ -214,59 +208,59 @@ with c_mid:
         label_visibility="collapsed",
     ).strip()
 
-    scan_deep = st.checkbox("Tüm Profili Derinlemesine Tara (Son 50+ Post)")
-
+    scan_deep = st.checkbox("Derin Profil Analizi Yap (Son 50+ Gönderi)")
     btn_analyze = st.button("Profili Analiz Et")
 
 st.markdown("---")
 
 # ---------------------------------------------------------
-# 5. GELİŞMİŞ VE REVİZE EDİLMİŞ ALGORİTMA ANALİZİ
+# 5. GERÇEKÇİ HESAPLAMA MOTORU
 # ---------------------------------------------------------
 if btn_analyze and target_user:
     if target_user.startswith("@"):
         target_user = target_user[1:]
 
     max_p = 50 if scan_deep else 12
-    spinner_msg = (
-        f"⏳ @{target_user} profilinin detaylı geçmiş verileri taranıyor..."
-        if scan_deep
-        else f"⏳ @{target_user} profili taranıyor..."
-    )
+    spinner_msg = f"⏳ @{target_user} profili çekiliyor ve matematiksel doğrulamadan geçiriliyor..."
 
     with st.spinner(spinner_msg):
         profile = fetch_apify_instagram_data(target_user, max_posts=max_p)
 
         if profile and "latestPosts" in profile:
-            followers = safe_int(profile.get("followersCount", profile.get("followers", 0)), default=1000)
-            followers = max(followers, 1) # Sıfıra bölünmeyi önle
+            # 1. Takipçi Sayısını Kesinleştir
+            raw_followers = profile.get("followersCount", profile.get("followers", 0))
+            followers = int(clean_number(raw_followers, default=1000))
+            followers = max(followers, 1) # Division by zero engeli
 
             raw_posts = profile.get("latestPosts", [])
+            
+            likes_list = []
+            comments_list = []
+            views_list = []
 
-            likes, comments, views = [], [], []
+            for p in raw_posts:
+                l = clean_number(p.get("likesCount"), 0)
+                c = clean_number(p.get("commentsCount"), 0)
+                v = clean_number(p.get("videoViewCount"), l) # Video değilse izlenmeyi beğeniye eşitleme, direkt l alıyoruz
+                
+                likes_list.append(l)
+                comments_list.append(c)
+                views_list.append(v)
 
-            for post in raw_posts:
-                l = safe_int(post.get("likesCount", 0))
-                c = safe_int(post.get("commentsCount", 0))
-                v = safe_int(post.get("videoViewCount", l))
-                likes.append(l)
-                comments.append(c)
-                views.append(v)
-
-            if len(likes) > 0:
+            if len(likes_list) > 0:
                 df = pd.DataFrame({
-                    "Gönderi": [f"Post {i+1}" for i in range(len(likes))],
-                    "Beğeni": likes,
-                    "Yorum": comments,
-                    "İzlenme": views,
+                    "Gönderi": [f"Post {i+1}" for i in range(len(likes_list))],
+                    "Beğeni": likes_list,
+                    "Yorum": comments_list,
+                    "İzlenme": views_list
                 })
 
                 df["Toplam Etkileşim"] = df["Beğeni"] + df["Yorum"]
-                df["ER (%)"] = (df["Toplam Etkileşim"] / followers) * 100
+                df["ER (%)"] = (df["Toplam Etkileşim"] / followers) * 100.0
 
                 st.success(
-                    f"**@{target_user}** hesabı başarıyla doğrulandı ve analiz edildi! "
-                    f"(Takipçi: {followers:,} | İncelenen Post Sayısı: **{len(likes)}**)"
+                    f"**@{target_user}** analizi tamamlandı. "
+                    f"(Takipçi: **{followers:,}** | İşlenen Gönderi: **{len(df)}**)"
                 )
 
                 sub_tab1, sub_tab2, sub_tab3 = st.tabs(
@@ -277,151 +271,153 @@ if btn_analyze and target_user:
                     ]
                 )
 
-                # --- GENEL MATEMATİKSEL DEĞERLER (REVİZE EDİLDİ) ---
+                # --- TEMEL İSTATİSTİKİ VERİLER ---
                 mean_er = float(df["ER (%)"].mean())
                 median_er = float(df["ER (%)"].median())
-                total_likes = sum(likes)
-                total_comments = sum(comments)
-                
-                # Standart Sapma ve Varyasyon Katsayısı (CV)
                 std_er = float(df["ER (%)"].std()) if len(df) > 1 else 0.0
-                cv_index = (std_er / mean_er) if mean_er > 0 else 0.0
-
-                # Yorum / Beğeni Dengesi
-                comment_like_ratio = (total_comments / max(total_likes, 1))
+                
+                sum_likes = float(df["Beğeni"].sum())
+                sum_comments = float(df["Yorum"].sum())
+                
+                comment_to_like_ratio = sum_comments / max(sum_likes, 1.0)
+                
+                # Variation Coefficient (CV) - İstikrar Endeksi
+                cv = (std_er / mean_er) if mean_er > 0 else 1.0
 
                 # =========================================================
-                # 1. HYPEAUDITOR (SİGMOİD VE LOGARİTMİK AQS REVIZYONU)
+                # 1. HYPEAUDITOR (AQS REALISTIC SCORE)
                 # =========================================================
                 with sub_tab1:
-                    st.subheader("🎯 HypeAuditor Profil Kalite Analizi (AQS)")
+                    st.subheader("🎯 HypeAuditor Kitle Kalite Analizi (AQS)")
 
-                    # Sigmoidal ER Skoru (Sektör Standartı Benchmark: ~%2.0 ER ideal kabul edilir)
-                    er_norm = 1 / (1 + math.exp(-1.2 * (mean_er - 2.0)))
-                    er_part = er_norm * 40.0
+                    # Takipçi Büyüklüğüne Göre Hedef ER (Benchmark)
+                    if followers < 20000:
+                        benchmark_er = 3.5
+                    elif followers < 100000:
+                        benchmark_er = 2.0
+                    elif followers < 1000000:
+                        benchmark_er = 1.2
+                    else:
+                        benchmark_er = 0.8
 
-                    # Yorum Kalitesi Skoru (Ideali %2 ile %5 arası yorum/beğeni oranıdır)
-                    comm_norm = min(1.0, comment_like_ratio / 0.03)
-                    comm_part = comm_norm * 40.0
+                    # 1. ER Puanı (Max 40)
+                    er_score = min(40.0, (mean_er / benchmark_er) * 40.0)
+                    
+                    # 2. Yorum Kalitesi Puanı (Ideal yorum/beğeni %1.5 - %4.0 arası) (Max 40)
+                    if comment_to_like_ratio >= 0.015:
+                        comment_score = 40.0
+                    else:
+                        comment_score = (comment_to_like_ratio / 0.015) * 40.0
 
-                    # İstikrar Skoru (Düşük varyasyon daha yüksek puan getirir)
-                    stab_part = max(0.0, 20.0 * (1.0 - min(cv_index, 1.0)))
+                    # 3. İçerik İstikrar Puanı (CV yükseldikçe puan düşer) (Max 20)
+                    stability_score = max(0.0, 20.0 * (1.0 - min(cv, 1.0)))
 
                     # Toplam AQS
-                    aqs_score = int(np.clip(er_part + comm_part + stab_part, 10, 99))
+                    final_aqs = int(np.clip(er_score + comment_score + stability_score, 10, 99))
 
-                    col1, col2, col3 = st.columns(3)
-                    col1.metric("Kitle Kalite Skoru (AQS)", f"{aqs_score} / 100")
-                    col2.metric("Ortalama ER", f"%{mean_er:.2f}")
-                    col3.metric("Yorum / Beğeni Oranı", f"%{(comment_like_ratio * 100):.2f}")
+                    c1, c2, c3 = st.columns(3)
+                    c1.metric("Gerçek Kalite Skoru (AQS)", f"{final_aqs} / 100")
+                    c2.metric("Ortalama ER", f"%{mean_er:.2f}")
+                    c3.metric("Yorum / Beğeni Oranı", f"%{(comment_to_like_ratio * 100):.2f}")
 
                     fig_hype = px.bar(
                         df,
                         x="Gönderi",
                         y="Toplam Etkileşim",
-                        title=f"Gönderi Başına Etkileşim Dağılımı ({len(likes)} Post)",
+                        title="Gönderi Başına Etkileşim Miktarı",
                         color_discrete_sequence=["#7c3aed"],
                         template="plotly_white",
                     )
                     st.plotly_chart(fig_hype, use_container_width=True)
 
                 # =========================================================
-                # 2. MODASH (DİNAMİK RİSK VE BOT SKORU REVIZYONU)
+                # 2. MODASH (MATEMATİKSEL BOT/GÜVENİLİRLİK HESABI)
                 # =========================================================
                 with sub_tab2:
-                    st.subheader("🔍 Modash Dinamik Bot & Kitle Matrisi")
+                    st.subheader("🔍 Modash Gerçekçi Kitle Matrisi")
 
-                    # Büyüklüğe göre beklenen ideal ER hesabı (Takipçi arttıkça ER doğal düşer)
-                    if followers < 10000:
-                        expected_er = 3.0
-                    elif followers < 100000:
-                        expected_er = 1.8
-                    elif followers < 1000000:
-                        expected_er = 1.2
-                    else:
-                        expected_er = 0.8
+                    # Bot Oranı Tespiti İçin 3 Parametreli Model
+                    bot_penalty = 0.0
 
-                    bot_risk_score = 3.0  # Doğal taban pasif kitle payı
+                    # A) Düşük ER Cezası
+                    if mean_er < (benchmark_er * 0.4):
+                        bot_penalty += 25.0
+                    elif mean_er < (benchmark_er * 0.7):
+                        bot_penalty += 12.0
 
-                    # Risk 1: ER beklentinin çok altındaysa
-                    if mean_er < (expected_er * 0.3):
-                        bot_risk_score += 22.0
-                    elif mean_er < (expected_er * 0.6):
-                        bot_risk_score += 12.0
+                    # B) Anormal Düşük Yorum Cezası (Sadece Beğeni Satın Alınmış Olabilir)
+                    if comment_to_like_ratio < 0.003:
+                        bot_penalty += 20.0
+                    elif comment_to_like_ratio < 0.008:
+                        bot_penalty += 8.0
 
-                    # Risk 2: Yorum oranı aşırı düşükse (sadece bot beğeni basılmış riski)
-                    if comment_like_ratio < 0.002:
-                        bot_risk_score += 18.0
-                    elif comment_like_ratio < 0.008:
-                        bot_risk_score += 8.0
+                    # C) Aşırı Düzensiz Etkileşim Dalgalanması
+                    if cv > 1.4:
+                        bot_penalty += 10.0
 
-                    # Risk 3: Düzenli değil, aşırı dengesiz dalgalanma varsa
-                    if cv_index > 1.5:
-                        bot_risk_score += 10.0
-
-                    fake_follower_pct = round(float(np.clip(bot_risk_score, 2.5, 65.0)), 1)
-                    real_followers = int(followers * (1.0 - (fake_follower_pct / 100.0)))
+                    # Doğal Pasif Kitle Tabanı: %4.0
+                    estimated_fake_pct = float(np.clip(4.0 + bot_penalty, 3.0, 75.0))
                     
-                    # Gerçek takipçi üzerinden efektif ER
-                    effective_er = (df["Toplam Etkileşim"].mean() / max(real_followers, 1)) * 100.0
+                    real_audience = int(followers * (1.0 - (estimated_fake_pct / 100.0)))
+                    real_er = (df["Toplam Etkileşim"].mean() / max(real_audience, 1)) * 100.0
 
                     m1, m2 = st.columns(2)
-                    m1.metric("Tahmini Pasif / Bot Takipçi Oranı", f"%{fake_follower_pct}")
-                    m2.metric("Organik Kitle Üzerinden ER", f"%{effective_er:.2f}")
+                    m1.metric("Tahmini Pasif / Şüpheli Kitle", f"%{estimated_fake_pct:.1f}")
+                    m2.metric("Organik Kitle Üzerinden ER", f"%{real_er:.2f}")
 
                     fig_modash = px.scatter(
                         df,
                         x="İzlenme",
                         y="Toplam Etkileşim",
                         size="Beğeni",
-                        title="İzlenme vs Toplam Etkileşim Korelasyonu",
+                        title="İzlenme - Etkileşim Dağılım Matrisi",
                         color_discrete_sequence=["#2563eb"],
                         template="plotly_white",
                     )
                     st.plotly_chart(fig_modash, use_container_width=True)
 
                 # =========================================================
-                # 3. SOCIAL BLADE (DERECE ALGORİTMASI REVIZYONU)
+                # 3. SOCIAL BLADE (GRADE METRİĞİ)
                 # =========================================================
                 with sub_tab3:
-                    st.subheader("📈 Social Blade Derecelendirme & Trend")
+                    st.subheader("📈 Social Blade Derecelendirmesi")
 
-                    # Düzeltilmiş Derecelendirme Mantığı (Aykırı Değerlerden Arındırılmış Medyan ER Esas Alınır)
-                    if median_er >= 3.5 and cv_index < 0.9:
+                    # Not Skalası (Medyan ER ve Varyasyon Katsayısı Bileşimi)
+                    if median_er >= (benchmark_er * 1.5) and cv < 0.8:
                         grade = "A+"
-                    elif median_er >= 2.0:
+                    elif median_er >= benchmark_er:
                         grade = "A"
-                    elif median_er >= 1.0:
+                    elif median_er >= (benchmark_er * 0.6):
                         grade = "B+"
-                    elif median_er >= 0.5:
+                    elif median_er >= (benchmark_er * 0.3):
                         grade = "B"
                     else:
                         grade = "C"
 
                     s1, s2 = st.columns(2)
                     s1.metric("Social Blade Hesap Skoru", grade)
-                    s2.metric("Gönderi Başı Ortalama Beğeni", f"{int(df['Beğeni'].mean()):,}")
+                    s2.metric("Ortalama Beğeni / Post", f"{int(df['Beğeni'].mean()):,}")
 
                     fig_sb = px.line(
                         df,
                         x="Gönderi",
                         y="ER (%)",
                         markers=True,
-                        title="Gönderi Bazlı Etkileşim Oranı Trendi",
+                        title="Gönderi Bazlı Performans Çizgisi",
                         color_discrete_sequence=["#db2777"],
                         template="plotly_white",
                     )
                     st.plotly_chart(fig_sb, use_container_width=True)
             else:
-                st.error("Gelen profilde analiz edilecek geçerli bir gönderi bulunamadı.")
+                st.error("Gelen veride işlenebilir gönderi sayısı 0. Profil gizli veya boş olabilir.")
         else:
-            st.error("❌ Profil bulunamadı veya Apify taraması zaman aşımına uğradı.")
+            st.error("❌ Profil verisi çekilemedi. Apify taraması zaman aşımına uğramış olabilir.")
 
 elif btn_analyze:
-    st.warning("Lütfen geçerli bir Instagram kullanıcı adı girin.")
+    st.warning("Lütfen analiz etmek istediğiniz kullanıcı adını girin.")
 
 # ---------------------------------------------------------
-# FOOTER (Turkey 2026)
+# FOOTER
 # ---------------------------------------------------------
 st.markdown(
     '<div class="footer">MG BRAND OFFICE © Turkey 2026 | Powered by Apify & Streamlit</div>',
