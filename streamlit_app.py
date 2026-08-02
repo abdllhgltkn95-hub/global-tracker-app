@@ -1,5 +1,7 @@
+
 import pandas as pd
 import plotly.express as px
+import requests
 import streamlit as st
 
 # Sayfa Yapılandırması
@@ -11,185 +13,188 @@ st.set_page_config(
 
 st.title("🛡️ All-in-One Influencer Tracker & Intelligence Suite")
 st.caption(
-    "HypeAuditor, Modash ve Social Blade Algoritmalarıyla Çapraz Analiz Platformu"
+    "HypeAuditor, Modash ve Social Blade Algoritmalarıyla Otomatik Analiz Platformu"
 )
 
-# --- YAN MENÜ: VERİ GİRİŞİ ---
-st.sidebar.header("📥 Profil Veri Girişi")
-username = st.sidebar.text_input("Kullanıcı Adı", "@ornek_hesap")
-followers = st.sidebar.number_input(
-    "Takipçi Sayısı", min_value=1, value=50000, step=1000
-)
-
-st.sidebar.subheader("Gönderi & Reels Verileri")
-likes_raw = st.sidebar.text_area(
-    "Beğeniler (Son 10 Gönderi - Virgülle)",
-    "1200, 950, 4500, 1100, 890, 920, 1050, 15000, 980, 1020",
-)
-comments_raw = st.sidebar.text_area(
-    "Yorumlar (Son 10 Gönderi - Virgülle)",
-    "45, 30, 180, 25, 12, 18, 22, 540, 19, 28",
-)
-views_raw = st.sidebar.text_area(
-    "İzlenmeler (Reels - Virgülle)",
-    "25000, 18000, 95000, 22000, 15000, 16000, 19000, 350000, 17000, 20000",
-)
+# -------------------------------------------------------------
+# RAPIDAPI ANAHTARIN (SENİN KEY'İN BURAYA EKLENDİ)
+# -------------------------------------------------------------
+API_KEY = "f149f5dbe8msh64295e613d8e62fp1068d3jsn8724a64fa267"
 
 
-def parse_input(raw_str):
+# --- YAN MENÜ: OTOMATİK VERİ ÇEKME ---
+st.sidebar.header("🔍 Otomatik Profil Analizi")
+target_user = st.sidebar.text_input(
+    "Instagram Kullanıcı Adı", placeholder="gunduzmeltemi"
+)
+btn_analyze = st.sidebar.button("🚀 Profili Analiz Et")
+
+
+def fetch_instagram_data(username):
+    url = f"https://instagram-looter2.p.rapidapi.com/profile?username={username}"
+    headers = {
+        "x-rapidapi-key": API_KEY,
+        "x-rapidapi-host": "instagram-looter2.p.rapidapi.com",
+    }
     try:
-        return [float(x.strip()) for x in raw_str.split(",") if x.strip()]
-    except:
-        return []
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            return response.json()
+        return None
+    except Exception:
+        return None
 
 
-likes = parse_input(likes_raw)
-comments = parse_input(comments_raw)
-views = parse_input(views_raw)
+if btn_analyze and target_user:
+    with st.spinner(
+        f"⏳ @{target_user} profil verileri çekiliyor, lütfen bekleyin..."
+    ):
+        data = fetch_instagram_data(target_user)
 
-if len(likes) > 0 and len(comments) > 0:
-    df = pd.DataFrame(
-        {
-            "Gönderi": [f"Post {i+1}" for i in range(len(likes))],
-            "Beğeni": likes,
-            "Yorum": comments,
-            "İzlenme": (
-                views if len(views) == len(likes) else [0] * len(likes)
-            ),
-        }
-    )
+        if data and "followers" in data:
+            followers = data.get("followers", 10000)
+            posts = data.get("posts", [])[:10]
 
-    df["Toplam Etkileşim"] = df["Beğeni"] + df["Yorum"]
-    df["ER (%)"] = (df["Toplam Etkileşim"] / followers) * 100
+            likes = [p.get("like_count", 0) for p in posts]
+            comments = [p.get("comment_count", 0) for p in posts]
+            views = [p.get("view_count", 0) for p in posts]
 
-    # SEKMELİ ARAYÜZ YAPISI
-    tab1, tab2, tab3 = st.tabs(
-        ["🎯 HypeAuditor Modülü", "🔍 Modash Modülü", "📈 Social Blade Modülü"]
-    )
+            if likes and len(likes) > 0:
+                df = pd.DataFrame(
+                    {
+                        "Gönderi": [f"Post {i+1}" for i in range(len(likes))],
+                        "Beğeni": likes,
+                        "Yorum": comments,
+                        "İzlenme": views,
+                    }
+                )
 
-    # ==========================================
-    # 1. BÖLÜM: HYPEAUDITOR MODÜLÜ
-    # ==========================================
-    with tab1:
-        st.header("🎯 HypeAuditor Metodolojisi Analizi")
-        st.info(
-            "💡 **HypeAuditor Ne İşe Yarar?** \n"
-            "HypeAuditor, kitle kalitesi ve sahte etkileşim (Bot) tespitinde dünya standardıdır. "
-            "Her etkileşimi eşit saymaz; yorum ve kaydetmeye yüksek katsayı verir ve aykırı (viral) sıçramaları temizleyerek **AQS (Audience Quality Score)** üretir."
-        )
+                df["Toplam Etkileşim"] = df["Beğeni"] + df["Yorum"]
+                df["ER (%)"] = (df["Toplam Etkileşim"] / followers) * 100
 
-        df["Hype_Weighted"] = (df["Beğeni"] * 1) + (df["Yorum"] * 3)
+                st.success(
+                    f"✅ **@{target_user}** hesabı başarıyla çekildi! (Takipçi: {followers:,})"
+                )
 
-        q_low = df["ER (%)"].quantile(0.10)
-        q_high = df["ER (%)"].quantile(0.90)
-        clean_df = df[(df["ER (%)"] >= q_low) & (df["ER (%)"] <= q_high)]
-        clean_er = clean_df["ER (%)"].mean()
+                tab1, tab2, tab3 = st.tabs(
+                    [
+                        "🎯 HypeAuditor Modülü",
+                        "🔍 Modash Modülü",
+                        "📈 Social Blade Modülü",
+                    ]
+                )
 
-        comment_ratio = df["Yorum"].sum() / (df["Beğeni"].sum() + 1)
-        aqs_score = int(
-            min(
-                100,
-                (clean_er * 12)
-                + (comment_ratio * 250)
-                + (40 if clean_er > 1.2 else 15),
-            )
-        )
+                # 1. HYPEAUDITOR
+                with tab1:
+                    st.header("🎯 HypeAuditor Kalite Analizi")
+                    st.info(
+                        "💡 **HypeAuditor:** Kitle kalitesi ve sahte etkileşim (Bot) tespitinde dünya standardıdır."
+                    )
 
-        c1, c2, c3 = st.columns(3)
-        c1.metric("Kitle Kalite Skoru (AQS)", f"{aqs_score} / 100")
-        c2.metric("Düzeltilmiş Gerçek ER", f"%{clean_er:.2f}")
-        c3.metric(
-            "Yorum / Beğeni Sadakat Oranı", f"%{(comment_ratio * 100):.2f}"
-        )
+                    q_low = df["ER (%)"].quantile(0.10)
+                    q_high = df["ER (%)"].quantile(0.90)
+                    clean_df = df[
+                        (df["ER (%)"] >= q_low) & (df["ER (%)"] <= q_high)
+                    ]
+                    clean_er = (
+                        clean_df["ER (%)"].mean()
+                        if not clean_df.empty
+                        else df["ER (%)"].mean()
+                    )
 
-        st.subheader("📊 HypeAuditor Ağırlıklı Etkileşim Grafiği")
-        fig_hype = px.bar(
-            df,
-            x="Gönderi",
-            y="Hype_Weighted",
-            title="Gönderi Başına Değerlendirilmiş Kalite Gücü (Yorumlar 3x Ağırlıklı)",
-            color_discrete_sequence=["#a855f7"],
-        )
-        st.plotly_chart(fig_hype, use_container_width=True)
+                    comment_ratio = df["Yorum"].sum() / (df["Beğeni"].sum() + 1)
+                    aqs_score = int(
+                        min(
+                            100,
+                            (clean_er * 12)
+                            + (comment_ratio * 250)
+                            + (40 if clean_er > 1.2 else 15),
+                        )
+                    )
 
-    # ==========================================
-    # 2. BÖLÜM: MODASH MODÜLÜ
-    # ==========================================
-    with tab2:
-        st.header("🔍 Modash Metodolojisi Analizi")
-        st.info(
-            "💡 **Modash Ne İşe Yarar?** \n"
-            "Modash, markaların e-ticaret ve satış odaklı performans ölçümlerinde kullanılır. "
-            "Profilin Reels izlenmelerine, sahte takipçi oranına ve reklam/dönüşüm potansiyeline odaklanır."
-        )
+                    c1, c2, c3 = st.columns(3)
+                    c1.metric("Kitle Kalite Skoru (AQS)", f"{aqs_score} / 100")
+                    c2.metric("Düzeltilmiş Gerçek ER", f"%{clean_er:.2f}")
+                    c3.metric(
+                        "Yorum/Beğeni Oranı", f"%{(comment_ratio * 100):.2f}"
+                    )
 
-        total_views = df["İzlenme"].sum()
-        view_conversion = (
-            (df["Toplam Etkileşim"].sum() / total_views * 100)
-            if total_views > 0
-            else 0
-        )
+                    fig_hype = px.bar(
+                        df,
+                        x="Gönderi",
+                        y="Toplam Etkileşim",
+                        title="Gönderi Başına Etkileşim Gücü",
+                        color_discrete_sequence=["#a855f7"],
+                    )
+                    st.plotly_chart(fig_hype, use_container_width=True)
 
-        fake_follower_pct = 12.5
-        real_followers = followers * (1 - (fake_follower_pct / 100))
-        effective_er = (df["Toplam Etkileşim"].mean() / real_followers) * 100
+                # 2. MODASH
+                with tab2:
+                    st.header("🔍 Modash Analizi")
+                    st.info(
+                        "💡 **Modash:** Satış/reklam odağı, Reels izlenmeleri ve pasif kitle oranına odaklanır."
+                    )
 
-        m1, m2, m3 = st.columns(3)
-        m1.metric("Tahmini Pasif/Bot Kitle", f"%{fake_follower_pct}")
-        m2.metric("Aktif Kitle Üzerinden ER", f"%{effective_er:.2f}")
-        m3.metric("Reels İzlenme Dönüşümü", f"%{view_conversion:.2f}")
+                    fake_follower_pct = 12.5
+                    real_followers = followers * (1 - (fake_follower_pct / 100))
+                    effective_er = (
+                        df["Toplam Etkileşim"].mean() / real_followers
+                    ) * 100
 
-        st.subheader("🎬 Reels İzlenme vs Etkileşim Dönüşüm Matrisi")
-        fig_modash = px.scatter(
-            df,
-            x="İzlenme",
-            y="Toplam Etkileşim",
-            size="Beğeni",
-            hover_name="Gönderi",
-            title="İzleme Başına Etkileşime Dönüşme Performansı",
-            color_discrete_sequence=["#38bdf8"],
-        )
-        st.plotly_chart(fig_modash, use_container_width=True)
+                    m1, m2 = st.columns(2)
+                    m1.metric(
+                        "Tahmini Pasif/Bot Kitle", f"%{fake_follower_pct}"
+                    )
+                    m2.metric("Aktif Kitle Üzerinden ER", f"%{effective_er:.2f}")
 
-    # ==========================================
-    # 3. BÖLÜM: SOCIAL BLADE MODÜLÜ
-    # ==========================================
-    with tab3:
-        st.header("📈 Social Blade Metodolojisi Analizi")
-        st.info(
-            "💡 **Social Blade Ne İşe Yarar?** \n"
-            "Social Blade; hesapların büyüme hızını, trendlerini ve genel başarı harfini (Grade) veren istatistik aracıdır."
-        )
+                    fig_modash = px.scatter(
+                        df,
+                        x="İzlenme",
+                        y="Toplam Etkileşim",
+                        size="Beğeni",
+                        title="Reels İzlenme vs Etkileşim Matrisi",
+                        color_discrete_sequence=["#38bdf8"],
+                    )
+                    st.plotly_chart(fig_modash, use_container_width=True)
 
-        raw_er = df["ER (%)"].mean()
-        if raw_er >= 5.0:
-            grade = "A+"
-        elif raw_er >= 3.0:
-            grade = "A"
-        elif raw_er >= 1.8:
-            grade = "B+"
-        elif raw_er >= 1.0:
-            grade = "B"
+                # 3. SOCIAL BLADE
+                with tab3:
+                    st.header("📈 Social Blade Analizi")
+                    st.info(
+                        "💡 **Social Blade:** Hesabın genel performans harfini (Grade) ve gidişat trendini verir."
+                    )
+
+                    raw_er = df["ER (%)"].mean()
+                    grade = (
+                        "A+"
+                        if raw_er >= 5.0
+                        else (
+                            "A"
+                            if raw_er >= 3.0
+                            else ("B+" if raw_er >= 1.8 else "B")
+                        )
+                    )
+
+                    s1, s2 = st.columns(2)
+                    s1.metric("Social Blade Skoru", grade)
+                    s2.metric("Ortalama Beğeni", f"{int(df['Beğeni'].mean()):,}")
+
+                    fig_sb = px.line(
+                        df,
+                        x="Gönderi",
+                        y="ER (%)",
+                        markers=True,
+                        title="Etkileşim Oranı Trend Çizgisi",
+                        color_discrete_sequence=["#ec4899"],
+                    )
+                    st.plotly_chart(fig_sb, use_container_width=True)
+
+            else:
+                st.error("Profilin son gönderi verileri okunamadı.")
         else:
-            grade = "C"
+            st.error(
+                "Instagram verisi çekilemedi. Profil gizli olabilir veya kullanıcı adı yanlış."
+            )
 
-        s1, s2, s3 = st.columns(3)
-        s1.metric("Social Blade Hesap Derecesi", grade)
-        s2.metric("Gönderi Başına Ort. Beğeni", f"{int(df['Beğeni'].mean()):,}")
-        s3.metric("Gönderi Başına Ort. Yorum", f"{int(df['Yorum'].mean()):,}")
-
-        st.subheader("📉 Gönderi Bazlı Etkileşim Trendi")
-        fig_sb = px.line(
-            df,
-            x="Gönderi",
-            y="ER (%)",
-            markers=True,
-            title="Son Gönderilerin Performans Trendi",
-            color_discrete_sequence=["#ec4899"],
-        )
-        st.plotly_chart(fig_sb, use_container_width=True)
-
-else:
-    st.warning(
-        "Lütfen sol taraftaki panelden analiz edilecek verileri eksiksiz girin."
-    )
+elif btn_analyze:
+    st.warning("Lütfen sol tarafa bir Instagram kullanıcı adı girin.")
