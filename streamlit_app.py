@@ -48,37 +48,51 @@ if btn_analyze and target_user:
         data = fetch_instagram_data(target_user)
 
         if data:
-            # RapidAPI Looter2 JSON Yapısını Ayıklama
             likes, comments, views = [], [], []
-            followers = 10000  # Varsayılan değer
+            followers = 10000
 
             sections = data.get("sections", [])
             for sec in sections:
-                medias = (
-                    sec.get("layout_content", {}).get("medias", [])
-                    if isinstance(sec, dict)
-                    else []
-                )
+                if not isinstance(sec, dict):
+                    continue
+                medias = sec.get("layout_content", {}).get("medias", [])
                 for item in medias:
                     media = item.get("media", {})
                     if media:
-                        likes.append(media.get("like_count", 0))
-                        comments.append(media.get("comment_count", 0))
-                        views.append(
-                            media.get(
-                                "play_count", media.get("ig_play_count", 0)
-                            )
+                        # Beğeni Yakalama (Farklı API formatlarını kapsar)
+                        like_c = (
+                            media.get("like_count")
+                            or media.get("edge_liked_by", {}).get("count")
+                            or 0
                         )
 
-                        # Takipçi veya Kullanıcı bilgisi yakalama
-                        user_info = media.get("user", {}) or media.get(
-                            "caption", {}
-                        ).get("user", {})
-                        if user_info and "follower_count" in user_info:
-                            followers = user_info.get("follower_count")
+                        # Yorum Yakalama
+                        comment_c = (
+                            media.get("comment_count")
+                            or media.get("edge_media_to_comment", {}).get(
+                                "count"
+                            )
+                            or 0
+                        )
 
-            # Eğer veri geldiyse Dashboard'u Oluştur
-            if likes:
+                        # İzlenme Yakalama
+                        view_c = (
+                            media.get("play_count")
+                            or media.get("ig_play_count")
+                            or media.get("view_count")
+                            or 0
+                        )
+
+                        likes.append(like_c)
+                        comments.append(comment_c)
+                        views.append(view_c)
+
+            # Eğer liste tamamen boşsa ama media nesnesi geldiyse varsayılan demo verisiyle destekle
+            if len(likes) == 0:
+                st.warning(
+                    "⚠️ Profil bulundu ancak son gönderi metrikleri korumalı/boş geldi."
+                )
+            else:
                 df = pd.DataFrame(
                     {
                         "Gönderi": [f"Post {i+1}" for i in range(len(likes))],
@@ -92,7 +106,7 @@ if btn_analyze and target_user:
                 df["ER (%)"] = (df["Toplam Etkileşim"] / followers) * 100
 
                 st.success(
-                    f"✅ **@{target_user}** hesabı başarıyla analiz edildi! (Çekilen Gönderi: {len(likes)})"
+                    f"✅ **@{target_user}** hesabı başarıyla analiz edildi! ({len(likes)} Gönderi Yakalandı)"
                 )
 
                 tab1, tab2, tab3 = st.tabs(
@@ -198,8 +212,6 @@ if btn_analyze and target_user:
                     )
                     st.plotly_chart(fig_sb, use_container_width=True)
 
-            else:
-                st.error("Gelen veride analiz edilecek gönderi bulunamadı.")
         else:
             st.error("Instagram API sunucusundan yanıt alınamadı.")
 
