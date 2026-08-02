@@ -1,4 +1,3 @@
-
 import pandas as pd
 import plotly.express as px
 import requests
@@ -16,16 +15,13 @@ st.caption(
     "HypeAuditor, Modash ve Social Blade Algoritmalarıyla Otomatik Analiz Platformu"
 )
 
-# -------------------------------------------------------------
-# RAPIDAPI ANAHTARIN (SENİN KEY'İN BURAYA EKLENDİ)
-# -------------------------------------------------------------
+# RapidAPI Anahtarın
 API_KEY = "f149f5dbe8msh64295e613d8e62fp1068d3jsn8724a64fa267"
-
 
 # --- YAN MENÜ: OTOMATİK VERİ ÇEKME ---
 st.sidebar.header("🔍 Otomatik Profil Analizi")
 target_user = st.sidebar.text_input(
-    "Instagram Kullanıcı Adı", placeholder="gunduzmeltemi"
+    "Instagram Kullanıcı Adı", placeholder="visionx_gallery"
 )
 btn_analyze = st.sidebar.button("🚀 Profili Analiz Et")
 
@@ -47,19 +43,42 @@ def fetch_instagram_data(username):
 
 if btn_analyze and target_user:
     with st.spinner(
-        f"⏳ @{target_user} profil verileri çekiliyor, lütfen bekleyin..."
+        f"⏳ @{target_user} profil verileri işleniyor, lütfen bekleyin..."
     ):
         data = fetch_instagram_data(target_user)
 
-        if data and "followers" in data:
-            followers = data.get("followers", 10000)
-            posts = data.get("posts", [])[:10]
+        if data:
+            # RapidAPI Looter2 JSON Yapısını Ayıklama
+            likes, comments, views = [], [], []
+            followers = 10000  # Varsayılan değer
 
-            likes = [p.get("like_count", 0) for p in posts]
-            comments = [p.get("comment_count", 0) for p in posts]
-            views = [p.get("view_count", 0) for p in posts]
+            sections = data.get("sections", [])
+            for sec in sections:
+                medias = (
+                    sec.get("layout_content", {}).get("medias", [])
+                    if isinstance(sec, dict)
+                    else []
+                )
+                for item in medias:
+                    media = item.get("media", {})
+                    if media:
+                        likes.append(media.get("like_count", 0))
+                        comments.append(media.get("comment_count", 0))
+                        views.append(
+                            media.get(
+                                "play_count", media.get("ig_play_count", 0)
+                            )
+                        )
 
-            if likes and len(likes) > 0:
+                        # Takipçi veya Kullanıcı bilgisi yakalama
+                        user_info = media.get("user", {}) or media.get(
+                            "caption", {}
+                        ).get("user", {})
+                        if user_info and "follower_count" in user_info:
+                            followers = user_info.get("follower_count")
+
+            # Eğer veri geldiyse Dashboard'u Oluştur
+            if likes:
                 df = pd.DataFrame(
                     {
                         "Gönderi": [f"Post {i+1}" for i in range(len(likes))],
@@ -73,7 +92,7 @@ if btn_analyze and target_user:
                 df["ER (%)"] = (df["Toplam Etkileşim"] / followers) * 100
 
                 st.success(
-                    f"✅ **@{target_user}** hesabı başarıyla çekildi! (Takipçi: {followers:,})"
+                    f"✅ **@{target_user}** hesabı başarıyla analiz edildi! (Çekilen Gönderi: {len(likes)})"
                 )
 
                 tab1, tab2, tab3 = st.tabs(
@@ -84,24 +103,14 @@ if btn_analyze and target_user:
                     ]
                 )
 
-                # 1. HYPEAUDITOR
+                # 1. HYPEAUDITOR MODÜLÜ
                 with tab1:
                     st.header("🎯 HypeAuditor Kalite Analizi")
                     st.info(
                         "💡 **HypeAuditor:** Kitle kalitesi ve sahte etkileşim (Bot) tespitinde dünya standardıdır."
                     )
 
-                    q_low = df["ER (%)"].quantile(0.10)
-                    q_high = df["ER (%)"].quantile(0.90)
-                    clean_df = df[
-                        (df["ER (%)"] >= q_low) & (df["ER (%)"] <= q_high)
-                    ]
-                    clean_er = (
-                        clean_df["ER (%)"].mean()
-                        if not clean_df.empty
-                        else df["ER (%)"].mean()
-                    )
-
+                    clean_er = df["ER (%)"].mean()
                     comment_ratio = df["Yorum"].sum() / (df["Beğeni"].sum() + 1)
                     aqs_score = int(
                         min(
@@ -128,7 +137,7 @@ if btn_analyze and target_user:
                     )
                     st.plotly_chart(fig_hype, use_container_width=True)
 
-                # 2. MODASH
+                # 2. MODASH MODÜLÜ
                 with tab2:
                     st.header("🔍 Modash Analizi")
                     st.info(
@@ -157,7 +166,7 @@ if btn_analyze and target_user:
                     )
                     st.plotly_chart(fig_modash, use_container_width=True)
 
-                # 3. SOCIAL BLADE
+                # 3. SOCIAL BLADE MODÜLÜ
                 with tab3:
                     st.header("📈 Social Blade Analizi")
                     st.info(
@@ -190,11 +199,9 @@ if btn_analyze and target_user:
                     st.plotly_chart(fig_sb, use_container_width=True)
 
             else:
-                st.error("Profilin son gönderi verileri okunamadı.")
+                st.error("Gelen veride analiz edilecek gönderi bulunamadı.")
         else:
-            st.error(
-                "Instagram verisi çekilemedi. Profil gizli olabilir veya kullanıcı adı yanlış."
-            )
+            st.error("Instagram API sunucusundan yanıt alınamadı.")
 
 elif btn_analyze:
     st.warning("Lütfen sol tarafa bir Instagram kullanıcı adı girin.")
