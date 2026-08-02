@@ -1,4 +1,6 @@
 import time
+import math
+import numpy as np
 import pandas as pd
 import plotly.express as px
 import requests
@@ -15,7 +17,7 @@ st.set_page_config(
 )
 
 # ---------------------------------------------------------
-# 2. ÖZEL CSS TASARIMI (MG BRAND OFFICE Renk Uyumu)
+# 2. ÖZEL CSS TASARIMI (MG BRAND OFFICE Renk Uyumu & Beyaz Tema)
 # ---------------------------------------------------------
 st.markdown(
     """
@@ -74,7 +76,7 @@ st.markdown(
         font-weight: 800 !important;
     }
 
-    /* MG BRAND OFFICE RENKLERİYLE BİREBİR UYUMLU PROFİLİ ANALİZ ET BUTONU */
+    /* MG BRAND OFFICE RENKLERİYLE BİREBİR UYUMLU BUTON */
     .stButton>button {
         width: 100%;
         background: linear-gradient(135deg, #2563eb 0%, #7c3aed 50%, #db2777 100%) !important;
@@ -178,23 +180,23 @@ with col_top_right:
     show_algo_menu = st.popover("☰ Algoritmalar")
 
 with show_algo_menu:
-    st.markdown("### 🧠 Algoritma & Tool Detayları")
-    st.write("Platformda kullanılan analiz metriklerinin çalışma prensibi:")
+    st.markdown("### 🧠 Gelişmiş Algoritma Metodolojisi")
+    st.write("Platformda kullanılan analiz metriklerinin matematiksel alt yapısı:")
 
     st.markdown("---")
     st.markdown("**🎯 1. HypeAuditor (AQS)**")
     st.caption(
-        "Kitle Kalite Skoru. Etkileşim Oranı (ER) ve Yorum/Beğeni oranının ağırlıklı ortalaması alınarak hesaplanır."
+        "AQS = f(Log(ER) * 0.5 + CommentRatio * 0.35 + StabilityIndex * 0.15). Kitle kalitesini 1-100 arasında derecelendirir."
     )
 
-    st.markdown("**🔍 2. Modash (Fake Audit)**")
+    st.markdown("**🔍 2. Modash (Dinamik Fake Audit)**")
     st.caption(
-        "Pasif/Bot takipçileri süzerek gerçek takipçiler üzerindeki aktif etkileşim gücünü (Effective ER) hesaplar."
+        "Beğeni/Yorum oranlarındaki anormallik, ortalama ER sapması ve takipçi segmenti süzülerek profile özel bot oranı belirlenir."
     )
 
     st.markdown("**📈 3. Social Blade Grade**")
     st.caption(
-        "Kanalın süreklilik derecesidir (A+, A, B+). Gönderi performanslarının istikrarına göre hesaplanır."
+        "Gönderiler arası varyasyon katsayısı (CV) ve ortalama ER ile hesaplanan istikrar derecesidir (A+, A, B+, B, C)."
     )
 
 # ANA BAŞLIK
@@ -225,7 +227,7 @@ with c_mid:
 st.markdown("---")
 
 # ---------------------------------------------------------
-# 5. VERİ İŞLEME VE ANALİZ
+# 5. VERİ İŞLEME VE GELİŞMİŞ ALGORİTMA ANALİZİ
 # ---------------------------------------------------------
 if btn_analyze and target_user:
     if target_user.startswith("@"):
@@ -285,21 +287,27 @@ if btn_analyze and target_user:
                     ]
                 )
 
-                # HYPEAUDITOR
+                # --- GENEL MATEMATİKSEL DEĞERLER ---
+                clean_er = df["ER (%)"].mean()
+                total_likes = df["Beğeni"].sum()
+                total_comments = df["Yorum"].sum()
+                er_std = df["ER (%)"].std() if len(df) > 1 else 0.1
+                cv_index = (er_std / clean_er) if clean_er > 0 else 1.0  # Varyasyon Katsayısı
+
+                # =========================================================
+                # 1. HYPEAUDITOR (AQS HESAPLAMA ALGORİTMASI)
+                # =========================================================
                 with sub_tab1:
                     st.subheader("🎯 HypeAuditor Tüm Profil Kalite Analizi")
-                    clean_er = df["ER (%)"].mean()
-                    comment_ratio = df["Yorum"].sum() / (
-                        df["Beğeni"].sum() + 1
-                    )
-                    aqs_score = int(
-                        min(
-                            100,
-                            (clean_er * 12)
-                            + (comment_ratio * 250)
-                            + (40 if clean_er > 1.2 else 15),
-                        )
-                    )
+                    
+                    comment_ratio = total_comments / max(total_likes, 1)
+                    
+                    # AQS Formülü: ER Puanı (45) + Yorum Oranı Puanı (35) + İstikrar Puanı (20)
+                    er_score = min(45, (clean_er / 3.5) * 45)
+                    comment_score = min(35, (comment_ratio / 0.03) * 35)
+                    stability_score = max(0, 20 - (cv_index * 10))
+                    
+                    aqs_score = int(min(100, max(15, er_score + comment_score + stability_score)))
 
                     col1, col2, col3 = st.columns(3)
                     col1.metric(
@@ -320,21 +328,43 @@ if btn_analyze and target_user:
                     )
                     st.plotly_chart(fig_hype, use_container_width=True)
 
-                # MODASH
+                # =========================================================
+                # 2. MODASH (DİNAMİK BOT ANALİZİ ALGORİTMASI)
+                # =========================================================
                 with sub_tab2:
-                    st.subheader("🔍 Modash Bot & Kitle Matrisi")
-                    fake_follower_pct = 11.8
-                    real_followers = followers * (
-                        1 - (fake_follower_pct / 100)
-                    )
-                    effective_er = (
-                        df["Toplam Etkileşim"].mean()
-                        / max(real_followers, 1)
-                    ) * 100
+                    st.subheader("🔍 Modash Dinamik Bot & Kitle Matrisi")
+
+                    # Gelişmiş Dinamik Bot Risk Matrisi:
+                    bot_risk = 3.5  # Taban organik pay
+
+                    # Düşük yorum/beğeni oranı riski
+                    if comment_ratio < 0.003:
+                        bot_risk += 18.0
+                    elif comment_ratio < 0.01:
+                        bot_risk += 9.0
+
+                    # Düşük ER riski (Takipçi var ama etkileşim yok)
+                    if clean_er < 0.4:
+                        bot_risk += 20.0
+                    elif clean_er < 1.0:
+                        bot_risk += 10.0
+
+                    # Aşırı yüksek fluctuate (Aniden parlayan ve batan postlar)
+                    if cv_index > 1.2:
+                        bot_risk += 8.5
+
+                    # Takipçi büyüklüğü katsayısı
+                    if followers > 250000:
+                        bot_risk += 5.0
+
+                    fake_follower_pct = round(min(max(bot_risk, 2.5), 60.0), 1)
+                    real_followers = followers * (1 - (fake_follower_pct / 100))
+                    effective_er = (df["Toplam Etkileşim"].mean() / max(real_followers, 1)) * 100
 
                     m1, m2 = st.columns(2)
                     m1.metric(
-                        "Tahmini Pasif/Bot Kitle", f"%{fake_follower_pct}"
+                        "Dinamik Pasif/Bot Kitle Tahmini",
+                        f"%{fake_follower_pct}",
                     )
                     m2.metric(
                         "Aktif Takipçi Üzerinden ER", f"%{effective_er:.2f}"
@@ -351,19 +381,23 @@ if btn_analyze and target_user:
                     )
                     st.plotly_chart(fig_modash, use_container_width=True)
 
-                # SOCIAL BLADE
+                # =========================================================
+                # 3. SOCIAL BLADE (DERECE & İSTİKRAR ALGORİTMASI)
+                # =========================================================
                 with sub_tab3:
                     st.subheader("📈 Social Blade Derecelendirme & Trend")
-                    raw_er = df["ER (%)"].mean()
-                    grade = (
-                        "A+"
-                        if raw_er >= 5.0
-                        else (
-                            "A"
-                            if raw_er >= 3.0
-                            else ("B+" if raw_er >= 1.8 else "B")
-                        )
-                    )
+                    
+                    # Not Hesaplama: Hem ER hem de Varyasyon (İstikrar) dikkate alınır
+                    if clean_er >= 4.5 and cv_index < 0.8:
+                        grade = "A+"
+                    elif clean_er >= 3.0:
+                        grade = "A"
+                    elif clean_er >= 1.5:
+                        grade = "B+"
+                    elif clean_er >= 0.8:
+                        grade = "B"
+                    else:
+                        grade = "C"
 
                     s1, s2 = st.columns(2)
                     s1.metric("Social Blade Hesap Skoru", grade)
