@@ -26,6 +26,7 @@ APIFY_TOKEN = st.secrets.get("APIFY_TOKEN", "apify_api_gvh1Gqo99oDTmXqrb4CwCk24H
 st.markdown(
     """
 <style>
+    /* Global Simsiyah Arka Plan ve Sayfa Alt Boşluğu */
     html, body, [data-testid="stAppViewContainer"], .stApp {
         background-color: #000000 !important;
         color: #ffffff !important;
@@ -43,6 +44,7 @@ st.markdown(
         100% { background-position: 0% 50%; }
     }
 
+    /* 1. EN ÜST LOGO BAŞLIĞI */
     .reflection-container {
         text-align: center;
         padding-top: 15px; 
@@ -63,41 +65,53 @@ st.markdown(
         -webkit-box-reflect: below -18px linear-gradient(transparent 50%, rgba(255, 255, 255, 0.2));
     }
 
-    /* SEKMELER */
-    div[data-baseweb="tab-list"] {
+    /* 2. SEKMELER (TABS) - KUTUSUZ, SADECE KIRMIZI ALT ÇİZGİ */
+    [data-baseweb="tab-list"] {
         display: flex !important;
         justify-content: center !important;
-        border-bottom: none !important; 
+        border-bottom: 1px solid #161b22 !important; /* Genel silik alt çizgi */
         margin: 0 auto 30px auto !important; 
         gap: 16px !important;
         width: 100% !important;
     }
 
-    div[data-baseweb="tab"] {
-        height: 50px;
-        background-color: #0d1117 !important;
-        border: 1px solid #21262d !important;
-        border-radius: 40px !important;
-        padding: 0px 30px !important;
+    [data-baseweb="tab"] {
+        background-color: transparent !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        outline: none !important; /* Tıklama esnasındaki mavi kutuyu (focus ring) tamamen yok eder */
+        padding: 10px 15px !important;
+        margin: 0 !important;
     }
 
-    div[data-baseweb="tab"] p, div[data-baseweb="tab"] span {
+    [data-baseweb="tab"]:focus, [data-baseweb="tab"]:active, [data-baseweb="tab"]:focus-visible {
+        outline: none !important;
+        box-shadow: none !important;
+        background-color: transparent !important;
+        border: none !important;
+    }
+
+    [data-baseweb="tab"] p, [data-baseweb="tab"] span {
         color: #8b949e !important;
-        font-weight: 900 !important;
+        font-weight: 800 !important;
         font-size: 1.05rem !important;
     }
 
-    div[aria-selected="true"] {
-        background: #21262d !important;
-        border: 1px solid #3b82f6 !important;
-        box-shadow: 0 0 15px rgba(59, 130, 246, 0.3) !important;
+    /* Seçili (Aktif) Sekme */
+    [data-baseweb="tab"][aria-selected="true"] {
+        background-color: transparent !important;
+        border-bottom: 2px solid #ef4444 !important; /* Sadece kırmızı alt çizgi */
+        box-shadow: none !important;
+        outline: none !important;
     }
 
-    div[aria-selected="true"] p, div[aria-selected="true"] span {
+    [data-baseweb="tab"][aria-selected="true"] p, [data-baseweb="tab"][aria-selected="true"] span {
         color: #ffffff !important;
+        font-weight: 900 !important;
     }
 
-    /* INPUTLAR VE BUTONLAR */
+    /* 3. INPUT (ARAMA KUTUSU) TASARIMI */
     div[data-testid="stTextInput"], div[data-testid="stNumberInput"] {
         max-width: 450px !important;
         width: 100% !important;
@@ -131,6 +145,7 @@ st.markdown(
         margin-bottom: 8px !important;
     }
 
+    /* 4. BUTON TASARIMI */
     div[data-testid="stButton"] {
         display: flex !important;
         justify-content: center !important;
@@ -194,6 +209,7 @@ st.markdown(
         margin-top: 24px;
     }
 
+    /* 5. EKRANIN EN ALTINA SABİTLENMİŞ YAZI (FOOTER) */
     .footer-dark {
         position: fixed !important;
         bottom: 0 !important;
@@ -552,7 +568,9 @@ with tab_wask:
                 w2.metric("Ortalama Beğeni", f"{int(m_wask['avg_likes']):,}")
                 w3.metric("Ortalama Yorum", f"{int(m_wask['avg_comments']):,}")
 
-                st.markdown("<br>### • Sektör Etkileşim Kıyaslaması (WASK)", unsafe_allow_html=True)
+                # Başlıktaki Markdown hatası HTML'ye çevrilerek düzeltildi
+                st.markdown("<br><h3 style='color:#ffffff; font-weight:800; font-size:1.5rem;'>• Sektör Etkileşim Kıyaslaması (WASK)</h3>", unsafe_allow_html=True)
+                
                 benchmark_er = m_wask['benchmark_er']
                 wask_chart_df = pd.DataFrame({
                     "Kategori": ["Düşük Performans", "Sektör Standardı", f"@{w_user} Performansı", "Yüksek Performans"],
@@ -563,7 +581,6 @@ with tab_wask:
                 fig_wask.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color="#ffffff"))
                 st.plotly_chart(fig_wask, use_container_width=True)
 
-                # YENİ EKLENEN DİNAMİK WASK YORUMLAMA RAPORU
                 if m_wask['er'] >= benchmark_er * 1.2:
                     eval_text = "Sektör standartlarının <b>çok üzerinde</b>, muazzam bir kitle sadakatine sahip."
                 elif m_wask['er'] >= benchmark_er:
