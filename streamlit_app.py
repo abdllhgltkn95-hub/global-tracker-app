@@ -65,7 +65,7 @@ st.markdown(
         -webkit-box-reflect: below -18px linear-gradient(transparent 50%, rgba(255, 255, 255, 0.2));
     }
 
-    /* 2. SEKMELER (TABS) - ALT ÇİZGİSİZ, ORTALANMIŞ */
+    /* 2. SEKMELER (TABS) - ORTALANMIŞ */
     div[data-baseweb="tab-list"] {
         display: flex !important;
         justify-content: center !important;
@@ -347,12 +347,12 @@ def run_all_algorithms(followers: int, posts: list):
 # 5. ARAYÜZ YAPISI
 # ---------------------------------------------------------
 
-# EN ÜSTTE BAŞLIK VE KESİN 6 SATIRLIK (140px) BOŞLUK BLOKU
+# EN ÜSTTE BAŞLIK VE YARIYA İNDİRİLMİŞ 3 SATIRLIK (70px) BOŞLUK BLOKU
 st.markdown("""
     <div class="reflection-container">
         <h1 class="brand-header-animated">MG BRAND OFFICE</h1>
     </div>
-    <div style="height: 140px;"></div>
+    <div style="height: 70px;"></div>
 """, unsafe_allow_html=True)
 
 # SEKMELER
