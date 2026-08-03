@@ -65,7 +65,7 @@ st.markdown(
         -webkit-box-reflect: below -18px linear-gradient(transparent 50%, rgba(255, 255, 255, 0.2));
     }
 
-    /* 2. SEKMELER (TABS) - ORTALANMIŞ */
+    /* 2. SEKMELER (TABS) - ALT ÇİZGİSİZ, ORTALANMIŞ */
     div[data-baseweb="tab-list"] {
         display: flex !important;
         justify-content: center !important;
@@ -369,7 +369,9 @@ with tab_hero:
     _, col_center, _ = st.columns([1.5, 3, 1.5])
     
     with col_center:
-        raw_hero = st.text_input("Instagram Kullanıcı Adı veya Profil Linki", placeholder="Örn: https://www.instagram.com/_helinkandemir/", key="hero_user_input")
+        # Sadece input formunun hemen üzerine 4 satırlık boşluk (90px) eklendi
+        st.markdown('<div style="height: 90px;"></div>', unsafe_allow_html=True)
+        raw_hero = st.text_input("Instagram Kullanıcı Adı veya Profil Linki", placeholder="Örn: mg brand office", key="hero_user_input")
         btn_hero = st.button("Derin Analiz Başlat", use_container_width=True, key="btn_hero")
 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -461,7 +463,8 @@ with tab_wask:
     _, col_center_wask, _ = st.columns([1.5, 3, 1.5])
     
     with col_center_wask:
-        wask_raw = st.text_input("Kullanıcı Adı veya Profil Linki Girin", placeholder="Örn: trendyol", key="wask_inp")
+        st.markdown('<div style="height: 90px;"></div>', unsafe_allow_html=True)
+        wask_raw = st.text_input("Kullanıcı Adı veya Profil Linki Girin", placeholder="Örn: mg brand office", key="wask_inp")
         btn_wask = st.button("Performans Analizi Yap", use_container_width=True, key="btn_wask")
 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -499,8 +502,9 @@ with tab_compare:
     _, col_center_cmp, _ = st.columns([1.5, 3, 1.5])
     
     with col_center_cmp:
-        c_u1 = st.text_input("1. Profil Kullanıcı Adı", key="cmp1")
-        c_u2 = st.text_input("2. Profil Kullanıcı Adı", key="cmp2")
+        st.markdown('<div style="height: 90px;"></div>', unsafe_allow_html=True)
+        c_u1 = st.text_input("1. Profil Kullanıcı Adı", placeholder="Örn: mg brand office", key="cmp1")
+        c_u2 = st.text_input("2. Profil Kullanıcı Adı", placeholder="Örn: trendyol", key="cmp2")
         btn_cmp = st.button("Profilleri Kıyasla", use_container_width=True, key="btn_cmp")
 
     st.markdown("<br>", unsafe_allow_html=True)
