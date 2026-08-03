@@ -289,11 +289,9 @@ def run_all_algorithms(followers: int, posts: list, budget: float = 0.0):
     authentic_pct = int(np.clip(credibility_score + 2, 10, 95))
     est_reach = min(int(followers * (er / 100.0) * 3.5) if er > 0 else int(followers * 0.05), followers)
 
-    # --- BÜTÇE VE MALİYET (CPE & CPM) HESAPLAMA ---
     cpe = budget / total_eng if total_eng > 0 else 0.0
     cpm = (budget / est_reach) * 1000.0 if est_reach > 0 else 0.0
 
-    # --- FORMAT PERFORMANS ANALİZİ ---
     format_stats = {"Reels/Video": [], "Carousel": [], "Tekil Fotoğraf": []}
     for p in posts:
         l = clean_number(p.get("likesCount"), 0)
@@ -312,7 +310,6 @@ def run_all_algorithms(followers: int, posts: list, budget: float = 0.0):
     if not format_data:
         format_data = [{"Format": "Veri Yok", "Ortalama Etkileşim": 0}]
 
-    # --- İŞ BİRLİĞİ VE SEKTÖR ANALİZİ ---
     collab_keywords = ["#reklam", "#işbirliği", "#isbirligi", "#sponsorlu", "işbirliği", "partnership"]
     sector_keywords = {
         "Moda & Giyim": ["kombin", "elbise", "tarz", "kıyafet", "moda", "giyim", "çanta", "ayakkabı", "trendyol"],
@@ -333,7 +330,6 @@ def run_all_algorithms(followers: int, posts: list, budget: float = 0.0):
     top_sectors = [s[0] for s in sorted(detected_sectors.items(), key=lambda item: item[1], reverse=True)[:2]]
     if not top_sectors: top_sectors = ["Genel Lifestyle"]
 
-    # --- YORUM, NLP DUYGU (SENTIMENT) VE BOT ANALİZİ ---
     pos_words = ["harika", "süper", "muhteşem", "güzel", "iyi", "bayıldım", "mükemmel", "şahane", "başarılı", "love", "great"]
     neg_words = ["kötü", "berbat", "iğrenç", "saçma", "rezil", "sevmedim", "çirkin", "gereksiz", "yalan", "dolandırıcı"]
     
@@ -400,6 +396,7 @@ def run_all_algorithms(followers: int, posts: list, budget: float = 0.0):
         "top_sectors": top_sectors,
         "cpe": cpe,
         "cpm": cpm,
+        "benchmark_er": benchmark_er,
         "format_data": format_data,
         "sentiment_data": sentiment_data,
         "comments_details": analyzed_list
@@ -556,15 +553,39 @@ with tab_wask:
                 w3.metric("Ortalama Yorum", f"{int(m_wask['avg_comments']):,}")
 
                 st.markdown("<br>### • Sektör Etkileşim Kıyaslaması (WASK)", unsafe_allow_html=True)
-                benchmark_er = 2.0 if f >= 100000 else 3.5
+                benchmark_er = m_wask['benchmark_er']
                 wask_chart_df = pd.DataFrame({
                     "Kategori": ["Düşük Performans", "Sektör Standardı", f"@{w_user} Performansı", "Yüksek Performans"],
-                    "Etkileşim Oranı (%)": [m_wask['er'] * 0.5, m_wask['er'], m_wask['er'], m_wask['er'] * 1.5]
+                    "Etkileşim Oranı (%)": [benchmark_er * 0.5, benchmark_er, m_wask['er'], benchmark_er * 1.5]
                 })
                 fig_wask = px.bar(wask_chart_df, x="Kategori", y="Etkileşim Oranı (%)", color="Kategori", text="Etkileşim Oranı (%)")
                 fig_wask.update_traces(texttemplate='%{text:.2f}%', textposition='outside')
                 fig_wask.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color="#ffffff"))
                 st.plotly_chart(fig_wask, use_container_width=True)
+
+                # YENİ EKLENEN DİNAMİK WASK YORUMLAMA RAPORU
+                if m_wask['er'] >= benchmark_er * 1.2:
+                    eval_text = "Sektör standartlarının <b>çok üzerinde</b>, muazzam bir kitle sadakatine sahip."
+                elif m_wask['er'] >= benchmark_er:
+                    eval_text = "Sektör standartlarının <b>üzerinde</b>, gayet sağlıklı ve aktif bir kitleye sahip."
+                elif m_wask['er'] >= benchmark_er * 0.7:
+                    eval_text = "Sektör standartlarına <b>yakın</b>, ancak içerik stratejisiyle geliştirilebilir bir konumda."
+                else:
+                    eval_text = "Sektör standartlarının <b>altında</b>, etkileşim oranını artıracak stratejilere ihtiyaç duyuyor."
+
+                st.markdown(f"""
+                <div class="report-box">
+                    <h4 style="color:#c084fc; margin-top:0; font-weight:800;">• WASK PERFORMANS DEĞERLENDİRMESİ</h4>
+                    <p style="color:#ffffff;"><b>Analiz Edilen Profil:</b> @{w_user} | <b>Bulunduğu Segmentteki Beklenen Hedef:</b> %{benchmark_er}</p>
+                    <hr style="border-top:1px solid #21262d; margin:12px 0;">
+                    <ul style="line-height:1.7; color:#ffffff;">
+                        <li><b>Etkileşim Gücü (ER):</b> Profilin <b>%{m_wask['er']:.2f}</b> olan etkileşim oranı, kitlenin içeriklerle ne kadar güçlü bir bağ kurduğunu gösterir. Profil şu an {eval_text}</li>
+                        <li><b>Benchmark Ne Anlama Geliyor?:</b> Algoritmamız, hesabın bulunduğu büyüklük dilimine (Takipçi Segmenti) göre ideal oranı <b>%{benchmark_er}</b> olarak belirlemiştir. Sadece takipçi sayısına değil, alınan organik reaksiyona odaklanılır.</li>
+                        <li><b>Stratejik Önemi:</b> Marka iş birliklerinde bu metrik en temel Yatırım Getirisi (ROI) ölçütüdür. Yüksek bir ER oranı, yapılacak reklam harcamasının potansiyel olarak çok daha başarılı dönüşler (satış, tıklama, erişim) getireceğini kanıtlar.</li>
+                    </ul>
+                </div>
+                """, unsafe_allow_html=True)
+
             else:
                 st.error("• Profil verisi çekilemedi.")
 
