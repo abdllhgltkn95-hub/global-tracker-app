@@ -47,7 +47,7 @@ st.markdown(
     /* 1. EN ÜST LOGO BAŞLIĞI */
     .reflection-container {
         text-align: center;
-        padding-top: 5px; 
+        padding-top: 15px; 
         padding-bottom: 0px; 
     }
 
@@ -65,12 +65,12 @@ st.markdown(
         -webkit-box-reflect: below -18px linear-gradient(transparent 50%, rgba(255, 255, 255, 0.2));
     }
 
-    /* 2. SEKMELER (TABS) - 6 SATIR AŞAĞI ALINDI VE ORTALANDI */
+    /* 2. SEKMELER (TABS) - ALT ÇİZGİSİZ, ORTALANMIŞ */
     div[data-baseweb="tab-list"] {
         display: flex !important;
         justify-content: center !important;
-        border-bottom: none !important;
-        margin: 120px auto 30px auto !important; /* Başlıktan 120px (yaklaşık 6 satır) aşağıda */
+        border-bottom: none !important; /* Gri çizgiyi yok et */
+        margin: 0 auto 30px auto !important; 
         gap: 16px !important;
         width: 100% !important;
     }
@@ -99,7 +99,7 @@ st.markdown(
         color: #ffffff !important;
     }
 
-    /* 3. INPUT (ARAMA KUTUSU) TASARIMI: ORANTILI BÜYÜTÜLDÜ */
+    /* 3. INPUT (ARAMA KUTUSU) TASARIMI: UZUN VE GENİŞ */
     div[data-testid="stTextInput"] {
         max-width: 450px !important;
         width: 100% !important;
@@ -347,10 +347,12 @@ def run_all_algorithms(followers: int, posts: list):
 # 5. ARAYÜZ YAPISI
 # ---------------------------------------------------------
 
+# EN ÜSTTE BAŞLIK VE KESİN 6 SATIRLIK (140px) BOŞLUK BLOKU
 st.markdown("""
     <div class="reflection-container">
         <h1 class="brand-header-animated">MG BRAND OFFICE</h1>
     </div>
+    <div style="height: 140px;"></div>
 """, unsafe_allow_html=True)
 
 # SEKMELER
