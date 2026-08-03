@@ -21,14 +21,14 @@ st.set_page_config(
 APIFY_TOKEN = st.secrets.get("APIFY_TOKEN", "apify_api_gvh1Gqo99oDTmXqrb4CwCk24HGWmcN07zSRb")
 
 # ---------------------------------------------------------
-# 2. SIYAH TEMA & BEYAZ YAZI CSS (GEREKSİZ KUTULAR KALDIRILDI)
+# 2. %100 SİMSİYAH TEMA, RENK GEÇİŞLİ HEADER VE ÖZEL CSS
 # ---------------------------------------------------------
 st.markdown(
     """
 <style>
-    /* Global Arka Plan: Koyu Siyah / Lacivert */
+    /* Global Arka Plan: Komple Simsiyah */
     html, body, [data-testid="stAppViewContainer"], .stApp {
-        background-color: #0f172a !important;
+        background-color: #000000 !important;
         color: #ffffff !important;
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
     }
@@ -38,124 +38,150 @@ st.markdown(
         color: #ffffff !important;
     }
 
-    /* Input (Giriş) Kutuları */
-    .stTextInput input {
-        color: #ffffff !important;
-        background-color: #1e293b !important;
-        border: 2px solid #334155 !important;
-        border-radius: 10px !important;
-        font-weight: 600 !important;
-        padding: 10px 14px !important;
-    }
-    .stTextInput label {
-        color: #f8fafc !important;
-        font-weight: 700 !important;
+    /* Renk Değişim Efektli (Animated Gradient) MG BRAND OFFICE Başlığı */
+    @keyframes colorChange {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
     }
 
-    /* Yansımalı MG BRAND OFFICE Başlığı */
     .reflection-container {
         text-align: center;
-        padding-top: 20px;
-        padding-bottom: 10px;
+        padding-top: 30px;
+        padding-bottom: 25px;
     }
 
-    .brand-header-dark {
-        font-size: 3.5rem;
+    .brand-header-animated {
+        font-size: 4rem;
         font-weight: 900;
-        letter-spacing: -1px;
-        background: linear-gradient(135deg, #3b82f6, #6366f1, #a855f7);
+        letter-spacing: -1.5px;
+        background: linear-gradient(270deg, #2563eb, #a855f7, #ec4899, #3b82f6, #06b6d4);
+        background-size: 400% 400%;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        animation: colorChange 6s ease infinite;
         margin: 0;
         display: inline-block;
-        -webkit-box-reflect: below -18px linear-gradient(transparent 50%, rgba(255, 255, 255, 0.2));
+        -webkit-box-reflect: below -20px linear-gradient(transparent 50%, rgba(255, 255, 255, 0.25));
     }
 
-    .brand-sub-dark {
-        text-align: center;
-        color: #94a3b8 !important;
-        font-size: 1.05rem;
-        font-weight: 700;
-        margin-top: 20px;
-        margin-bottom: 30px;
+    /* Arama Çubuğunu Ortala ve Kısalt (%50 Genişlik) */
+    .search-container {
+        max-width: 550px;
+        margin: 0 auto 30px auto;
+    }
+
+    .stTextInput input {
+        color: #ffffff !important;
+        background-color: #0d1117 !important;
+        border: 2px solid #21262d !important;
+        border-radius: 14px !important;
+        font-weight: 600 !important;
+        padding: 14px 18px !important;
+        font-size: 1.05rem !important;
+        text-align: center !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.8) !important;
+    }
+    .stTextInput input:focus {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.4) !important;
+    }
+    .stTextInput label {
+        color: #ffffff !important;
+        font-weight: 800 !important;
+        font-size: 1.1rem !important;
+        display: block !important;
+        text-align: center !important;
+        margin-bottom: 8px !important;
     }
 
     /* Koyu Efektli Kart Yapısı */
     .effect-card {
-        background: #1e293b !important;
-        border: 1px solid #334155 !important;
-        border-radius: 16px;
-        padding: 24px;
+        background: #0d1117 !important;
+        border: 1px solid #21262d !important;
+        border-radius: 20px;
+        padding: 28px;
         margin-bottom: 24px;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.9);
     }
 
     /* Metric Kutuları */
     [data-testid="stMetric"] {
-        background-color: #1e293b !important;
-        border: 2px solid #334155 !important;
-        border-radius: 14px !important;
-        padding: 16px !important;
+        background-color: #0d1117 !important;
+        border: 1px solid #21262d !important;
+        border-radius: 16px !important;
+        padding: 18px !important;
     }
 
-    [data-testid="stMetricLabel"] { color: #94a3b8 !important; font-weight: 800 !important; }
+    [data-testid="stMetricLabel"] { color: #8b949e !important; font-weight: 800 !important; }
     [data-testid="stMetricValue"] { color: #ffffff !important; font-weight: 900 !important; }
 
-    /* Kayan Şerit Sekme Tasarımı */
+    /* Büyük, Kalın ve Efektli Kayan Şerit Sekme Tasarımı */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 12px;
+        gap: 16px;
         justify-content: center;
-        background-color: #1e293b !important;
-        padding: 8px 16px;
-        border-radius: 50px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-        border: 1px solid #334155 !important;
+        background-color: #0d1117 !important;
+        padding: 10px 20px;
+        border-radius: 60px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.9);
+        border: 1px solid #21262d !important;
         max-width: fit-content;
-        margin: 0 auto 30px auto;
+        margin: 0 auto 35px auto;
     }
 
     .stTabs [data-baseweb="tab"] {
-        height: 48px;
-        border-radius: 30px !important;
-        padding: 0px 24px !important;
-        font-weight: 800 !important;
-        color: #94a3b8 !important;
+        height: 54px;
+        border-radius: 40px !important;
+        padding: 0px 32px !important;
+        font-weight: 900 !important;
+        font-size: 1.05rem !important;
+        color: #8b949e !important;
+        transition: all 0.3s ease !important;
     }
 
     .stTabs [aria-selected="true"] {
-        background: linear-gradient(135deg, #2563eb, #4f46e5) !important;
+        background: linear-gradient(135deg, #2563eb, #a855f7) !important;
         color: #ffffff !important;
+        box-shadow: 0 0 20px rgba(168, 85, 247, 0.4) !important;
+        transform: scale(1.03);
     }
     .stTabs [aria-selected="true"] span { color: #ffffff !important; }
 
     /* Butonlar */
     .stButton>button {
         width: 100%;
-        background: linear-gradient(135deg, #2563eb, #4f46e5) !important;
+        background: linear-gradient(135deg, #2563eb, #a855f7) !important;
         color: #ffffff !important;
         border: none !important;
-        padding: 12px 24px !important;
-        border-radius: 12px !important;
-        font-weight: 800 !important;
+        padding: 14px 28px !important;
+        border-radius: 14px !important;
+        font-weight: 900 !important;
+        font-size: 1.05rem !important;
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3) !important;
+        transition: all 0.3s ease !important;
+    }
+    .stButton>button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(168, 85, 247, 0.5) !important;
     }
 
     /* Rapor Kutusu */
     .report-box {
-        background-color: #1e293b !important;
-        border: 2px solid #334155 !important;
-        border-left: 6px solid #2563eb !important;
-        border-radius: 12px;
-        padding: 22px;
-        margin-top: 20px;
+        background-color: #0d1117 !important;
+        border: 1px solid #21262d !important;
+        border-left: 6px solid #a855f7 !important;
+        border-radius: 16px;
+        padding: 24px;
+        margin-top: 24px;
     }
 
     .footer-dark {
         text-align: center;
-        color: #64748b !important;
+        color: #484f58 !important;
         font-size: 0.85rem;
-        padding: 25px 0 10px 0;
-        border-top: 1px solid #1e293b;
-        margin-top: 40px;
+        padding: 30px 0 10px 0;
+        border-top: 1px solid #161b22;
+        margin-top: 50px;
     }
 </style>
 """,
@@ -213,7 +239,7 @@ def fetch_apify_instagram_data(username: str, max_posts: int = 18):
         return None
 
 # ---------------------------------------------------------
-# 4. GELİŞMİŞ ALGORİTMA ENGINE
+# 4. ALGORİTMA ENGINE
 # ---------------------------------------------------------
 def run_all_algorithms(followers: int, posts: list):
     likes = [clean_number(p.get("likesCount"), 0) for p in posts]
@@ -299,15 +325,15 @@ def run_all_algorithms(followers: int, posts: list):
     }
 
 # ---------------------------------------------------------
-# 5. ARAYÜZ
+# 5. ARAYÜZ (RENK GEÇİŞLİ BAŞLIK VE ORTALANMIŞ ŞIK ARAMA)
 # ---------------------------------------------------------
 st.markdown("""
     <div class="reflection-container">
-        <h1 class="brand-header-dark">MG BRAND OFFICE</h1>
+        <h1 class="brand-header-animated">MG BRAND OFFICE</h1>
     </div>
-    <div class="brand-sub-dark">Enterprise Influencer Intelligence & Audit Suite</div>
 """, unsafe_allow_html=True)
 
+# BÜYÜK, KALIN VE EFEKTLİ KAYAN SEKMELER
 tab_hero, tab_wask, tab_compare = st.tabs([
     "• Influencer Hero & Audit", 
     "• WASK Performans & Benchmark", 
@@ -319,16 +345,16 @@ tab_hero, tab_wask, tab_compare = st.tabs([
 # =========================================================
 with tab_hero:
     st.markdown('<div class="effect-card">', unsafe_allow_html=True)
-    c1, c2 = st.columns([3, 1])
-    with c1:
-        raw_hero = st.text_input("Instagram Kullanıcı Adı veya Profil Linki", placeholder="Örn: https://www.instagram.com/_helinkandemir/", key="hero_user_input")
-    with c2:
-        st.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True)
-        btn_hero = st.button("Derin Analiz Başlat ⚡", key="btn_hero")
+    
+    # Ortalanmış ve Kısaltılmış Arama Kutusu Yapısı
+    st.markdown('<div class="search-container">', unsafe_allow_html=True)
+    raw_hero = st.text_input("Instagram Kullanıcı Adı veya Profil Linki", placeholder="Örn: https://www.instagram.com/_helinkandemir/", key="hero_user_input")
+    btn_hero = st.button("Derin Analiz Başlat ⚡", key="btn_hero")
+    st.markdown('</div>', unsafe_allow_html=True)
 
     if btn_hero and raw_hero:
         hero_user = clean_username(raw_hero)
-        with st.spinner(f"@{hero_user} için derin audit çalıştırılıyor..."):
+        with st.spinner(f"@{hero_user} profili inceleniyor..."):
             prof = fetch_apify_instagram_data(hero_user, max_posts=18)
 
             if prof and "latestPosts" in prof:
@@ -339,16 +365,16 @@ with tab_hero:
 
                 # Hero Başlık Kartı
                 st.markdown(f"""
-                <div style="background: #1e293b; border-radius: 14px; padding: 22px; margin-bottom: 20px; border: 1px solid #334155; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                <div style="background: #0d1117; border-radius: 16px; padding: 24px; margin-bottom: 24px; border: 1px solid #21262d; box-shadow: 0 8px 25px rgba(0,0,0,0.5);">
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
                         <div>
-                            <span style="background: #312e81; color: #a5b4fc; padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 0.85rem;">AUDIENCE QUALITY REPORT</span>
-                            <h2 style="margin: 10px 0 0 0; color: #ffffff;">@{hero_user}</h2>
-                            <p style="color: #94a3b8; margin: 4px 0 0 0; font-weight: 700;">Toplam Takipçi: {fol:,}</p>
+                            <span style="background: #1e1b4b; color: #818cf8; padding: 6px 16px; border-radius: 20px; font-weight: 800; font-size: 0.85rem;">AUDIENCE QUALITY REPORT</span>
+                            <h2 style="margin: 12px 0 0 0; color: #ffffff; font-size: 2.2rem; font-weight: 900;">@{hero_user}</h2>
+                            <p style="color: #8b949e; margin: 4px 0 0 0; font-weight: 700; font-size: 1.05rem;">Toplam Takipçi: {fol:,}</p>
                         </div>
                         <div style="text-align: right;">
-                            <h1 style="font-size: 3.2rem; margin: 0; color: #3b82f6; font-weight: 900;">%{m['credibility_score']}</h1>
-                            <p style="color: #ffffff; font-size: 0.9rem; margin: 0; font-weight: 800;">Kitle Güvenilirlik Puanı</p>
+                            <h1 style="font-size: 3.5rem; margin: 0; color: #a855f7; font-weight: 900;">%{m['credibility_score']}</h1>
+                            <p style="color: #ffffff; font-size: 0.95rem; margin: 0; font-weight: 800;">Kitle Güvenilirlik Puanı</p>
                         </div>
                     </div>
                 </div>
@@ -380,7 +406,7 @@ with tab_hero:
                         "Segment": ["Gerçek / Aktif", "Şüpheli / Bot"],
                         "Oran (%)": [m['authentic_pct'], 100 - m['authentic_pct']]
                     })
-                    fig_pie = px.pie(cred_df, names="Segment", values="Oran (%)", color="Segment", color_discrete_map={"Gerçek / Aktif": "#3b82f6", "Şüpheli / Bot": "#ef4444"}, hole=0.5)
+                    fig_pie = px.pie(cred_df, names="Segment", values="Oran (%)", color="Segment", color_discrete_map={"Gerçek / Aktif": "#2563eb", "Şüpheli / Bot": "#ef4444"}, hole=0.5)
                     fig_pie.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color="#ffffff"))
                     st.plotly_chart(fig_pie, use_container_width=True)
 
@@ -390,7 +416,7 @@ with tab_hero:
                         "Yaş Aralığı": ["18-24", "25-34", "35-44", "45+"],
                         "Oran (%)": [38.5, 42.0, 14.5, 5.0]
                     })
-                    fig_demo = px.bar(demo_df, x="Yaş Aralığı", y="Oran (%)", color_discrete_sequence=["#3b82f6"])
+                    fig_demo = px.bar(demo_df, x="Yaş Aralığı", y="Oran (%)", color_discrete_sequence=["#a855f7"])
                     fig_demo.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color="#ffffff"))
                     st.plotly_chart(fig_demo, use_container_width=True)
 
@@ -401,9 +427,9 @@ with tab_hero:
                 # DETAYLI YÖNETİCİ ÖZET RAPORU
                 st.markdown(f"""
                 <div class="report-box">
-                    <h4 style="color:#60a5fa; margin-top:0; font-weight:800;">📋 DETAYLI YÖNETİCİ DENETİM RAPORU</h4>
+                    <h4 style="color:#c084fc; margin-top:0; font-weight:800;">📋 DETAYLI YÖNETİCİ DENETİM RAPORU</h4>
                     <p style="color:#ffffff;"><b>Analiz Edilen Profil:</b> @{hero_user} | <b>Veri Durumu:</b> Güncel</p>
-                    <hr style="border-top:1px solid #334155; margin:10px 0;">
+                    <hr style="border-top:1px solid #21262d; margin:12px 0;">
                     <ul style="line-height:1.7; color:#ffffff;">
                         <li><b>Kitle Kalitesi ve Güvenilirlik (%{m['credibility_score']}):</b> Hesabın takipçi kitlesinin <b>%{m['authentic_pct']}</b> kadarının gerçek ve organik hareket eden kullanıcılardan oluştuğu tespit edilmiştir.</li>
                         <li><b>HypeAuditor Kalite Skoru (AQS - {m['aqs_score']}/100):</b> Profilin içerik üretme istikrarı, beğeni/yorum dengesi ve takipçi ölçeğine göre etkileşim performansı son derece yüksektir.</li>
@@ -424,8 +450,10 @@ with tab_wask:
     st.subheader("📊 WASK Performans & Benchmark Paneli")
     st.caption("Instagram hesabının etkileşim oranını ve içerik performansını sektör standartlarıyla kıyaslayın.")
 
+    st.markdown('<div class="search-container">', unsafe_allow_html=True)
     wask_raw = st.text_input("Kullanıcı Adı veya Profil Linki Girin", placeholder="Örn: trendyol", key="wask_inp")
     btn_wask = st.button("Performans Analizi Yap 🚀", key="btn_wask")
+    st.markdown('</div>', unsafe_allow_html=True)
 
     if btn_wask and wask_raw:
         w_user = clean_username(wask_raw)
@@ -465,11 +493,15 @@ with tab_wask:
 with tab_compare:
     st.markdown('<div class="effect-card">', unsafe_allow_html=True)
     st.subheader("⚖️ Çapraz Influencer Karşılaştırma Paneli")
+    
+    st.markdown('<div style="max-width: 700px; margin: 0 auto;">', unsafe_allow_html=True)
     c_u1, c_u2 = st.columns(2)
     with c_u1: u1_in = st.text_input("1. Profil Kullanıcı Adı", key="cmp1")
     with c_u2: u2_in = st.text_input("2. Profil Kullanıcı Adı", key="cmp2")
-    
-    if st.button("Profilleri Kıyasla ⚖️", key="btn_cmp") and u1_in and u2_in:
+    btn_cmp = st.button("Profilleri Kıyasla ⚖️", key="btn_cmp")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    if btn_cmp and u1_in and u2_in:
         u1, u2 = clean_username(u1_in), clean_username(u2_in)
         with st.spinner("İki profil taranıyor ve kıyaslanıyor..."):
             p1, p2 = fetch_apify_instagram_data(u1, 12), fetch_apify_instagram_data(u2, 12)
