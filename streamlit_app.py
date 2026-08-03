@@ -21,7 +21,7 @@ st.set_page_config(
 APIFY_TOKEN = st.secrets.get("APIFY_TOKEN", "apify_api_gvh1Gqo99oDTmXqrb4CwCk24HGWmcN07zSRb")
 
 # ---------------------------------------------------------
-# 2. CSS STİLLERİ VE YERLEŞİM DÜZENLEMELERİ
+# 2. CSS STİLLERİ VE KESİN KÜÇÜLTÜLMÜŞ ARAMA KUTUSU
 # ---------------------------------------------------------
 st.markdown(
     """
@@ -97,14 +97,23 @@ st.markdown(
         box-shadow: 0 0 15px rgba(59, 130, 246, 0.3) !important;
     }
 
-    /* 3. DAHADA KÜÇÜLTÜLMÜŞ & ORTALANMIŞ ARAMA KUTUSU (MAX 420px) */
+    /* 3. ARAMA KUTUSU VE BUTON KESİN KÜÇÜLTME (360px STİLLERİ) */
     .search-box-wrapper {
-        max-width: 420px;
-        margin: 0 auto;
-        text-align: center;
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    /* Streamlit Input Kapsayıcısını 360px İle Sınırla */
+    div[data-testid="stTextInput"] {
+        width: 360px !important;
+        margin: 0 auto !important;
     }
 
     .stTextInput input {
+        width: 100% !important;
         color: #ffffff !important;
         background-color: #0d1117 !important;
         border: 2px solid #21262d !important;
@@ -127,16 +136,16 @@ st.markdown(
         margin-bottom: 8px !important;
     }
 
-    /* 4. DİNAMİK RENK DEĞİŞTİREN ORTALANMIŞ BUTON */
-    .stButton {
-        display: flex;
-        justify-content: center;
-        margin-top: 12px;
+    /* 4. DİNAMİK RENK DEĞİŞTİREN ORTALANMIŞ KÜÇÜK BUTON */
+    div[data-testid="stButton"] {
+        width: 360px !important;
+        margin: 12px auto 0 auto !important;
+        display: flex !important;
+        justify-content: center !important;
     }
 
     .stButton>button {
         width: 100% !important;
-        max-width: 420px !important;
         background: linear-gradient(270deg, #2563eb, #a855f7, #ec4899, #3b82f6);
         background-size: 300% 300% !important;
         animation: colorChange 5s ease infinite !important;
@@ -260,7 +269,6 @@ def run_all_algorithms(followers: int, posts: list):
     total_eng = avg_likes + avg_comments
     er = (total_eng / max(followers, 1)) * 100.0
 
-    # HypeAuditor AQS Algoritması
     benchmark_er = 2.0 if followers >= 100000 else 3.5
     er_score = min(40.0, (er / benchmark_er) * 40.0)
     comment_ratio = avg_comments / max(avg_likes, 1.0)
@@ -355,7 +363,7 @@ tab_hero, tab_wask, tab_compare = st.tabs([
 with tab_hero:
     st.markdown('<div class="effect-card">', unsafe_allow_html=True)
     
-    # KÜÇÜLTÜLMÜŞ (MAX 420px) ARAMA KUTUSU VE DİNAMİK BUTON
+    # 360px'E HEDEFLEŞTİRİLMİŞ KÜÇÜK ARAMA VE BUTON ALANI
     st.markdown('<div class="search-box-wrapper">', unsafe_allow_html=True)
     raw_hero = st.text_input("Instagram Kullanıcı Adı veya Profil Linki", placeholder="Örn: https://www.instagram.com/_helinkandemir/", key="hero_user_input")
     btn_hero = st.button("Derin Analiz Başlat", key="btn_hero")
@@ -379,7 +387,7 @@ with tab_hero:
                 <div style="background: #0d1117; border-radius: 16px; padding: 24px; margin-bottom: 24px; border: 1px solid #21262d; box-shadow: 0 8px 25px rgba(0,0,0,0.5);">
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
                         <div>
-                            <span style="background: #1e1b4b; color: #818cf8; padding: 6px 16px; border-radius: 20px; font-weight: 800; font-size: 0.85rem;">AUDIENCE QUALITY REPORT</span>
+                            <span style="background: #1e1b4b; color: #818cf8; padding: 6px 16px; border-radius: 20px; font-weight: 800; font-size: 0.85rem;">INFLUENCER HERO AUDIT</span>
                             <h2 style="margin: 12px 0 0 0; color: #ffffff; font-size: 2.2rem; font-weight: 900;">@{hero_user}</h2>
                             <p style="color: #8b949e; margin: 4px 0 0 0; font-weight: 700; font-size: 1.05rem;">Toplam Takipçi: {fol:,}</p>
                         </div>
