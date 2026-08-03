@@ -21,7 +21,7 @@ st.set_page_config(
 APIFY_TOKEN = st.secrets.get("APIFY_TOKEN", "apify_api_gvh1Gqo99oDTmXqrb4CwCk24HGWmcN07zSRb")
 
 # ---------------------------------------------------------
-# 2. CSS STİLLERİ VE KESİN KÜÇÜLTÜLMÜŞ HİZALI ARAMA ALANI
+# 2. CSS STİLLERİ VE ŞERİT ALTINA TAM HİZALANMIŞ KÜÇÜK FORM YAPISI
 # ---------------------------------------------------------
 st.markdown(
     """
@@ -65,7 +65,7 @@ st.markdown(
         -webkit-box-reflect: below -18px linear-gradient(transparent 50%, rgba(255, 255, 255, 0.2));
     }
 
-    /* 2. ORTALANMIŞ KAYAN SEKMELER */
+    /* 2. ORTALANMIŞ KAYAN SEKMELER (ŞERİT) */
     .stTabs [data-baseweb="tab-list"] {
         gap: 16px;
         justify-content: center;
@@ -97,19 +97,19 @@ st.markdown(
         box-shadow: 0 0 15px rgba(59, 130, 246, 0.3) !important;
     }
 
-    /* 3. ARAMA KUTUSU VE BUTON ALANINI ŞERİDİN ALTINA MÜKEMMEL HİZALA (320px) */
-    .search-box-wrapper {
+    /* 3. ARAMA VE BUTON KUTULARINI ŞERİDİN GENİŞLİĞİNE GÖRE KÜÇÜLT VE TAM ORTALA (300px) */
+    .tab-form-aligner {
         width: 100% !important;
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
-        margin-top: 5px !important;
+        margin: 0 auto !important;
     }
 
-    /* Streamlit Input Kapsayıcısını 320px İle Sınırla */
+    /* Input Alanını Kısıtla */
     div[data-testid="stTextInput"] {
-        width: 320px !important;
+        width: 300px !important;
         margin: 0 auto !important;
     }
 
@@ -137,9 +137,9 @@ st.markdown(
         margin-bottom: 6px !important;
     }
 
-    /* 4. DİNAMİK RENK DEĞİŞTİREN KÜÇÜK VE HİZALI BUTON */
+    /* Buton Alanını Şeride Göre Küçült & Tam Ortala */
     div[data-testid="stButton"] {
-        width: 320px !important;
+        width: 300px !important;
         margin: 10px auto 0 auto !important;
         display: flex !important;
         justify-content: center !important;
@@ -341,7 +341,7 @@ def run_all_algorithms(followers: int, posts: list):
     }
 
 # ---------------------------------------------------------
-# 5. ARAYÜZ
+# 5. ARAYÜZ (EN ÜSTTE LOGO BAŞLIĞI, ALTINDA SEKMELER)
 # ---------------------------------------------------------
 
 # 1. EN ÜST LOGO
@@ -364,8 +364,8 @@ tab_hero, tab_wask, tab_compare = st.tabs([
 with tab_hero:
     st.markdown('<div class="effect-card">', unsafe_allow_html=True)
     
-    # 320px İLE KÜÇÜLTÜLMÜŞ VE ŞERİDİN ALTINA ORTALANMIŞ ALAN
-    st.markdown('<div class="search-box-wrapper">', unsafe_allow_html=True)
+    # KÜÇÜLTÜLMÜŞ VE ŞERİDİN TAM ORTA ALTINA KİLİTLENMİŞ ALAN
+    st.markdown('<div class="tab-form-aligner">', unsafe_allow_html=True)
     raw_hero = st.text_input("Instagram Kullanıcı Adı veya Profil Linki", placeholder="Örn: https://www.instagram.com/_helinkandemir/", key="hero_user_input")
     btn_hero = st.button("Derin Analiz Başlat", key="btn_hero")
     st.markdown('</div>', unsafe_allow_html=True)
@@ -470,7 +470,7 @@ with tab_wask:
     st.subheader("📊 WASK Performans & Benchmark Paneli")
     st.caption("Instagram hesabının etkileşim oranını ve içerik performansını sektör standartlarıyla kıyaslayın.")
 
-    st.markdown('<div class="search-box-wrapper">', unsafe_allow_html=True)
+    st.markdown('<div class="tab-form-aligner">', unsafe_allow_html=True)
     wask_raw = st.text_input("Kullanıcı Adı veya Profil Linki Girin", placeholder="Örn: trendyol", key="wask_inp")
     btn_wask = st.button("Performans Analizi Yap", key="btn_wask")
     st.markdown('</div>', unsafe_allow_html=True)
@@ -514,15 +514,14 @@ with tab_compare:
     st.markdown('<div class="effect-card">', unsafe_allow_html=True)
     st.subheader("⚖️ Çapraz Influencer Karşılaştırma Paneli")
     
-    st.markdown('<div class="search-box-wrapper">', unsafe_allow_html=True)
-    c_u1, c_u2 = st.columns(2)
-    with c_u1: u1_in = st.text_input("1. Profil Kullanıcı Adı", key="cmp1")
-    with c_u2: u2_in = st.text_input("2. Profil Kullanıcı Adı", key="cmp2")
+    st.markdown('<div class="tab-form-aligner">', unsafe_allow_html=True)
+    c_u1 = st.text_input("1. Profil Kullanıcı Adı", key="cmp1")
+    c_u2 = st.text_input("2. Profil Kullanıcı Adı", key="cmp2")
     btn_cmp = st.button("Profilleri Kıyasla", key="btn_cmp")
     st.markdown('</div>', unsafe_allow_html=True)
 
-    if btn_cmp and u1_in and u2_in:
-        u1, u2 = clean_username(u1_in), clean_username(u2_in)
+    if btn_cmp and c_u1 and c_u2:
+        u1, u2 = clean_username(c_u1), clean_username(c_u2)
         with st.spinner("İki profil taranıyor ve kıyaslanıyor..."):
             p1, p2 = fetch_apify_instagram_data(u1, 12), fetch_apify_instagram_data(u2, 12)
             if p1 and p2:
