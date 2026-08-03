@@ -13,7 +13,6 @@ import streamlit as st
 # ---------------------------------------------------------
 st.set_page_config(
     page_title="MG BRAND OFFICE | Enterprise Intelligence Suite",
-    page_icon="⚡",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -21,7 +20,7 @@ st.set_page_config(
 APIFY_TOKEN = st.secrets.get("APIFY_TOKEN", "apify_api_gvh1Gqo99oDTmXqrb4CwCk24HGWmcN07zSRb")
 
 # ---------------------------------------------------------
-# 2. CSS STİLLERİ VE KESİN TAM ORTALAMA
+# 2. CSS STİLLERİ: MERKEZİ HİZALAMA VE ŞERİT TEMİZLİĞİ
 # ---------------------------------------------------------
 st.markdown(
     """
@@ -47,8 +46,8 @@ st.markdown(
     /* 1. EN ÜST LOGO BAŞLIĞI */
     .reflection-container {
         text-align: center;
-        padding-top: 15px;
-        padding-bottom: 20px;
+        padding-top: 25px;
+        padding-bottom: 25px;
     }
 
     .brand-header-animated {
@@ -65,44 +64,51 @@ st.markdown(
         -webkit-box-reflect: below -18px linear-gradient(transparent 50%, rgba(255, 255, 255, 0.2));
     }
 
-    /* 2. ORTALANMIŞ KAYAN SEKMELER (ŞERİT) */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 16px;
+    /* 2. SEKMELER (TABS) - TAM ORTADA VE ALT ÇİZGİSİZ */
+    div[data-baseweb="tab-list"] {
+        display: flex !important;
         justify-content: center !important;
-        background-color: #0d1117 !important;
-        padding: 8px 20px;
-        border-radius: 50px;
-        border: 1px solid #21262d !important;
-        max-width: fit-content;
-        margin: 10px auto 30px auto !important;
+        border-bottom: none !important; /* Ekranı bölen gri çizgiyi kaldırır */
+        margin: 0 auto 30px auto !important;
+        gap: 16px !important;
+        width: 100% !important;
     }
 
-    .stTabs [data-baseweb="tab"] {
-        height: 48px;
-        border-radius: 35px !important;
-        padding: 0px 26px !important;
+    div[data-baseweb="tab"] {
+        height: 50px;
+        background-color: #0d1117 !important;
+        border: 1px solid #21262d !important;
+        border-radius: 40px !important;
+        padding: 0px 30px !important;
+    }
+
+    div[data-baseweb="tab"] p, div[data-baseweb="tab"] span {
+        color: #8b949e !important;
         font-weight: 900 !important;
         font-size: 1.05rem !important;
-        color: #ffffff !important;
     }
 
-    .stTabs [data-baseweb="tab"] p, .stTabs [data-baseweb="tab"] span {
-        color: #ffffff !important;
-        font-weight: 900 !important;
-    }
-
-    .stTabs [aria-selected="true"] {
+    div[aria-selected="true"] {
         background: #21262d !important;
         border: 1px solid #3b82f6 !important;
         box-shadow: 0 0 15px rgba(59, 130, 246, 0.3) !important;
     }
 
-    /* 3. INPUT (ARAMA KUTUSU) VE BUTONU TAM EKSENDE ORTALA */
-    div[data-testid="stTextInput"], div[data-testid="stButton"] {
+    div[aria-selected="true"] p, div[aria-selected="true"] span {
+        color: #ffffff !important;
+    }
+
+    /* 3. ARAMA KUTUSU VE BUTONU TAM EKSENDE ORTALA VE KÜÇÜLT */
+    div[data-testid="stTextInput"], 
+    div[data-testid="stButton"] {
+        max-width: 350px !important;
         width: 100% !important;
-        max-width: 340px !important;
         margin-left: auto !important;
         margin-right: auto !important;
+    }
+
+    div[data-testid="stTextInput"] {
+        margin-bottom: 5px !important;
     }
 
     .stTextInput input {
@@ -111,7 +117,7 @@ st.markdown(
         border: 2px solid #21262d !important;
         border-radius: 12px !important;
         font-weight: 700 !important;
-        padding: 10px 14px !important;
+        padding: 12px 14px !important;
         font-size: 0.95rem !important;
         text-align: center !important;
     }
@@ -125,10 +131,15 @@ st.markdown(
         font-size: 1rem !important;
         display: block !important;
         text-align: center !important;
-        margin-bottom: 8px !important;
+        margin-bottom: 10px !important;
     }
 
-    /* 4. DİNAMİK RENK DEĞİŞTİREN BUTON TASARIMI */
+    /* 4. BUTON TASARIMI */
+    div[data-testid="stButton"] {
+        display: flex !important;
+        justify-content: center !important;
+    }
+
     .stButton>button {
         width: 100% !important;
         background: linear-gradient(270deg, #2563eb, #a855f7, #ec4899, #3b82f6);
@@ -142,7 +153,6 @@ st.markdown(
         font-size: 1.05rem !important;
         box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4) !important;
         transition: all 0.3s ease !important;
-        margin-top: 5px !important;
     }
     .stButton>button:hover {
         transform: scale(1.02);
@@ -155,7 +165,7 @@ st.markdown(
 
     /* Koyu Efektli Kart Yapıları */
     .effect-card {
-        background: #000000 !important;
+        background: transparent !important;
         border: none !important;
         padding: 10px 0px;
     }
@@ -305,7 +315,7 @@ def run_all_algorithms(followers: int, posts: list):
         bot_pct = 32.0 if comment_ratio < 0.003 else (14.0 if comment_ratio < 0.008 else 4.8)
         analyzed_list = [
             {"Kullanıcı": "@user_sample1", "Yorum Metni": "Tasarım harika görünüyor!", "Durum": "✅ Organik", "Tespit Sebebi": "Spesifik Metin"},
-            {"Kullanıcı": "@bot_account_22", "Yorum Metni": "🔥🔥🔥", "Durum": "⚠️ Şüpheli / Bot", "Tespit Sebebi": "Tekrarlayan Emoji"},
+            {"Kullanıcı": "@bot_account_22", "Yorum Metni": "Kalın Nokta İşareti", "Durum": "⚠️ Şüpheli / Bot", "Tespit Sebebi": "Tekrarlayan"},
         ]
 
     return {
@@ -336,7 +346,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# 2. SEKMELER (DİĞER SEKMELERLE UYUMLU • NOKTASI EKLENDİ)
+# 2. SEKMELER
 tab_hero, tab_wask, tab_compare = st.tabs([
     "• Influencer Hero & Audit", 
     "• WASK Performans & Benchmark", 
@@ -349,6 +359,7 @@ tab_hero, tab_wask, tab_compare = st.tabs([
 with tab_hero:
     st.markdown('<div class="effect-card">', unsafe_allow_html=True)
     
+    # DOĞRUDAN ELEMENTLER (KOLON KULLANILMADI - CSS İLE MERKEZE HİZALANIYOR)
     raw_hero = st.text_input("Instagram Kullanıcı Adı veya Profil Linki", placeholder="Örn: https://www.instagram.com/_helinkandemir/", key="hero_user_input")
     btn_hero = st.button("Derin Analiz Başlat", key="btn_hero")
 
@@ -392,7 +403,7 @@ with tab_hero:
                 st.markdown("<br>", unsafe_allow_html=True)
 
                 # HypeAuditor Bileşenleri
-                st.markdown("### 🎯 HypeAuditor AQS Büyüme & Kalite Bileşenleri")
+                st.markdown("### • HypeAuditor AQS Büyüme & Kalite Bileşenleri")
                 ha1, ha2, ha3 = st.columns(3)
                 ha1.metric("Etkileşim Performans Puanı", f"{m['er_score']:.1f} / 40")
                 ha2.metric("Yorum/Beğeni Denge Puanı", f"{m['comment_score']:.1f} / 40")
@@ -423,20 +434,19 @@ with tab_hero:
                     st.plotly_chart(fig_demo, use_container_width=True)
 
                 # YORUM DÖKÜMÜ VE RAPOR
-                st.subheader("🔍 Yorum Denetimi ve Bot Tespiti Dökümü")
+                st.subheader("• Yorum Denetimi ve Bot Tespiti Dökümü")
                 st.dataframe(pd.DataFrame(m['comments_details']), use_container_width=True, height=200)
 
                 # DETAYLI YÖNETİCİ ÖZET RAPORU
                 st.markdown(f"""
                 <div class="report-box">
-                    <h4 style="color:#c084fc; margin-top:0; font-weight:800;">📋 DETAYLI YÖNETİCİ DENETİM RAPORU</h4>
+                    <h4 style="color:#c084fc; margin-top:0; font-weight:800;">• DETAYLI YÖNETİCİ DENETİM RAPORU</h4>
                     <p style="color:#ffffff;"><b>Analiz Edilen Profil:</b> @{hero_user} | <b>Veri Durumu:</b> Güncel</p>
                     <hr style="border-top:1px solid #21262d; margin:12px 0;">
                     <ul style="line-height:1.7; color:#ffffff;">
                         <li><b>Kitle Kalitesi ve Güvenilirlik (%{m['credibility_score']}):</b> Hesabın takipçi kitlesinin <b>%{m['authentic_pct']}</b> kadarının gerçek ve organik hareket eden kullanıcılardan oluştuğu tespit edilmiştir.</li>
                         <li><b>HypeAuditor Kalite Skoru (AQS - {m['aqs_score']}/100):</b> Profilin içerik üretme istikrarı, beğeni/yorum dengesi ve takipçi ölçeğine göre etkileşim performansı son derece yüksektir.</li>
                         <li><b>Erişim Gücü:</b> Yayınlanacak bir içeriğin organik olarak ortalama <b>{m['est_reach']:,}</b> tekil kullanıcıya ulaşacağı öngörülmektedir.</li>
-                        <li><b>Nihai Değerlendirme:</b> {"✅ Bu profil organik etkileşimi ve kitle kalitesi yüksek bir yapıya sahiptir." if m['bot_pct'] < 25 else "⚠️ Şüpheli etkileşim oranı nedeniyle detaylı inceleme yapılması önerilir."}</li>
                     </ul>
                 </div>
                 """, unsafe_allow_html=True)
@@ -449,9 +459,7 @@ with tab_hero:
 # =========================================================
 with tab_wask:
     st.markdown('<div class="effect-card">', unsafe_allow_html=True)
-    st.subheader("📊 WASK Performans & Benchmark Paneli")
-    st.caption("Instagram hesabının etkileşim oranını ve içerik performansını sektör standartlarıyla kıyaslayın.")
-
+    
     wask_raw = st.text_input("Kullanıcı Adı veya Profil Linki Girin", placeholder="Örn: trendyol", key="wask_inp")
     btn_wask = st.button("Performans Analizi Yap", key="btn_wask")
 
@@ -463,7 +471,7 @@ with tab_wask:
                 f = int(clean_number(p.get("followersCount", p.get("followers", 0)), 1))
                 m_wask = run_all_algorithms(f, p.get("latestPosts", []))
 
-                st.success(f"✅ @{w_user} için analiz tamamlandı.")
+                st.success(f"• @{w_user} için analiz tamamlandı.")
 
                 w1, w2, w3 = st.columns(3)
                 w1.metric("Etkileşim Oranı (ER)", f"%{m_wask['er']:.2f}")
@@ -473,7 +481,7 @@ with tab_wask:
                 st.markdown("<br>", unsafe_allow_html=True)
 
                 # Benchmark Grafiği
-                st.markdown("### 📈 Sektör Etkileşim Kıyaslaması (WASK)")
+                st.markdown("### • Sektör Etkileşim Kıyaslaması (WASK)")
                 benchmark_er = 2.0 if f >= 100000 else 3.5
                 wask_chart_df = pd.DataFrame({
                     "Kategori": ["Düşük Performans", "Sektör Standardı", f"@{w_user} Performansı", "Yüksek Performans"],
@@ -492,7 +500,6 @@ with tab_wask:
 # =========================================================
 with tab_compare:
     st.markdown('<div class="effect-card">', unsafe_allow_html=True)
-    st.subheader("⚖️ Çapraz Influencer Karşılaştırma Paneli")
     
     c_u1 = st.text_input("1. Profil Kullanıcı Adı", key="cmp1")
     c_u2 = st.text_input("2. Profil Kullanıcı Adı", key="cmp2")
