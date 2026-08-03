@@ -21,7 +21,7 @@ st.set_page_config(
 APIFY_TOKEN = st.secrets.get("APIFY_TOKEN", "apify_api_gvh1Gqo99oDTmXqrb4CwCk24HGWmcN07zSRb")
 
 # ---------------------------------------------------------
-# 2. CSS STİLLERİ VE ŞERİT ALTINA TAM HİZALANMIŞ KÜÇÜK FORM YAPISI
+# 2. CSS STİLLERİ
 # ---------------------------------------------------------
 st.markdown(
     """
@@ -44,7 +44,7 @@ st.markdown(
         100% { background-position: 0% 50%; }
     }
 
-    /* 1. EN ÜSTTEKİ MG BRAND OFFICE BAŞLIĞI */
+    /* 1. EN ÜST LOGO BAŞLIĞI */
     .reflection-container {
         text-align: center;
         padding-top: 15px;
@@ -68,13 +68,13 @@ st.markdown(
     /* 2. ORTALANMIŞ KAYAN SEKMELER (ŞERİT) */
     .stTabs [data-baseweb="tab-list"] {
         gap: 16px;
-        justify-content: center;
+        justify-content: center !important;
         background-color: #0d1117 !important;
         padding: 8px 20px;
         border-radius: 50px;
         border: 1px solid #21262d !important;
         max-width: fit-content;
-        margin: 10px auto 25px auto !important;
+        margin: 10px auto 30px auto !important;
     }
 
     .stTabs [data-baseweb="tab"] {
@@ -97,31 +97,15 @@ st.markdown(
         box-shadow: 0 0 15px rgba(59, 130, 246, 0.3) !important;
     }
 
-    /* 3. ARAMA VE BUTON KUTULARINI ŞERİDİN GENİŞLİĞİNE GÖRE KÜÇÜLT VE TAM ORTALA (300px) */
-    .tab-form-aligner {
-        width: 100% !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-        margin: 0 auto !important;
-    }
-
-    /* Input Alanını Kısıtla */
-    div[data-testid="stTextInput"] {
-        width: 300px !important;
-        margin: 0 auto !important;
-    }
-
+    /* 3. INPUT (ARAMA KUTUSU) TASARIMI */
     .stTextInput input {
-        width: 100% !important;
         color: #ffffff !important;
         background-color: #0d1117 !important;
         border: 2px solid #21262d !important;
         border-radius: 12px !important;
         font-weight: 700 !important;
-        padding: 8px 12px !important;
-        font-size: 0.9rem !important;
+        padding: 10px 14px !important;
+        font-size: 0.95rem !important;
         text-align: center !important;
     }
     .stTextInput input:focus {
@@ -131,20 +115,13 @@ st.markdown(
     .stTextInput label {
         color: #ffffff !important;
         font-weight: 800 !important;
-        font-size: 0.95rem !important;
+        font-size: 1rem !important;
         display: block !important;
         text-align: center !important;
-        margin-bottom: 6px !important;
+        margin-bottom: 8px !important;
     }
 
-    /* Buton Alanını Şeride Göre Küçült & Tam Ortala */
-    div[data-testid="stButton"] {
-        width: 300px !important;
-        margin: 10px auto 0 auto !important;
-        display: flex !important;
-        justify-content: center !important;
-    }
-
+    /* 4. DİNAMİK RENK DEĞİŞTİREN BUTON TASARIMI */
     .stButton>button {
         width: 100% !important;
         background: linear-gradient(270deg, #2563eb, #a855f7, #ec4899, #3b82f6);
@@ -152,16 +129,17 @@ st.markdown(
         animation: colorChange 5s ease infinite !important;
         color: #ffffff !important;
         border: none !important;
-        padding: 10px 20px !important;
+        padding: 12px 24px !important;
         border-radius: 12px !important;
         font-weight: 900 !important;
-        font-size: 0.95rem !important;
-        box-shadow: 0 4px 18px rgba(168, 85, 247, 0.4) !important;
+        font-size: 1.05rem !important;
+        box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4) !important;
         transition: all 0.3s ease !important;
+        margin-top: 5px !important;
     }
     .stButton>button:hover {
         transform: scale(1.02);
-        box-shadow: 0 6px 25px rgba(168, 85, 247, 0.6) !important;
+        box-shadow: 0 6px 30px rgba(168, 85, 247, 0.6) !important;
     }
     .stButton>button p, .stButton>button span {
         color: #ffffff !important;
@@ -341,17 +319,17 @@ def run_all_algorithms(followers: int, posts: list):
     }
 
 # ---------------------------------------------------------
-# 5. ARAYÜZ (EN ÜSTTE LOGO BAŞLIĞI, ALTINDA SEKMELER)
+# 5. ARAYÜZ
 # ---------------------------------------------------------
 
-# 1. EN ÜST LOGO
+# 1. LOGO BAŞLIĞI
 st.markdown("""
     <div class="reflection-container">
         <h1 class="brand-header-animated">MG BRAND OFFICE</h1>
     </div>
 """, unsafe_allow_html=True)
 
-# 2. HEMEN ALTINDAKİ SEKMELER
+# 2. SEKMELER
 tab_hero, tab_wask, tab_compare = st.tabs([
     "• Influencer Hero & Audit", 
     "• WASK Performans & Benchmark", 
@@ -364,11 +342,11 @@ tab_hero, tab_wask, tab_compare = st.tabs([
 with tab_hero:
     st.markdown('<div class="effect-card">', unsafe_allow_html=True)
     
-    # KÜÇÜLTÜLMÜŞ VE ŞERİDİN TAM ORTA ALTINA KİLİTLENMİŞ ALAN
-    st.markdown('<div class="tab-form-aligner">', unsafe_allow_html=True)
-    raw_hero = st.text_input("Instagram Kullanıcı Adı veya Profil Linki", placeholder="Örn: https://www.instagram.com/_helinkandemir/", key="hero_user_input")
-    btn_hero = st.button("Derin Analiz Başlat", key="btn_hero")
-    st.markdown('</div>', unsafe_allow_html=True)
+    # NATIVE STREAMLIT COLUMNS İLE TAM ORTALAMA VE KISALTMA (1 : 1.2 : 1)
+    col_left, col_center, col_right = st.columns([1, 1.2, 1])
+    with col_center:
+        raw_hero = st.text_input("Instagram Kullanıcı Adı veya Profil Linki", placeholder="Örn: https://www.instagram.com/_helinkandemir/", key="hero_user_input")
+        btn_hero = st.button("Derin Analiz Başlat", key="btn_hero")
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -470,10 +448,10 @@ with tab_wask:
     st.subheader("📊 WASK Performans & Benchmark Paneli")
     st.caption("Instagram hesabının etkileşim oranını ve içerik performansını sektör standartlarıyla kıyaslayın.")
 
-    st.markdown('<div class="tab-form-aligner">', unsafe_allow_html=True)
-    wask_raw = st.text_input("Kullanıcı Adı veya Profil Linki Girin", placeholder="Örn: trendyol", key="wask_inp")
-    btn_wask = st.button("Performans Analizi Yap", key="btn_wask")
-    st.markdown('</div>', unsafe_allow_html=True)
+    col_l2, col_c2, col_r2 = st.columns([1, 1.2, 1])
+    with col_c2:
+        wask_raw = st.text_input("Kullanıcı Adı veya Profil Linki Girin", placeholder="Örn: trendyol", key="wask_inp")
+        btn_wask = st.button("Performans Analizi Yap", key="btn_wask")
 
     if btn_wask and wask_raw:
         w_user = clean_username(wask_raw)
@@ -514,11 +492,11 @@ with tab_compare:
     st.markdown('<div class="effect-card">', unsafe_allow_html=True)
     st.subheader("⚖️ Çapraz Influencer Karşılaştırma Paneli")
     
-    st.markdown('<div class="tab-form-aligner">', unsafe_allow_html=True)
-    c_u1 = st.text_input("1. Profil Kullanıcı Adı", key="cmp1")
-    c_u2 = st.text_input("2. Profil Kullanıcı Adı", key="cmp2")
-    btn_cmp = st.button("Profilleri Kıyasla", key="btn_cmp")
-    st.markdown('</div>', unsafe_allow_html=True)
+    col_l3, col_c3, col_r3 = st.columns([1, 1.5, 1])
+    with col_c3:
+        c_u1 = st.text_input("1. Profil Kullanıcı Adı", key="cmp1")
+        c_u2 = st.text_input("2. Profil Kullanıcı Adı", key="cmp2")
+        btn_cmp = st.button("Profilleri Kıyasla", key="btn_cmp")
 
     if btn_cmp and c_u1 and c_u2:
         u1, u2 = clean_username(c_u1), clean_username(c_u2)
