@@ -191,6 +191,14 @@ st.markdown(
         margin-top: 24px;
     }
 
+    .info-box {
+        background-color: #0d1117 !important;
+        border: 1px solid #21262d !important;
+        border-radius: 16px;
+        padding: 24px;
+        margin-top: 40px;
+    }
+
     /* 5. EKRANIN EN ALTINA SABİTLENMİŞ YAZI (FOOTER) */
     .footer-dark {
         position: fixed !important;
@@ -298,7 +306,6 @@ def run_all_algorithms(followers: int, posts: list):
     authentic_pct = int(np.clip(credibility_score + 2, 10, 95))
     est_reach = min(int(followers * (er / 100.0) * 3.5) if er > 0 else int(followers * 0.05), followers)
 
-    # --- İŞ BİRLİĞİ VE SEKTÖR ANALİZ MOTORU ---
     collab_keywords = ["#reklam", "#işbirliği", "#isbirligi", "#sponsorlu", "işbirliği", "partnership", "iş ortaklığı"]
     sector_keywords = {
         "Moda & Giyim": ["kombin", "elbise", "tarz", "kıyafet", "moda", "giyim", "çanta", "ayakkabı", "trendyol", "zara", "aksesuar"],
@@ -323,7 +330,6 @@ def run_all_algorithms(followers: int, posts: list):
     top_sectors = [s[0] for s in sorted(detected_sectors.items(), key=lambda item: item[1], reverse=True)[:2]]
     if not top_sectors:
         top_sectors = ["Genel Lifestyle"]
-    # -----------------------------------------------------------
 
     all_comments = []
     for p in posts:
@@ -488,6 +494,7 @@ with tab_hero:
                         <li><b>Kitle Kalitesi ve Güvenilirlik (%{m['credibility_score']}):</b> Hesabın takipçi kitlesinin <b>%{m['authentic_pct']}</b> kadarının gerçek ve organik hareket eden kullanıcılardan oluştuğu tespit edilmiştir.</li>
                         <li><b>HypeAuditor Kalite Skoru (AQS - {m['aqs_score']}/100):</b> Profilin içerik üretme istikrarı, beğeni/yorum dengesi ve takipçi ölçeğine göre etkileşim performansı son derece yüksektir.</li>
                         <li><b>Erişim Gücü:</b> Yayınlanacak bir içeriğin organik olarak ortalama <b>{m['est_reach']:,}</b> tekil kullanıcıya ulaşacağı öngörülmektedir.</li>
+                        <li><b>Sektörel Dağılım ve İş Birliği:</b> Aktif olarak <b>{", ".join(m['top_sectors'])}</b> alanlarında paylaşım ve sponsorluk yapmaktadır (Tahmini İş Birliği Oranı: %{m['collab_ratio']:.1f}).</li>
                     </ul>
                 </div>
                 """, unsafe_allow_html=True)
@@ -504,6 +511,21 @@ with tab_wask:
         st.markdown('<div style="height: 90px;"></div>', unsafe_allow_html=True)
         wask_raw = st.text_input("Kullanıcı Adı veya Profil Linki Girin", placeholder="Örn: mg brand office", key="wask_inp")
         btn_wask = st.button("Performans Analizi Yap", use_container_width=True, key="btn_wask")
+
+        # KULLANICI ARAMA YAPMADAN ÖNCE WASK AÇIKLAMASI EKRANDA GÖRÜNSÜN
+        if not (btn_wask and wask_raw):
+            st.markdown("""
+            <div class="info-box">
+                <h4 style="color: #60a5fa; font-weight: 800; margin-top: 0; font-size: 1.1rem;">• Instagram Etkileşim Oranı (Engagement Rate) Nedir?</h4>
+                <p style="color: #8b949e; font-size: 0.95rem; line-height: 1.6;">Etkileşim oranı, Instagram hesabınızın takipçileriyle ne kadar aktif ve güçlü bir bağ kurduğunu gösteren en temel ölçümdür. Sadece takipçi sayınıza değil; paylaşımlarınıza gelen beğeni ve yorumların, toplam takipçi sayınıza olan organik oranını hesaplar.</p>
+                
+                <h4 style="color: #60a5fa; font-weight: 800; margin-top: 20px; font-size: 1.1rem;">• Neden Önemlidir?</h4>
+                <p style="color: #8b949e; font-size: 0.95rem; line-height: 1.6;">Markalar ve ajanslar iş birliklerinde veya sponsorluklarda salt takipçi sayısına değil, <b>etkileşim gücüne</b> bakar. Yüksek bir oran, kitlenizin bot veya sahte olmadığını ve içeriklerinize gerçekten değer verdiğini markalara kanıtlar. Ayrıca Instagram algoritması yüksek etkileşimli profilleri daha fazla önerir.</p>
+                
+                <h4 style="color: #60a5fa; font-weight: 800; margin-top: 20px; font-size: 1.1rem;">• Nasıl Hesaplanır?</h4>
+                <p style="color: #8b949e; font-size: 0.95rem; line-height: 1.6; margin-bottom: 0;">Sistemimiz; <i>(Toplam Beğeni + Toplam Yorum) / Toplam Takipçi Sayısı x 100</i> WASK standart formülünü kullanarak profilinizin genel etkileşimini sektör ve takipçi segmentinize göre analiz eder.</p>
+            </div>
+            """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -557,7 +579,6 @@ with tab_compare:
                 m1 = run_all_algorithms(f1, p1.get("latestPosts", []))
                 m2 = run_all_algorithms(f2, p2.get("latestPosts", []))
 
-                # 1. TÜM VERİLERİN (İŞ BİRLİĞİ DAHİL) TABLO OLARAK GÖSTERİLMESİ
                 cmp_table = pd.DataFrame({
                     "Metrik / İnceleme": [
                         "Takipçi Sayısı", 
@@ -589,7 +610,6 @@ with tab_compare:
                 })
                 st.table(cmp_table)
 
-                # 2. DİNAMİK YÖNETİCİ ÖZETİ (YAZI FORMATINDA)
                 winner_aqs = u1 if m1['aqs_score'] >= m2['aqs_score'] else u2
                 winner_collab = u1 if m1['collab_ratio'] > m2['collab_ratio'] else (u2 if m2['collab_ratio'] > m1['collab_ratio'] else "eşit")
 
@@ -601,7 +621,7 @@ with tab_compare:
                     collab_text = f"Sponsorlu içerik analizine göre, <b>@{winner_collab}</b> profilinin ticari çalışmalara daha yatkın olduğu ve marka iş birliklerine aktif olarak daha fazla yer verdiği tespit edilmiştir."
 
                 if winner_aqs == winner_collab or winner_collab == "eşit":
-                    rec_text = f"Hem yüksek kitle kalitesi hem de ticari içerik tecrübesi bir arada değerlendirildiğinde, <b>@{winner_aqs}</b> ile yapılacak bir kampanya yatırım getiriş (ROI) açısından en güvenli tercih olacaktır."
+                    rec_text = f"Hem yüksek kitle kalitesi hem de ticari içerik tecrübesi bir arada değerlendirildiğinde, <b>@{winner_aqs}</b> ile yapılacak bir kampanya yatırım getirişi (ROI) açısından en güvenli tercih olacaktır."
                 else:
                     rec_text = f"Stratejik olarak; hedefiniz yüksek kitle güveni ve organik etkileşim ise <b>@{winner_aqs}</b> tercih edilmelidir. Ancak doğrudan ticari tecrübeye, satışa ve yoğun iş birliği alışkanlığına öncelik veriyorsanız <b>@{winner_collab}</b> daha uygun bir alternatif olarak öne çıkmaktadır."
 
