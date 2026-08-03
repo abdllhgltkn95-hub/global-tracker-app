@@ -65,8 +65,8 @@ st.markdown(
         -webkit-box-reflect: below -18px linear-gradient(transparent 50%, rgba(255, 255, 255, 0.2));
     }
 
-    /* 2. SEKMELER (TABS) - ALT ÇİZGİSİZ, ORTALANMIŞ */
-    div[data-baseweb="tab-list"] {
+    /* 2. SEKMELER (TABS) - TÜMÜ EŞİT KUTU/KAPSÜL GÖRÜNÜMÜNDE */
+    [data-baseweb="tab-list"] {
         display: flex !important;
         justify-content: center !important;
         border-bottom: none !important; /* Gri çizgiyi yok et */
@@ -75,27 +75,29 @@ st.markdown(
         width: 100% !important;
     }
 
-    div[data-baseweb="tab"] {
-        height: 50px;
+    [data-baseweb="tab"] {
+        height: 50px !important;
         background-color: #0d1117 !important;
         border: 1px solid #21262d !important;
         border-radius: 40px !important;
         padding: 0px 30px !important;
+        margin: 0 !important;
     }
 
-    div[data-baseweb="tab"] p, div[data-baseweb="tab"] span {
+    [data-baseweb="tab"] p, [data-baseweb="tab"] span {
         color: #8b949e !important;
         font-weight: 900 !important;
         font-size: 1.05rem !important;
     }
 
-    div[aria-selected="true"] {
+    /* Seçili (Aktif) Sekme Efekti */
+    [data-baseweb="tab"][aria-selected="true"] {
         background: #21262d !important;
         border: 1px solid #3b82f6 !important;
         box-shadow: 0 0 15px rgba(59, 130, 246, 0.3) !important;
     }
 
-    div[aria-selected="true"] p, div[aria-selected="true"] span {
+    [data-baseweb="tab"][aria-selected="true"] p, [data-baseweb="tab"][aria-selected="true"] span {
         color: #ffffff !important;
     }
 
@@ -371,6 +373,7 @@ with tab_hero:
     with col_center:
         # Sadece input formunun hemen üzerine 4 satırlık boşluk (90px) eklendi
         st.markdown('<div style="height: 90px;"></div>', unsafe_allow_html=True)
+        # Etiketler ve Placeholder'lar eşitlendi
         raw_hero = st.text_input("Instagram Kullanıcı Adı veya Profil Linki", placeholder="Örn: mg brand office", key="hero_user_input")
         btn_hero = st.button("Derin Analiz Başlat", use_container_width=True, key="btn_hero")
 
@@ -464,7 +467,8 @@ with tab_wask:
     
     with col_center_wask:
         st.markdown('<div style="height: 90px;"></div>', unsafe_allow_html=True)
-        wask_raw = st.text_input("Kullanıcı Adı veya Profil Linki Girin", placeholder="Örn: mg brand office", key="wask_inp")
+        # Etiketler ve Placeholder'lar eşitlendi
+        wask_raw = st.text_input("Instagram Kullanıcı Adı veya Profil Linki", placeholder="Örn: mg brand office", key="wask_inp")
         btn_wask = st.button("Performans Analizi Yap", use_container_width=True, key="btn_wask")
 
     st.markdown("<br>", unsafe_allow_html=True)
