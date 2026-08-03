@@ -21,7 +21,7 @@ st.set_page_config(
 APIFY_TOKEN = st.secrets.get("APIFY_TOKEN", "apify_api_gvh1Gqo99oDTmXqrb4CwCk24HGWmcN07zSRb")
 
 # ---------------------------------------------------------
-# 2. CSS STİLLERİ VE KESİN KÜÇÜLTÜLMÜŞ ARAMA KUTUSU
+# 2. CSS STİLLERİ VE KESİN KÜÇÜLTÜLMÜŞ HİZALI ARAMA ALANI
 # ---------------------------------------------------------
 st.markdown(
     """
@@ -97,18 +97,19 @@ st.markdown(
         box-shadow: 0 0 15px rgba(59, 130, 246, 0.3) !important;
     }
 
-    /* 3. ARAMA KUTUSU VE BUTON KESİN KÜÇÜLTME (360px STİLLERİ) */
+    /* 3. ARAMA KUTUSU VE BUTON ALANINI ŞERİDİN ALTINA MÜKEMMEL HİZALA (320px) */
     .search-box-wrapper {
         width: 100% !important;
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
+        margin-top: 5px !important;
     }
 
-    /* Streamlit Input Kapsayıcısını 360px İle Sınırla */
+    /* Streamlit Input Kapsayıcısını 320px İle Sınırla */
     div[data-testid="stTextInput"] {
-        width: 360px !important;
+        width: 320px !important;
         margin: 0 auto !important;
     }
 
@@ -119,8 +120,8 @@ st.markdown(
         border: 2px solid #21262d !important;
         border-radius: 12px !important;
         font-weight: 700 !important;
-        padding: 10px 14px !important;
-        font-size: 0.95rem !important;
+        padding: 8px 12px !important;
+        font-size: 0.9rem !important;
         text-align: center !important;
     }
     .stTextInput input:focus {
@@ -130,16 +131,16 @@ st.markdown(
     .stTextInput label {
         color: #ffffff !important;
         font-weight: 800 !important;
-        font-size: 1rem !important;
+        font-size: 0.95rem !important;
         display: block !important;
         text-align: center !important;
-        margin-bottom: 8px !important;
+        margin-bottom: 6px !important;
     }
 
-    /* 4. DİNAMİK RENK DEĞİŞTİREN ORTALANMIŞ KÜÇÜK BUTON */
+    /* 4. DİNAMİK RENK DEĞİŞTİREN KÜÇÜK VE HİZALI BUTON */
     div[data-testid="stButton"] {
-        width: 360px !important;
-        margin: 12px auto 0 auto !important;
+        width: 320px !important;
+        margin: 10px auto 0 auto !important;
         display: flex !important;
         justify-content: center !important;
     }
@@ -151,16 +152,16 @@ st.markdown(
         animation: colorChange 5s ease infinite !important;
         color: #ffffff !important;
         border: none !important;
-        padding: 12px 24px !important;
+        padding: 10px 20px !important;
         border-radius: 12px !important;
         font-weight: 900 !important;
-        font-size: 1.05rem !important;
-        box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4) !important;
+        font-size: 0.95rem !important;
+        box-shadow: 0 4px 18px rgba(168, 85, 247, 0.4) !important;
         transition: all 0.3s ease !important;
     }
     .stButton>button:hover {
         transform: scale(1.02);
-        box-shadow: 0 6px 30px rgba(168, 85, 247, 0.6) !important;
+        box-shadow: 0 6px 25px rgba(168, 85, 247, 0.6) !important;
     }
     .stButton>button p, .stButton>button span {
         color: #ffffff !important;
@@ -340,7 +341,7 @@ def run_all_algorithms(followers: int, posts: list):
     }
 
 # ---------------------------------------------------------
-# 5. ARAYÜZ (EN ÜSTTE LOGO BAŞLIĞI, ALTINDA SEKMELER)
+# 5. ARAYÜZ
 # ---------------------------------------------------------
 
 # 1. EN ÜST LOGO
@@ -363,7 +364,7 @@ tab_hero, tab_wask, tab_compare = st.tabs([
 with tab_hero:
     st.markdown('<div class="effect-card">', unsafe_allow_html=True)
     
-    # 360px'E HEDEFLEŞTİRİLMİŞ KÜÇÜK ARAMA VE BUTON ALANI
+    # 320px İLE KÜÇÜLTÜLMÜŞ VE ŞERİDİN ALTINA ORTALANMIŞ ALAN
     st.markdown('<div class="search-box-wrapper">', unsafe_allow_html=True)
     raw_hero = st.text_input("Instagram Kullanıcı Adı veya Profil Linki", placeholder="Örn: https://www.instagram.com/_helinkandemir/", key="hero_user_input")
     btn_hero = st.button("Derin Analiz Başlat", key="btn_hero")
