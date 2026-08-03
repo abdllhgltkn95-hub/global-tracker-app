@@ -43,15 +43,15 @@ st.markdown(
         100% { background-position: 0% 50%; }
     }
 
-    /* 1. EN ÜST LOGO BAŞLIĞI */
+    /* 1. EN ÜST LOGO BAŞLIĞI - YUKARI ÇEKİLDİ */
     .reflection-container {
         text-align: center;
-        padding-top: 15px;
+        padding-top: 5px; /* Daha yukarıya alındı */
         padding-bottom: 25px;
     }
 
     .brand-header-animated {
-        font-size: 4rem;
+        font-size: 3.8rem;
         font-weight: 900;
         letter-spacing: -1.5px;
         background: linear-gradient(270deg, #2563eb, #a855f7, #ec4899, #3b82f6, #06b6d4);
@@ -97,15 +97,22 @@ st.markdown(
         color: #ffffff !important;
     }
 
-    /* 3. INPUT (ARAMA KUTUSU) TASARIMI */
+    /* 3. INPUT (ARAMA KUTUSU) TASARIMI - KÜÇÜLTÜLDÜ VE ORTALANDI */
+    div[data-testid="stTextInput"], div[data-testid="stButton"] {
+        width: 100% !important;
+        max-width: 320px !important; /* Daha da daraltıldı */
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
     .stTextInput input {
         color: #ffffff !important;
         background-color: #0d1117 !important;
         border: 2px solid #21262d !important;
         border-radius: 12px !important;
         font-weight: 700 !important;
-        padding: 12px 14px !important;
-        font-size: 0.95rem !important;
+        padding: 8px 12px !important; /* Yüksekliği inceltildi */
+        font-size: 0.9rem !important;
         text-align: center !important;
     }
     .stTextInput input:focus {
@@ -115,26 +122,32 @@ st.markdown(
     .stTextInput label {
         color: #ffffff !important;
         font-weight: 800 !important;
-        font-size: 1rem !important;
+        font-size: 0.95rem !important;
         display: block !important;
         text-align: center !important;
-        margin-bottom: 8px !important;
+        margin-bottom: 6px !important;
     }
 
-    /* 4. DİNAMİK BUTON TASARIMI */
+    /* 4. DİNAMİK BUTON TASARIMI - KÜÇÜLTÜLDÜ */
+    div[data-testid="stButton"] {
+        display: flex !important;
+        justify-content: center !important;
+        margin-top: 8px !important;
+    }
+
     .stButton>button {
+        width: 100% !important;
         background: linear-gradient(270deg, #2563eb, #a855f7, #ec4899, #3b82f6);
         background-size: 300% 300% !important;
         animation: colorChange 5s ease infinite !important;
         color: #ffffff !important;
         border: none !important;
-        padding: 12px 24px !important;
+        padding: 10px 20px !important; /* Yüksekliği inceltildi */
         border-radius: 12px !important;
         font-weight: 900 !important;
-        font-size: 1.05rem !important;
+        font-size: 0.95rem !important;
         box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4) !important;
         transition: all 0.3s ease !important;
-        margin-top: 5px !important;
     }
     .stButton>button:hover {
         transform: scale(1.02);
@@ -327,7 +340,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# SEKMELER (Nokta işareti eşitlendi)
+# SEKMELER
 tab_hero, tab_wask, tab_compare = st.tabs([
     "• Influencer Hero & Audit", 
     "• WASK Performans & Benchmark", 
@@ -338,7 +351,7 @@ tab_hero, tab_wask, tab_compare = st.tabs([
 # SEKME 1: INFLUENCER HERO & AUDIT
 # =========================================================
 with tab_hero:
-    # NATIVE STREAMLIT SÜTUNLARIYLA TAM ORTALAMA EKSENİ (1.5 - 2 - 1.5 Oranı)
+    # NATIVE STREAMLIT SÜTUNLARIYLA TAM ORTALAMA EKSENİ
     _, col_center, _ = st.columns([1.5, 2, 1.5])
     
     with col_center:
