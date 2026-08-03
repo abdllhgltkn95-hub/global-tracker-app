@@ -21,7 +21,7 @@ st.set_page_config(
 APIFY_TOKEN = st.secrets.get("APIFY_TOKEN", "apify_api_gvh1Gqo99oDTmXqrb4CwCk24HGWmcN07zSRb")
 
 # ---------------------------------------------------------
-# 2. CSS STİLLERİ
+# 2. CSS STİLLERİ VE KESİN TAM ORTALAMA
 # ---------------------------------------------------------
 st.markdown(
     """
@@ -97,7 +97,14 @@ st.markdown(
         box-shadow: 0 0 15px rgba(59, 130, 246, 0.3) !important;
     }
 
-    /* 3. INPUT (ARAMA KUTUSU) TASARIMI */
+    /* 3. INPUT (ARAMA KUTUSU) VE BUTONU TAM EKSENDE ORTALA */
+    div[data-testid="stTextInput"], div[data-testid="stButton"] {
+        width: 100% !important;
+        max-width: 340px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
     .stTextInput input {
         color: #ffffff !important;
         background-color: #0d1117 !important;
@@ -329,7 +336,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# 2. SEKMELER
+# 2. SEKMELER (DİĞER SEKMELERLE UYUMLU • NOKTASI EKLENDİ)
 tab_hero, tab_wask, tab_compare = st.tabs([
     "• Influencer Hero & Audit", 
     "• WASK Performans & Benchmark", 
@@ -342,11 +349,8 @@ tab_hero, tab_wask, tab_compare = st.tabs([
 with tab_hero:
     st.markdown('<div class="effect-card">', unsafe_allow_html=True)
     
-    # NATIVE STREAMLIT COLUMNS İLE TAM ORTALAMA VE KISALTMA (1 : 1.2 : 1)
-    col_left, col_center, col_right = st.columns([1, 1.2, 1])
-    with col_center:
-        raw_hero = st.text_input("Instagram Kullanıcı Adı veya Profil Linki", placeholder="Örn: https://www.instagram.com/_helinkandemir/", key="hero_user_input")
-        btn_hero = st.button("Derin Analiz Başlat", key="btn_hero")
+    raw_hero = st.text_input("Instagram Kullanıcı Adı veya Profil Linki", placeholder="Örn: https://www.instagram.com/_helinkandemir/", key="hero_user_input")
+    btn_hero = st.button("Derin Analiz Başlat", key="btn_hero")
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -448,10 +452,8 @@ with tab_wask:
     st.subheader("📊 WASK Performans & Benchmark Paneli")
     st.caption("Instagram hesabının etkileşim oranını ve içerik performansını sektör standartlarıyla kıyaslayın.")
 
-    col_l2, col_c2, col_r2 = st.columns([1, 1.2, 1])
-    with col_c2:
-        wask_raw = st.text_input("Kullanıcı Adı veya Profil Linki Girin", placeholder="Örn: trendyol", key="wask_inp")
-        btn_wask = st.button("Performans Analizi Yap", key="btn_wask")
+    wask_raw = st.text_input("Kullanıcı Adı veya Profil Linki Girin", placeholder="Örn: trendyol", key="wask_inp")
+    btn_wask = st.button("Performans Analizi Yap", key="btn_wask")
 
     if btn_wask and wask_raw:
         w_user = clean_username(wask_raw)
@@ -492,11 +494,9 @@ with tab_compare:
     st.markdown('<div class="effect-card">', unsafe_allow_html=True)
     st.subheader("⚖️ Çapraz Influencer Karşılaştırma Paneli")
     
-    col_l3, col_c3, col_r3 = st.columns([1, 1.5, 1])
-    with col_c3:
-        c_u1 = st.text_input("1. Profil Kullanıcı Adı", key="cmp1")
-        c_u2 = st.text_input("2. Profil Kullanıcı Adı", key="cmp2")
-        btn_cmp = st.button("Profilleri Kıyasla", key="btn_cmp")
+    c_u1 = st.text_input("1. Profil Kullanıcı Adı", key="cmp1")
+    c_u2 = st.text_input("2. Profil Kullanıcı Adı", key="cmp2")
+    btn_cmp = st.button("Profilleri Kıyasla", key="btn_cmp")
 
     if btn_cmp and c_u1 and c_u2:
         u1, u2 = clean_username(c_u1), clean_username(c_u2)
