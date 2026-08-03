@@ -21,7 +21,7 @@ st.set_page_config(
 APIFY_TOKEN = st.secrets.get("APIFY_TOKEN", "apify_api_gvh1Gqo99oDTmXqrb4CwCk24HGWmcN07zSRb")
 
 # ---------------------------------------------------------
-# 2. SİMSİYAH TEMA, ÜST SEKMELER VE DİNAMİK BUTON CSS
+# 2. CSS STİLLERİ VE YERLEŞİM DÜZENLEMELERİ
 # ---------------------------------------------------------
 st.markdown(
     """
@@ -37,50 +37,18 @@ st.markdown(
         color: #ffffff !important;
     }
 
-    /* Renk Değişim Animasyonu (Header ve Buton İçin) */
+    /* Renk Değişim Animasyonu */
     @keyframes colorChange {
         0% { background-position: 0% 50%; }
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
     }
 
-    /* 1. SEKMELERİ EN ÜSTE AL, BÜYÜT, KALIN VE BEYAZ YAZI YAP */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 16px;
-        justify-content: center;
-        background-color: #0d1117 !important;
-        padding: 10px 24px;
-        border-radius: 50px;
-        border: 1px solid #21262d !important;
-        max-width: fit-content;
-        margin: 10px auto 30px auto !important;
-    }
-
-    .stTabs [data-baseweb="tab"] {
-        height: 52px;
-        border-radius: 35px !important;
-        padding: 0px 30px !important;
-        font-weight: 900 !important;
-        font-size: 1.15rem !important;
-        color: #ffffff !important;
-    }
-
-    .stTabs [data-baseweb="tab"] p, .stTabs [data-baseweb="tab"] span {
-        color: #ffffff !important;
-        font-weight: 900 !important;
-    }
-
-    .stTabs [aria-selected="true"] {
-        background: #21262d !important;
-        border: 1px solid #3b82f6 !important;
-        box-shadow: 0 0 15px rgba(59, 130, 246, 0.3) !important;
-    }
-
-    /* 2. LOGO BAŞLIĞI */
+    /* 1. EN ÜSTTEKİ MG BRAND OFFICE BAŞLIĞI */
     .reflection-container {
         text-align: center;
-        padding-top: 10px;
-        padding-bottom: 25px;
+        padding-top: 15px;
+        padding-bottom: 20px;
     }
 
     .brand-header-animated {
@@ -97,9 +65,41 @@ st.markdown(
         -webkit-box-reflect: below -18px linear-gradient(transparent 50%, rgba(255, 255, 255, 0.2));
     }
 
-    /* 3. ARAMA KUTUSU VE BUTON ALANINI ORTALA VE KISALT */
+    /* 2. ORTALANMIŞ KAYAN SEKMELER */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 16px;
+        justify-content: center;
+        background-color: #0d1117 !important;
+        padding: 8px 20px;
+        border-radius: 50px;
+        border: 1px solid #21262d !important;
+        max-width: fit-content;
+        margin: 10px auto 25px auto !important;
+    }
+
+    .stTabs [data-baseweb="tab"] {
+        height: 48px;
+        border-radius: 35px !important;
+        padding: 0px 26px !important;
+        font-weight: 900 !important;
+        font-size: 1.05rem !important;
+        color: #ffffff !important;
+    }
+
+    .stTabs [data-baseweb="tab"] p, .stTabs [data-baseweb="tab"] span {
+        color: #ffffff !important;
+        font-weight: 900 !important;
+    }
+
+    .stTabs [aria-selected="true"] {
+        background: #21262d !important;
+        border: 1px solid #3b82f6 !important;
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.3) !important;
+    }
+
+    /* 3. DAHADA KÜÇÜLTÜLMÜŞ & ORTALANMIŞ ARAMA KUTUSU (MAX 420px) */
     .search-box-wrapper {
-        max-width: 500px;
+        max-width: 420px;
         margin: 0 auto;
         text-align: center;
     }
@@ -108,44 +108,44 @@ st.markdown(
         color: #ffffff !important;
         background-color: #0d1117 !important;
         border: 2px solid #21262d !important;
-        border-radius: 14px !important;
+        border-radius: 12px !important;
         font-weight: 700 !important;
-        padding: 12px 18px !important;
-        font-size: 1.05rem !important;
+        padding: 10px 14px !important;
+        font-size: 0.95rem !important;
         text-align: center !important;
     }
     .stTextInput input:focus {
-        border-color: #3b82f6 !important;
-        box-shadow: 0 0 15px rgba(59, 130, 246, 0.4) !important;
+        border-color: #a855f7 !important;
+        box-shadow: 0 0 15px rgba(168, 85, 247, 0.4) !important;
     }
     .stTextInput label {
         color: #ffffff !important;
         font-weight: 800 !important;
-        font-size: 1.1rem !important;
+        font-size: 1rem !important;
         display: block !important;
         text-align: center !important;
-        margin-bottom: 10px !important;
+        margin-bottom: 8px !important;
     }
 
-    /* 4. RENK DEĞİŞTİREN DİNAMİK BUTON (EMOJİSİZ & ORTALANMIŞ) */
+    /* 4. DİNAMİK RENK DEĞİŞTİREN ORTALANMIŞ BUTON */
     .stButton {
         display: flex;
         justify-content: center;
-        margin-top: 15px;
+        margin-top: 12px;
     }
 
     .stButton>button {
         width: 100% !important;
-        max-width: 500px !important;
+        max-width: 420px !important;
         background: linear-gradient(270deg, #2563eb, #a855f7, #ec4899, #3b82f6);
         background-size: 300% 300% !important;
         animation: colorChange 5s ease infinite !important;
         color: #ffffff !important;
         border: none !important;
-        padding: 14px 28px !important;
-        border-radius: 14px !important;
+        padding: 12px 24px !important;
+        border-radius: 12px !important;
         font-weight: 900 !important;
-        font-size: 1.1rem !important;
+        font-size: 1.05rem !important;
         box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4) !important;
         transition: all 0.3s ease !important;
     }
@@ -158,7 +158,7 @@ st.markdown(
         font-weight: 900 !important;
     }
 
-    /* Kart Yapıları ve Rapor Kutuları */
+    /* Koyu Efektli Kart Yapıları */
     .effect-card {
         background: #000000 !important;
         border: none !important;
@@ -332,20 +332,22 @@ def run_all_algorithms(followers: int, posts: list):
     }
 
 # ---------------------------------------------------------
-# 5. ARAYÜZ (SEKMELER EN ÜSTE ALINDI)
+# 5. ARAYÜZ (EN ÜSTTE LOGO BAŞLIĞI, ALTINDA SEKMELER)
 # ---------------------------------------------------------
-tab_hero, tab_wask, tab_compare = st.tabs([
-    "• Influencer Hero & Audit", 
-    "• WASK Performans & Benchmark", 
-    "• Çapraz Kıyaslama Paneli"
-])
 
-# LOGO HEADER
+# 1. EN ÜST LOGO
 st.markdown("""
     <div class="reflection-container">
         <h1 class="brand-header-animated">MG BRAND OFFICE</h1>
     </div>
 """, unsafe_allow_html=True)
+
+# 2. HEMEN ALTINDAKİ SEKMELER
+tab_hero, tab_wask, tab_compare = st.tabs([
+    "• Influencer Hero & Audit", 
+    "• WASK Performans & Benchmark", 
+    "• Çapraz Kıyaslama Paneli"
+])
 
 # =========================================================
 # SEKME 1: INFLUENCER HERO & AUDIT
@@ -353,7 +355,7 @@ st.markdown("""
 with tab_hero:
     st.markdown('<div class="effect-card">', unsafe_allow_html=True)
     
-    # KISALTILMIŞ VE TAM ORTALANMIŞ ARAMA & RENK DEĞİŞTİREN BUTON ALANI
+    # KÜÇÜLTÜLMÜŞ (MAX 420px) ARAMA KUTUSU VE DİNAMİK BUTON
     st.markdown('<div class="search-box-wrapper">', unsafe_allow_html=True)
     raw_hero = st.text_input("Instagram Kullanıcı Adı veya Profil Linki", placeholder="Örn: https://www.instagram.com/_helinkandemir/", key="hero_user_input")
     btn_hero = st.button("Derin Analiz Başlat", key="btn_hero")
