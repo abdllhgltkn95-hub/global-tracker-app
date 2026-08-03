@@ -21,38 +21,70 @@ st.set_page_config(
 APIFY_TOKEN = st.secrets.get("APIFY_TOKEN", "apify_api_gvh1Gqo99oDTmXqrb4CwCk24HGWmcN07zSRb")
 
 # ---------------------------------------------------------
-# 2. %100 SİMSİYAH TEMA, RENK GEÇİŞLİ HEADER VE ÖZEL CSS
+# 2. SİMSİYAH TEMA, ÜST SEKMELER VE DİNAMİK BUTON CSS
 # ---------------------------------------------------------
 st.markdown(
     """
 <style>
-    /* Global Arka Plan: Komple Simsiyah */
+    /* Global Simsiyah Arka Plan */
     html, body, [data-testid="stAppViewContainer"], .stApp {
         background-color: #000000 !important;
         color: #ffffff !important;
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
     }
 
-    /* Tüm Başlık, Paragraf ve Etiketler Beyaz */
     h1, h2, h3, h4, h5, h6, p, span, div, label, li, td, th {
         color: #ffffff !important;
     }
 
-    /* Renk Değişim Efektli (Animated Gradient) MG BRAND OFFICE Başlığı */
+    /* Renk Değişim Animasyonu (Header ve Buton İçin) */
     @keyframes colorChange {
         0% { background-position: 0% 50%; }
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
     }
 
+    /* 1. SEKMELERİ EN ÜSTE AL, BÜYÜT, KALIN VE BEYAZ YAZI YAP */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 16px;
+        justify-content: center;
+        background-color: #0d1117 !important;
+        padding: 10px 24px;
+        border-radius: 50px;
+        border: 1px solid #21262d !important;
+        max-width: fit-content;
+        margin: 10px auto 30px auto !important;
+    }
+
+    .stTabs [data-baseweb="tab"] {
+        height: 52px;
+        border-radius: 35px !important;
+        padding: 0px 30px !important;
+        font-weight: 900 !important;
+        font-size: 1.15rem !important;
+        color: #ffffff !important;
+    }
+
+    .stTabs [data-baseweb="tab"] p, .stTabs [data-baseweb="tab"] span {
+        color: #ffffff !important;
+        font-weight: 900 !important;
+    }
+
+    .stTabs [aria-selected="true"] {
+        background: #21262d !important;
+        border: 1px solid #3b82f6 !important;
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.3) !important;
+    }
+
+    /* 2. LOGO BAŞLIĞI */
     .reflection-container {
         text-align: center;
-        padding-top: 30px;
+        padding-top: 10px;
         padding-bottom: 25px;
     }
 
     .brand-header-animated {
-        font-size: 4rem;
+        font-size: 3.8rem;
         font-weight: 900;
         letter-spacing: -1.5px;
         background: linear-gradient(270deg, #2563eb, #a855f7, #ec4899, #3b82f6, #06b6d4);
@@ -62,13 +94,14 @@ st.markdown(
         animation: colorChange 6s ease infinite;
         margin: 0;
         display: inline-block;
-        -webkit-box-reflect: below -20px linear-gradient(transparent 50%, rgba(255, 255, 255, 0.25));
+        -webkit-box-reflect: below -18px linear-gradient(transparent 50%, rgba(255, 255, 255, 0.2));
     }
 
-    /* Arama Çubuğunu Ortala ve Kısalt (%50 Genişlik) */
-    .search-container {
-        max-width: 550px;
-        margin: 0 auto 30px auto;
+    /* 3. ARAMA KUTUSU VE BUTON ALANINI ORTALA VE KISALT */
+    .search-box-wrapper {
+        max-width: 500px;
+        margin: 0 auto;
+        text-align: center;
     }
 
     .stTextInput input {
@@ -76,11 +109,10 @@ st.markdown(
         background-color: #0d1117 !important;
         border: 2px solid #21262d !important;
         border-radius: 14px !important;
-        font-weight: 600 !important;
-        padding: 14px 18px !important;
+        font-weight: 700 !important;
+        padding: 12px 18px !important;
         font-size: 1.05rem !important;
         text-align: center !important;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.8) !important;
     }
     .stTextInput input:focus {
         border-color: #3b82f6 !important;
@@ -92,20 +124,47 @@ st.markdown(
         font-size: 1.1rem !important;
         display: block !important;
         text-align: center !important;
-        margin-bottom: 8px !important;
+        margin-bottom: 10px !important;
     }
 
-    /* Koyu Efektli Kart Yapısı */
+    /* 4. RENK DEĞİŞTİREN DİNAMİK BUTON (EMOJİSİZ & ORTALANMIŞ) */
+    .stButton {
+        display: flex;
+        justify-content: center;
+        margin-top: 15px;
+    }
+
+    .stButton>button {
+        width: 100% !important;
+        max-width: 500px !important;
+        background: linear-gradient(270deg, #2563eb, #a855f7, #ec4899, #3b82f6);
+        background-size: 300% 300% !important;
+        animation: colorChange 5s ease infinite !important;
+        color: #ffffff !important;
+        border: none !important;
+        padding: 14px 28px !important;
+        border-radius: 14px !important;
+        font-weight: 900 !important;
+        font-size: 1.1rem !important;
+        box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4) !important;
+        transition: all 0.3s ease !important;
+    }
+    .stButton>button:hover {
+        transform: scale(1.02);
+        box-shadow: 0 6px 30px rgba(168, 85, 247, 0.6) !important;
+    }
+    .stButton>button p, .stButton>button span {
+        color: #ffffff !important;
+        font-weight: 900 !important;
+    }
+
+    /* Kart Yapıları ve Rapor Kutuları */
     .effect-card {
-        background: #0d1117 !important;
-        border: 1px solid #21262d !important;
-        border-radius: 20px;
-        padding: 28px;
-        margin-bottom: 24px;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.9);
+        background: #000000 !important;
+        border: none !important;
+        padding: 10px 0px;
     }
 
-    /* Metric Kutuları */
     [data-testid="stMetric"] {
         background-color: #0d1117 !important;
         border: 1px solid #21262d !important;
@@ -116,56 +175,6 @@ st.markdown(
     [data-testid="stMetricLabel"] { color: #8b949e !important; font-weight: 800 !important; }
     [data-testid="stMetricValue"] { color: #ffffff !important; font-weight: 900 !important; }
 
-    /* Büyük, Kalın ve Efektli Kayan Şerit Sekme Tasarımı */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 16px;
-        justify-content: center;
-        background-color: #0d1117 !important;
-        padding: 10px 20px;
-        border-radius: 60px;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.9);
-        border: 1px solid #21262d !important;
-        max-width: fit-content;
-        margin: 0 auto 35px auto;
-    }
-
-    .stTabs [data-baseweb="tab"] {
-        height: 54px;
-        border-radius: 40px !important;
-        padding: 0px 32px !important;
-        font-weight: 900 !important;
-        font-size: 1.05rem !important;
-        color: #8b949e !important;
-        transition: all 0.3s ease !important;
-    }
-
-    .stTabs [aria-selected="true"] {
-        background: linear-gradient(135deg, #2563eb, #a855f7) !important;
-        color: #ffffff !important;
-        box-shadow: 0 0 20px rgba(168, 85, 247, 0.4) !important;
-        transform: scale(1.03);
-    }
-    .stTabs [aria-selected="true"] span { color: #ffffff !important; }
-
-    /* Butonlar */
-    .stButton>button {
-        width: 100%;
-        background: linear-gradient(135deg, #2563eb, #a855f7) !important;
-        color: #ffffff !important;
-        border: none !important;
-        padding: 14px 28px !important;
-        border-radius: 14px !important;
-        font-weight: 900 !important;
-        font-size: 1.05rem !important;
-        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3) !important;
-        transition: all 0.3s ease !important;
-    }
-    .stButton>button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 25px rgba(168, 85, 247, 0.5) !important;
-    }
-
-    /* Rapor Kutusu */
     .report-box {
         background-color: #0d1117 !important;
         border: 1px solid #21262d !important;
@@ -251,7 +260,7 @@ def run_all_algorithms(followers: int, posts: list):
     total_eng = avg_likes + avg_comments
     er = (total_eng / max(followers, 1)) * 100.0
 
-    # 1. HypeAuditor AQS Algoritması
+    # HypeAuditor AQS Algoritması
     benchmark_er = 2.0 if followers >= 100000 else 3.5
     er_score = min(40.0, (er / benchmark_er) * 40.0)
     comment_ratio = avg_comments / max(avg_likes, 1.0)
@@ -262,12 +271,10 @@ def run_all_algorithms(followers: int, posts: list):
     stability_score = max(0.0, 20.0 * (1.0 - min(cv, 1.0)))
     aqs_score = int(np.clip(er_score + comment_score + stability_score, 10, 99))
 
-    # 2. Kitle Güvenilirliği Simülasyonu
     credibility_score = int(np.clip(aqs_score * 0.95 + np.random.randint(-2, 3), 15, 98))
     authentic_pct = int(np.clip(credibility_score + 2, 10, 95))
     est_reach = min(int(followers * (er / 100.0) * 3.5) if er > 0 else int(followers * 0.05), followers)
 
-    # 3. Yorum Tespiti
     all_comments = []
     for p in posts:
         c_list = p.get("latestComments", []) or p.get("comments", [])
@@ -325,20 +332,20 @@ def run_all_algorithms(followers: int, posts: list):
     }
 
 # ---------------------------------------------------------
-# 5. ARAYÜZ (RENK GEÇİŞLİ BAŞLIK VE ORTALANMIŞ ŞIK ARAMA)
+# 5. ARAYÜZ (SEKMELER EN ÜSTE ALINDI)
 # ---------------------------------------------------------
-st.markdown("""
-    <div class="reflection-container">
-        <h1 class="brand-header-animated">MG BRAND OFFICE</h1>
-    </div>
-""", unsafe_allow_html=True)
-
-# BÜYÜK, KALIN VE EFEKTLİ KAYAN SEKMELER
 tab_hero, tab_wask, tab_compare = st.tabs([
     "• Influencer Hero & Audit", 
     "• WASK Performans & Benchmark", 
     "• Çapraz Kıyaslama Paneli"
 ])
+
+# LOGO HEADER
+st.markdown("""
+    <div class="reflection-container">
+        <h1 class="brand-header-animated">MG BRAND OFFICE</h1>
+    </div>
+""", unsafe_allow_html=True)
 
 # =========================================================
 # SEKME 1: INFLUENCER HERO & AUDIT
@@ -346,11 +353,13 @@ tab_hero, tab_wask, tab_compare = st.tabs([
 with tab_hero:
     st.markdown('<div class="effect-card">', unsafe_allow_html=True)
     
-    # Ortalanmış ve Kısaltılmış Arama Kutusu Yapısı
-    st.markdown('<div class="search-container">', unsafe_allow_html=True)
+    # KISALTILMIŞ VE TAM ORTALANMIŞ ARAMA & RENK DEĞİŞTİREN BUTON ALANI
+    st.markdown('<div class="search-box-wrapper">', unsafe_allow_html=True)
     raw_hero = st.text_input("Instagram Kullanıcı Adı veya Profil Linki", placeholder="Örn: https://www.instagram.com/_helinkandemir/", key="hero_user_input")
-    btn_hero = st.button("Derin Analiz Başlat ⚡", key="btn_hero")
+    btn_hero = st.button("Derin Analiz Başlat", key="btn_hero")
     st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
 
     if btn_hero and raw_hero:
         hero_user = clean_username(raw_hero)
@@ -450,9 +459,9 @@ with tab_wask:
     st.subheader("📊 WASK Performans & Benchmark Paneli")
     st.caption("Instagram hesabının etkileşim oranını ve içerik performansını sektör standartlarıyla kıyaslayın.")
 
-    st.markdown('<div class="search-container">', unsafe_allow_html=True)
+    st.markdown('<div class="search-box-wrapper">', unsafe_allow_html=True)
     wask_raw = st.text_input("Kullanıcı Adı veya Profil Linki Girin", placeholder="Örn: trendyol", key="wask_inp")
-    btn_wask = st.button("Performans Analizi Yap 🚀", key="btn_wask")
+    btn_wask = st.button("Performans Analizi Yap", key="btn_wask")
     st.markdown('</div>', unsafe_allow_html=True)
 
     if btn_wask and wask_raw:
@@ -494,11 +503,11 @@ with tab_compare:
     st.markdown('<div class="effect-card">', unsafe_allow_html=True)
     st.subheader("⚖️ Çapraz Influencer Karşılaştırma Paneli")
     
-    st.markdown('<div style="max-width: 700px; margin: 0 auto;">', unsafe_allow_html=True)
+    st.markdown('<div class="search-box-wrapper">', unsafe_allow_html=True)
     c_u1, c_u2 = st.columns(2)
     with c_u1: u1_in = st.text_input("1. Profil Kullanıcı Adı", key="cmp1")
     with c_u2: u2_in = st.text_input("2. Profil Kullanıcı Adı", key="cmp2")
-    btn_cmp = st.button("Profilleri Kıyasla ⚖️", key="btn_cmp")
+    btn_cmp = st.button("Profilleri Kıyasla", key="btn_cmp")
     st.markdown('</div>', unsafe_allow_html=True)
 
     if btn_cmp and u1_in and u2_in:
