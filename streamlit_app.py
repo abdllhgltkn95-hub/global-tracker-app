@@ -20,16 +20,17 @@ st.set_page_config(
 APIFY_TOKEN = st.secrets.get("APIFY_TOKEN", "apify_api_gvh1Gqo99oDTmXqrb4CwCk24HGWmcN07zSRb")
 
 # ---------------------------------------------------------
-# 2. CSS STİLLERİ: SİMSİYAH TEMA VE ORANTILI FORMLAR
+# 2. CSS STİLLERİ
 # ---------------------------------------------------------
 st.markdown(
     """
 <style>
-    /* Global Simsiyah Arka Plan */
+    /* Global Simsiyah Arka Plan ve Sayfa Alt Boşluğu */
     html, body, [data-testid="stAppViewContainer"], .stApp {
         background-color: #000000 !important;
         color: #ffffff !important;
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+        padding-bottom: 60px !important; /* Sabit footer için boşluk bırakıldı */
     }
 
     h1, h2, h3, h4, h5, h6, p, span, div, label, li, td, th {
@@ -46,8 +47,8 @@ st.markdown(
     /* 1. EN ÜST LOGO BAŞLIĞI */
     .reflection-container {
         text-align: center;
-        padding-top: 15px;
-        padding-bottom: 25px;
+        padding-top: 5px; 
+        padding-bottom: 0px; 
     }
 
     .brand-header-animated {
@@ -64,12 +65,12 @@ st.markdown(
         -webkit-box-reflect: below -18px linear-gradient(transparent 50%, rgba(255, 255, 255, 0.2));
     }
 
-    /* 2. SEKMELER (TABS) - ALT ÇİZGİSİZ, ORTALANMIŞ */
+    /* 2. SEKMELER (TABS) - 6 SATIR AŞAĞI ALINDI VE ORTALANDI */
     div[data-baseweb="tab-list"] {
         display: flex !important;
         justify-content: center !important;
         border-bottom: none !important;
-        margin: 0 auto 30px auto !important;
+        margin: 120px auto 30px auto !important; /* Başlıktan 120px (yaklaşık 6 satır) aşağıda */
         gap: 16px !important;
         width: 100% !important;
     }
@@ -98,9 +99,9 @@ st.markdown(
         color: #ffffff !important;
     }
 
-    /* 3. INPUT (ARAMA KUTUSU) TASARIMI: DAHA UZUN VE GENİŞ */
+    /* 3. INPUT (ARAMA KUTUSU) TASARIMI: ORANTILI BÜYÜTÜLDÜ */
     div[data-testid="stTextInput"] {
-        max-width: 450px !important; /* Giriş kutusu daha uzun */
+        max-width: 450px !important;
         width: 100% !important;
         margin-left: auto !important;
         margin-right: auto !important;
@@ -134,7 +135,7 @@ st.markdown(
     div[data-testid="stButton"] {
         display: flex !important;
         justify-content: center !important;
-        max-width: 250px !important; /* Buton daha kısa ve kompakt */
+        max-width: 250px !important;
         width: 100% !important;
         margin-left: auto !important;
         margin-right: auto !important;
@@ -148,7 +149,7 @@ st.markdown(
         color: #ffffff !important;
         border: none !important;
         padding: 10px 20px !important;
-        border-radius: 20px !important; /* Daha yuvarlak (hap stili) buton */
+        border-radius: 20px !important;
         font-weight: 900 !important;
         font-size: 0.95rem !important;
         box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4) !important;
@@ -190,13 +191,19 @@ st.markdown(
         margin-top: 24px;
     }
 
+    /* 5. EKRANIN EN ALTINA SABİTLENMİŞ YAZI (FOOTER) */
     .footer-dark {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
         text-align: center;
         color: #484f58 !important;
+        background-color: #000000 !important;
         font-size: 0.85rem;
-        padding: 30px 0 10px 0;
+        padding: 15px 0 !important;
         border-top: 1px solid #161b22;
-        margin-top: 50px;
+        z-index: 9999 !important;
     }
 </style>
 """,
@@ -346,7 +353,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# SEKMELER 
+# SEKMELER
 tab_hero, tab_wask, tab_compare = st.tabs([
     "• Influencer Hero & Audit", 
     "• WASK Performans & Benchmark", 
