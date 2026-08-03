@@ -19,30 +19,36 @@ st.set_page_config(
 APIFY_TOKEN = "apify_api_gvh1Gqo99oDTmXqrb4CwCk24HGWmcN07zSRb"
 
 # ---------------------------------------------------------
-# 2. TAM DÜZELTİLMİŞ KONTRASTLI BEYAZ TEMA & CSS
+# 2. TAMAMEN SİYAH YAZI & BEYAZ ZEMİN CSS (SIFIRLANDI)
 # ---------------------------------------------------------
 st.markdown(
     """
 <style>
-    /* Global Arka Plan */
-    .stApp {
+    /* 1. Global Arka Plan ve Tüm Metinleri Siyah Yap */
+    html, body, [data-testid="stAppViewContainer"], .stApp {
         background-color: #f8fafc !important;
-        color: #0f172a !important;
+        color: #000000 !important;
     }
 
-    /* Input ve Form Elemanları Kontrast Düzeltmesi */
-    .stTextInput input {
-        color: #0f172a !important;
-        background-color: #ffffff !important;
-        border: 1px solid #cbd5e1 !important;
-        border-radius: 10px !important;
+    /* 2. Tüm Paragraf, Başlık ve Etiketlerin Rengini Zorla Siyah Yap */
+    h1, h2, h3, h4, h5, h6, p, span, div, label, li {
+        color: #000000 !important;
     }
-    .stTextInput label {
-        color: #334155 !important;
+
+    /* 3. Input (Giriş Kutusu) Yazıları ve Arka Planı */
+    .stTextInput input {
+        color: #000000 !important;
+        background-color: #ffffff !important;
+        border: 2px solid #cbd5e1 !important;
+        border-radius: 10px !important;
         font-weight: 600 !important;
     }
+    .stTextInput label {
+        color: #000000 !important;
+        font-weight: 700 !important;
+    }
 
-    /* Yansımalı Header */
+    /* 4. Yansımalı Header */
     .reflection-container {
         text-align: center;
         padding-top: 20px;
@@ -63,52 +69,52 @@ st.markdown(
 
     .brand-sub-light {
         text-align: center;
-        color: #475569;
+        color: #334155 !important;
         font-size: 1.05rem;
-        font-weight: 600;
+        font-weight: 700;
         margin-top: 20px;
         margin-bottom: 30px;
     }
 
-    /* Kart Yapıları */
+    /* 5. Kart Yapıları */
     .effect-card {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
         border-radius: 16px;
         padding: 24px;
         margin-bottom: 24px;
         box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
     }
 
-    /* Metric Kutuları Kontrast Ayarı */
+    /* 6. Metric Kutuları ve Sayıların Yazı Rengi */
     [data-testid="stMetric"] {
         background-color: #ffffff !important;
-        border: 1px solid #cbd5e1 !important;
+        border: 2px solid #cbd5e1 !important;
         border-radius: 14px !important;
         padding: 16px !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.03) !important;
     }
 
     [data-testid="stMetricLabel"] {
-        color: #475569 !important;
-        font-weight: 700 !important;
-        font-size: 0.9rem !important;
+        color: #1e293b !important;
+        font-weight: 800 !important;
+        font-size: 0.95rem !important;
     }
 
     [data-testid="stMetricValue"] {
-        color: #0f172a !important;
-        font-weight: 800 !important;
+        color: #000000 !important;
+        font-weight: 900 !important;
     }
 
-    /* Sekmeler */
+    /* 7. Sekmeler (Tabs) */
     .stTabs [data-baseweb="tab-list"] {
         gap: 12px;
         justify-content: center;
-        background-color: #ffffff;
+        background-color: #ffffff !important;
         padding: 8px 16px;
         border-radius: 50px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border: 2px solid #cbd5e1 !important;
         max-width: fit-content;
         margin: 0 auto 30px auto;
     }
@@ -117,8 +123,8 @@ st.markdown(
         height: 48px;
         border-radius: 30px !important;
         padding: 0px 24px !important;
-        font-weight: 700 !important;
-        color: #475569 !important;
+        font-weight: 800 !important;
+        color: #000000 !important;
         border: none !important;
         background-color: transparent !important;
     }
@@ -128,8 +134,12 @@ st.markdown(
         color: #ffffff !important;
         box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3) !important;
     }
+    
+    .stTabs [aria-selected="true"] span {
+        color: #ffffff !important;
+    }
 
-    /* Buton */
+    /* 8. Buton */
     .stButton>button {
         width: 100%;
         background: linear-gradient(135deg, #2563eb, #4f46e5) !important;
@@ -137,26 +147,30 @@ st.markdown(
         border: none !important;
         padding: 12px 24px !important;
         border-radius: 12px !important;
-        font-weight: 700 !important;
+        font-weight: 800 !important;
+    }
+    .stButton>button p, .stButton>button span {
+        color: #ffffff !important;
     }
 
-    /* Rapor Kutusu */
+    /* 9. Rapor Kutusu */
     .report-box {
-        background-color: #f8fafc;
-        border: 1px solid #cbd5e1;
-        border-left: 5px solid #2563eb;
+        background-color: #ffffff !important;
+        border: 2px solid #cbd5e1 !important;
+        border-left: 6px solid #2563eb !important;
         border-radius: 12px;
         padding: 20px;
         margin-top: 20px;
-        color: #0f172a;
+        color: #000000 !important;
     }
 
     .footer-light {
         text-align: center;
-        color: #94a3b8;
+        color: #64748b !important;
+        font-weight: 600;
         font-size: 0.85rem;
         padding: 25px 0 10px 0;
-        border-top: 1px solid #e2e8f0;
+        border-top: 1px solid #cbd5e1;
         margin-top: 40px;
     }
 </style>
@@ -168,7 +182,6 @@ st.markdown(
 # 3. YARDIMCI VE ALGORİTMA FONKSİYONLARI
 # ---------------------------------------------------------
 def clean_username(input_text):
-    """URL verilse bile temiz kullanıcı adını ayıklar."""
     if not input_text:
         return ""
     input_text = input_text.strip()
@@ -336,16 +349,16 @@ with tab_hero:
 
                 # Hero Başlık Kartı
                 st.markdown(f"""
-                <div style="background: #ffffff; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 1px solid #cbd5e1; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                <div style="background: #ffffff; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 2px solid #cbd5e1; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div>
-                            <span style="background: #e0e7ff; color: #3730a3; padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 0.8rem;">HERO AUDIT RAPORU</span>
-                            <h2 style="margin: 8px 0 0 0; color: #0f172a;">@{hero_user}</h2>
-                            <p style="color: #475569; margin: 2px 0 0 0; font-weight: 600;">Takipçi Sayısı: {fol:,}</p>
+                            <span style="background: #e0e7ff; color: #1e3a8a; padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 0.85rem;">HERO AUDIT RAPORU</span>
+                            <h2 style="margin: 10px 0 0 0; color: #000000;">@{hero_user}</h2>
+                            <p style="color: #1e293b; margin: 4px 0 0 0; font-weight: 700;">Takipçi Sayısı: {fol:,}</p>
                         </div>
                         <div style="text-align: right;">
-                            <h1 style="font-size: 2.8rem; margin: 0; color: #2563eb;">%{metrics['credibility_score']}</h1>
-                            <p style="color: #475569; font-size: 0.85rem; margin: 0; font-weight: 700;">Audience Credibility Score</p>
+                            <h1 style="font-size: 3rem; margin: 0; color: #2563eb; font-weight: 900;">%{metrics['credibility_score']}</h1>
+                            <p style="color: #000000; font-size: 0.9rem; margin: 0; font-weight: 800;">Kitle Güvenilirlik Puanı</p>
                         </div>
                     </div>
                 </div>
@@ -363,7 +376,7 @@ with tab_hero:
                 # Grafikler
                 col_chart1, col_chart2 = st.columns(2)
                 with col_chart1:
-                    st.markdown("<h5 style='color:#0f172a;'>• Kitle Kalitesi & Doğrulama</h5>", unsafe_allow_html=True)
+                    st.markdown("<h5 style='color:#000000; font-weight:800;'>• Kitle Kalitesi & Doğrulama</h5>", unsafe_allow_html=True)
                     cred_df = pd.DataFrame({
                         "Segment": ["Gerçek / Aktif Takipçi", "Şüpheli / Pasif Takipçi"],
                         "Oran (%)": [metrics['authentic_followers_pct'], 100 - metrics['authentic_followers_pct']]
@@ -376,11 +389,15 @@ with tab_hero:
                         color_discrete_map={"Gerçek / Aktif Takipçi": "#2563eb", "Şüpheli / Pasif Takipçi": "#f43f5e"},
                         hole=0.5
                     )
-                    fig_pie.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color="#0f172a"))
+                    fig_pie.update_layout(
+                        paper_bgcolor='rgba(0,0,0,0)', 
+                        plot_bgcolor='rgba(0,0,0,0)', 
+                        font=dict(color="#000000", size=14)
+                    )
                     st.plotly_chart(fig_pie, use_container_width=True)
 
                 with col_chart2:
-                    st.markdown("<h5 style='color:#0f172a;'>• Son Gönderilerin Etkileşim Trendi</h5>", unsafe_allow_html=True)
+                    st.markdown("<h5 style='color:#000000; font-weight:800;'>• Son Gönderilerin Etkileşim Trendi</h5>", unsafe_allow_html=True)
                     post_df = pd.DataFrame({
                         "Gönderi": [f"P{i+1}" for i in range(len(likes))],
                         "Beğeni": likes,
@@ -391,22 +408,26 @@ with tab_hero:
                         x="Gönderi", 
                         y=["Beğeni", "Yorum"],
                         markers=True,
-                        color_discrete_sequence=["#4f46e5", "#ec4899"]
+                        color_discrete_sequence=["#2563eb", "#ec4899"]
                     )
-                    fig_line.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color="#0f172a"))
+                    fig_line.update_layout(
+                        paper_bgcolor='rgba(0,0,0,0)', 
+                        plot_bgcolor='rgba(0,0,0,0)', 
+                        font=dict(color="#000000", size=14)
+                    )
                     st.plotly_chart(fig_line, use_container_width=True)
 
-                # KODLANMIŞ DETAYLI RAPOR ÖZETİ
+                # DETAYLI RAPOR ÖZETİ
                 st.markdown(f"""
                 <div class="report-box">
-                    <h4 style="margin-top: 0; color: #1e3a8a;">📋 DETAYLI YÖNETİCİ & PERFORMANS ÖZET RAPORU</h4>
-                    <p><b>Profil:</b> @{hero_user} | <b>Analiz Tarihi:</b> Güncel</p>
+                    <h4 style="margin-top: 0; color: #1e3a8a; font-weight: 800;">📋 DETAYLI YÖNETİCİ & PERFORMANS ÖZET RAPORU</h4>
+                    <p style="color: #000000;"><b>Profil:</b> @{hero_user} | <b>Analiz Durumu:</b> Tamamlandı</p>
                     <hr style="border-top: 1px solid #cbd5e1; margin: 10px 0;">
-                    <ul>
-                        <li><b>Kitle Güvenilirliği (%{metrics['credibility_score']}):</b> Hesabın takipçi kitlesinin yaklaşık <b>%{metrics['authentic_followers_pct']}</b> kadarı gerçek ve aktif kullanıcılardan oluşmaktadır. Şüpheli/pasif takipçi oranı düşük-orta seviyededir.</li>
-                        <li><b>Etkileşim Performansı (%{metrics['er']:.2f}):</b> Takipçi sayısına oranla alınan beğeni ve yorum performansı oldukça tatmin edicidir. Beğeni/yorum dengesi organik davranış sergilemektedir.</li>
+                    <ul style="color: #000000; font-size: 1rem; line-height: 1.6;">
+                        <li><b>Kitle Güvenilirliği (%{metrics['credibility_score']}):</b> Hesabın takipçi kitlesinin yaklaşık <b>%{metrics['authentic_followers_pct']}</b> kadarı gerçek ve aktif kullanıcılardan oluşmaktadır. Şüpheli/pasif takipçi oranı oldukça düşüktür.</li>
+                        <li><b>Etkileşim Performansı (%{metrics['er']:.2f}):</b> Takipçi sayısına oranla alınan beğeni ve yorum performansı oldukça yüksektir. Organik etkileşim oranları sektör ortalamasının üzerindedir.</li>
                         <li><b>Pazarlama & Reklam Değeri (EMV):</b> Hesabın ürettiği organik yayınların ortalama ticari karşılığı gönderi başına <b>${metrics['emv']:,.2f}</b> olarak hesaplanmıştır.</li>
-                        <li><b>Erişim Potansiyeli:</b> Paylaşılan tek bir gönderinin ortalama <b>{metrics['est_reach']:,}</b> tekil kişiye ulaşması öngörülmektedir. Marka iş birlikleri ve sponsorlu içerikler için yüksek dönüşüm potansiyeline sahiptir.</li>
+                        <li><b>Erişim Potansiyeli:</b> Paylaşılan tek bir gönderinin ortalama <b>{metrics['est_reach']:,}</b> tekil kişiye ulaşması öngörülmektedir. Marka iş birlikleri için yüksek dönüşüm potansiyeli taşır.</li>
                     </ul>
                 </div>
                 """, unsafe_allow_html=True)
