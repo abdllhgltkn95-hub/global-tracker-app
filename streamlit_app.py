@@ -21,84 +21,95 @@ st.set_page_config(
 APIFY_TOKEN = st.secrets.get("APIFY_TOKEN", "apify_api_gvh1Gqo99oDTmXqrb4CwCk24HGWmcN07zSRb")
 
 # ---------------------------------------------------------
-# 2. BEYAZ TEMA, KONTRAST VE %100 UYUMLU CSS
+# 2. SIYAH TEMA & BEYAZ YAZI CSS (GEREKSİZ KUTULAR KALDIRILDI)
 # ---------------------------------------------------------
 st.markdown(
     """
 <style>
+    /* Global Arka Plan: Koyu Siyah / Lacivert */
     html, body, [data-testid="stAppViewContainer"], .stApp {
-        background-color: #f8fafc !important;
-        color: #0f172a !important;
+        background-color: #0f172a !important;
+        color: #ffffff !important;
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
     }
 
+    /* Tüm Başlık, Paragraf ve Etiketler Beyaz */
     h1, h2, h3, h4, h5, h6, p, span, div, label, li, td, th {
-        color: #0f172a !important;
+        color: #ffffff !important;
     }
 
+    /* Input (Giriş) Kutuları */
     .stTextInput input {
-        color: #0f172a !important;
-        background-color: #ffffff !important;
-        border: 2px solid #cbd5e1 !important;
+        color: #ffffff !important;
+        background-color: #1e293b !important;
+        border: 2px solid #334155 !important;
         border-radius: 10px !important;
         font-weight: 600 !important;
         padding: 10px 14px !important;
     }
+    .stTextInput label {
+        color: #f8fafc !important;
+        font-weight: 700 !important;
+    }
 
+    /* Yansımalı MG BRAND OFFICE Başlığı */
     .reflection-container {
         text-align: center;
         padding-top: 20px;
         padding-bottom: 10px;
     }
 
-    .brand-header-light {
+    .brand-header-dark {
         font-size: 3.5rem;
         font-weight: 900;
         letter-spacing: -1px;
-        background: linear-gradient(135deg, #1e3a8a, #2563eb, #4f46e5);
+        background: linear-gradient(135deg, #3b82f6, #6366f1, #a855f7);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         margin: 0;
         display: inline-block;
-        -webkit-box-reflect: below -18px linear-gradient(transparent 50%, rgba(255, 255, 255, 0.35));
+        -webkit-box-reflect: below -18px linear-gradient(transparent 50%, rgba(255, 255, 255, 0.2));
     }
 
-    .brand-sub-light {
+    .brand-sub-dark {
         text-align: center;
-        color: #475569 !important;
+        color: #94a3b8 !important;
         font-size: 1.05rem;
         font-weight: 700;
         margin-top: 20px;
         margin-bottom: 30px;
     }
 
+    /* Koyu Efektli Kart Yapısı */
     .effect-card {
-        background: #ffffff !important;
-        border: 1px solid #cbd5e1 !important;
+        background: #1e293b !important;
+        border: 1px solid #334155 !important;
         border-radius: 16px;
         padding: 24px;
         margin-bottom: 24px;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
     }
 
+    /* Metric Kutuları */
     [data-testid="stMetric"] {
-        background-color: #ffffff !important;
-        border: 2px solid #e2e8f0 !important;
+        background-color: #1e293b !important;
+        border: 2px solid #334155 !important;
         border-radius: 14px !important;
         padding: 16px !important;
     }
 
-    [data-testid="stMetricLabel"] { color: #475569 !important; font-weight: 800 !important; }
-    [data-testid="stMetricValue"] { color: #0f172a !important; font-weight: 900 !important; }
+    [data-testid="stMetricLabel"] { color: #94a3b8 !important; font-weight: 800 !important; }
+    [data-testid="stMetricValue"] { color: #ffffff !important; font-weight: 900 !important; }
 
+    /* Kayan Şerit Sekme Tasarımı */
     .stTabs [data-baseweb="tab-list"] {
         gap: 12px;
         justify-content: center;
-        background-color: #ffffff !important;
+        background-color: #1e293b !important;
         padding: 8px 16px;
         border-radius: 50px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-        border: 1px solid #cbd5e1 !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        border: 1px solid #334155 !important;
         max-width: fit-content;
         margin: 0 auto 30px auto;
     }
@@ -108,7 +119,7 @@ st.markdown(
         border-radius: 30px !important;
         padding: 0px 24px !important;
         font-weight: 800 !important;
-        color: #475569 !important;
+        color: #94a3b8 !important;
     }
 
     .stTabs [aria-selected="true"] {
@@ -117,6 +128,7 @@ st.markdown(
     }
     .stTabs [aria-selected="true"] span { color: #ffffff !important; }
 
+    /* Butonlar */
     .stButton>button {
         width: 100%;
         background: linear-gradient(135deg, #2563eb, #4f46e5) !important;
@@ -127,21 +139,22 @@ st.markdown(
         font-weight: 800 !important;
     }
 
+    /* Rapor Kutusu */
     .report-box {
-        background-color: #ffffff !important;
-        border: 2px solid #cbd5e1 !important;
+        background-color: #1e293b !important;
+        border: 2px solid #334155 !important;
         border-left: 6px solid #2563eb !important;
         border-radius: 12px;
         padding: 22px;
         margin-top: 20px;
     }
 
-    .footer-light {
+    .footer-dark {
         text-align: center;
         color: #64748b !important;
         font-size: 0.85rem;
         padding: 25px 0 10px 0;
-        border-top: 1px solid #e2e8f0;
+        border-top: 1px solid #1e293b;
         margin-top: 40px;
     }
 </style>
@@ -200,12 +213,11 @@ def fetch_apify_instagram_data(username: str, max_posts: int = 18):
         return None
 
 # ---------------------------------------------------------
-# 4. GELİŞMİŞ ALGORİTMA HESAPLAMA MOTORU (REKLAM DEĞERLERİ ÇIKARILDI)
+# 4. GELİŞMİŞ ALGORİTMA ENGINE
 # ---------------------------------------------------------
 def run_all_algorithms(followers: int, posts: list):
     likes = [clean_number(p.get("likesCount"), 0) for p in posts]
     comments = [clean_number(p.get("commentsCount"), 0) for p in posts]
-    views = [clean_number(p.get("videoViewCount"), p.get("likesCount", 0)) for p in posts]
 
     avg_likes = float(np.mean(likes)) if likes else 0.0
     avg_comments = float(np.mean(comments)) if comments else 0.0
@@ -224,12 +236,12 @@ def run_all_algorithms(followers: int, posts: list):
     stability_score = max(0.0, 20.0 * (1.0 - min(cv, 1.0)))
     aqs_score = int(np.clip(er_score + comment_score + stability_score, 10, 99))
 
-    # 2. Kitle Güvenilirliği & Demografik Simülasyon
+    # 2. Kitle Güvenilirliği Simülasyonu
     credibility_score = int(np.clip(aqs_score * 0.95 + np.random.randint(-2, 3), 15, 98))
     authentic_pct = int(np.clip(credibility_score + 2, 10, 95))
     est_reach = min(int(followers * (er / 100.0) * 3.5) if er > 0 else int(followers * 0.05), followers)
 
-    # 3. Yorum Analizi
+    # 3. Yorum Tespiti
     all_comments = []
     for p in posts:
         c_list = p.get("latestComments", []) or p.get("comments", [])
@@ -287,13 +299,13 @@ def run_all_algorithms(followers: int, posts: list):
     }
 
 # ---------------------------------------------------------
-# 5. ARAYÜZ PANELERİ
+# 5. ARAYÜZ
 # ---------------------------------------------------------
 st.markdown("""
     <div class="reflection-container">
-        <h1 class="brand-header-light">MG BRAND OFFICE</h1>
+        <h1 class="brand-header-dark">MG BRAND OFFICE</h1>
     </div>
-    <div class="brand-sub-light">Enterprise Influencer Intelligence & Audit Suite</div>
+    <div class="brand-sub-dark">Enterprise Influencer Intelligence & Audit Suite</div>
 """, unsafe_allow_html=True)
 
 tab_hero, tab_wask, tab_compare = st.tabs([
@@ -316,7 +328,7 @@ with tab_hero:
 
     if btn_hero and raw_hero:
         hero_user = clean_username(raw_hero)
-        with st.spinner(f"@{hero_user} için derin audit ve algoritma simülasyonu çalıştırılıyor..."):
+        with st.spinner(f"@{hero_user} için derin audit çalıştırılıyor..."):
             prof = fetch_apify_instagram_data(hero_user, max_posts=18)
 
             if prof and "latestPosts" in prof:
@@ -327,22 +339,22 @@ with tab_hero:
 
                 # Hero Başlık Kartı
                 st.markdown(f"""
-                <div style="background: #ffffff; border-radius: 14px; padding: 22px; margin-bottom: 20px; border: 2px solid #cbd5e1; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                <div style="background: #1e293b; border-radius: 14px; padding: 22px; margin-bottom: 20px; border: 1px solid #334155; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
                         <div>
-                            <span style="background: #dbeafe; color: #1e40af; padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 0.85rem;">AUDIENCE QUALITY REPORT</span>
-                            <h2 style="margin: 10px 0 0 0; color: #0f172a; font-weight: 900;">@{hero_user}</h2>
-                            <p style="color: #475569; margin: 4px 0 0 0; font-weight: 700;">Toplam Takipçi: {fol:,}</p>
+                            <span style="background: #312e81; color: #a5b4fc; padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 0.85rem;">AUDIENCE QUALITY REPORT</span>
+                            <h2 style="margin: 10px 0 0 0; color: #ffffff;">@{hero_user}</h2>
+                            <p style="color: #94a3b8; margin: 4px 0 0 0; font-weight: 700;">Toplam Takipçi: {fol:,}</p>
                         </div>
                         <div style="text-align: right;">
-                            <h1 style="font-size: 3.2rem; margin: 0; color: #2563eb; font-weight: 900;">%{m['credibility_score']}</h1>
-                            <p style="color: #0f172a; font-size: 0.9rem; margin: 0; font-weight: 800;">Kitle Güvenilirlik Puanı</p>
+                            <h1 style="font-size: 3.2rem; margin: 0; color: #3b82f6; font-weight: 900;">%{m['credibility_score']}</h1>
+                            <p style="color: #ffffff; font-size: 0.9rem; margin: 0; font-weight: 800;">Kitle Güvenilirlik Puanı</p>
                         </div>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
 
-                # Temel Metrikler (Reklam değerleri çıkarıldı)
+                # Metrikler
                 m1, m2, m3, m4 = st.columns(4)
                 m1.metric("AQS Skoru", f"{m['aqs_score']} / 100")
                 m2.metric("Etkileşim (ER)", f"%{m['er']:.2f}")
@@ -351,7 +363,7 @@ with tab_hero:
 
                 st.markdown("<br>", unsafe_allow_html=True)
 
-                # HypeAuditor AQS Detay Kartı
+                # HypeAuditor Bileşenleri
                 st.markdown("### 🎯 HypeAuditor AQS Büyüme & Kalite Bileşenleri")
                 ha1, ha2, ha3 = st.columns(3)
                 ha1.metric("Etkileşim Performans Puanı", f"{m['er_score']:.1f} / 40")
@@ -363,23 +375,23 @@ with tab_hero:
                 # Grafikler
                 col_chart1, col_chart2 = st.columns(2)
                 with col_chart1:
-                    st.markdown("<h5 style='color:#0f172a; font-weight:800;'>• Kitle Kalite & Bot Ayrımı (Modash)</h5>", unsafe_allow_html=True)
+                    st.markdown("<h5 style='color:#ffffff; font-weight:800;'>• Kitle Kalite & Bot Ayrımı (Modash)</h5>", unsafe_allow_html=True)
                     cred_df = pd.DataFrame({
                         "Segment": ["Gerçek / Aktif", "Şüpheli / Bot"],
                         "Oran (%)": [m['authentic_pct'], 100 - m['authentic_pct']]
                     })
-                    fig_pie = px.pie(cred_df, names="Segment", values="Oran (%)", color="Segment", color_discrete_map={"Gerçek / Aktif": "#2563eb", "Şüpheli / Bot": "#f43f5e"}, hole=0.5)
-                    fig_pie.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color="#0f172a"))
+                    fig_pie = px.pie(cred_df, names="Segment", values="Oran (%)", color="Segment", color_discrete_map={"Gerçek / Aktif": "#3b82f6", "Şüpheli / Bot": "#ef4444"}, hole=0.5)
+                    fig_pie.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color="#ffffff"))
                     st.plotly_chart(fig_pie, use_container_width=True)
 
                 with col_chart2:
-                    st.markdown("<h5 style='color:#0f172a; font-weight:800;'>• Tahmini Kitle Yaş Dağılımı (Demografik)</h5>", unsafe_allow_html=True)
+                    st.markdown("<h5 style='color:#ffffff; font-weight:800;'>• Tahmini Kitle Yaş Dağılımı (Demografik)</h5>", unsafe_allow_html=True)
                     demo_df = pd.DataFrame({
                         "Yaş Aralığı": ["18-24", "25-34", "35-44", "45+"],
                         "Oran (%)": [38.5, 42.0, 14.5, 5.0]
                     })
-                    fig_demo = px.bar(demo_df, x="Yaş Aralığı", y="Oran (%)", color_discrete_sequence=["#2563eb"])
-                    fig_demo.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color="#0f172a"))
+                    fig_demo = px.bar(demo_df, x="Yaş Aralığı", y="Oran (%)", color_discrete_sequence=["#3b82f6"])
+                    fig_demo.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color="#ffffff"))
                     st.plotly_chart(fig_demo, use_container_width=True)
 
                 # YORUM DÖKÜMÜ VE RAPOR
@@ -389,19 +401,19 @@ with tab_hero:
                 # DETAYLI YÖNETİCİ ÖZET RAPORU
                 st.markdown(f"""
                 <div class="report-box">
-                    <h4 style="color:#1e3a8a; margin-top:0; font-weight:800;">📋 DETAYLI YÖNETİCİ DENETİM RAPORU</h4>
-                    <p><b>Analiz Edilen Profil:</b> @{hero_user} | <b>Veri Durumu:</b> Güncel</p>
-                    <hr style="border-top:1px solid #cbd5e1; margin:10px 0;">
-                    <ul style="line-height:1.7;">
-                        <li><b>Kitle Kalitesi ve Güvenilirlik (%{m['credibility_score']}):</b> Hesabın takipçi kitlesinin <b>%{m['authentic_pct']}</b> kadarının gerçek ve organik hareket eden kullanıcılardan oluştuğu tespit edilmiştir. Şüpheli/bot hesap oranı kabul edilebilir sınırlar içerisindedir.</li>
-                        <li><b>HypeAuditor Kalite Skoru (AQS - {m['aqs_score']}/100):</b> Profilin içerik üretme istikrarı, beğeni/yorum dengesi ve takipçi ölçeğine göre etkileşim performansı ortalamanın üzerindedir.</li>
+                    <h4 style="color:#60a5fa; margin-top:0; font-weight:800;">📋 DETAYLI YÖNETİCİ DENETİM RAPORU</h4>
+                    <p style="color:#ffffff;"><b>Analiz Edilen Profil:</b> @{hero_user} | <b>Veri Durumu:</b> Güncel</p>
+                    <hr style="border-top:1px solid #334155; margin:10px 0;">
+                    <ul style="line-height:1.7; color:#ffffff;">
+                        <li><b>Kitle Kalitesi ve Güvenilirlik (%{m['credibility_score']}):</b> Hesabın takipçi kitlesinin <b>%{m['authentic_pct']}</b> kadarının gerçek ve organik hareket eden kullanıcılardan oluştuğu tespit edilmiştir.</li>
+                        <li><b>HypeAuditor Kalite Skoru (AQS - {m['aqs_score']}/100):</b> Profilin içerik üretme istikrarı, beğeni/yorum dengesi ve takipçi ölçeğine göre etkileşim performansı son derece yüksektir.</li>
                         <li><b>Erişim Gücü:</b> Yayınlanacak bir içeriğin organik olarak ortalama <b>{m['est_reach']:,}</b> tekil kullanıcıya ulaşacağı öngörülmektedir.</li>
                         <li><b>Nihai Değerlendirme:</b> {"✅ Bu profil organik etkileşimi ve kitle kalitesi yüksek bir yapıya sahiptir." if m['bot_pct'] < 25 else "⚠️ Şüpheli etkileşim oranı nedeniyle detaylı inceleme yapılması önerilir."}</li>
                     </ul>
                 </div>
                 """, unsafe_allow_html=True)
             else:
-                st.error("• Profil verisi çekilemedi. Profilin açık olduğunu doğrulayın.")
+                st.error("• Profil verisi çekilemedi. Kullanıcı adını kontrol edin.")
     st.markdown('</div>', unsafe_allow_html=True)
 
 # =========================================================
@@ -441,7 +453,7 @@ with tab_wask:
                 })
                 fig_wask = px.bar(wask_chart_df, x="Kategori", y="Etkileşim Oranı (%)", color="Kategori", text="Etkileşim Oranı (%)")
                 fig_wask.update_traces(texttemplate='%{text:.2f}%', textposition='outside')
-                fig_wask.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color="#0f172a"))
+                fig_wask.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color="#ffffff"))
                 st.plotly_chart(fig_wask, use_container_width=True)
             else:
                 st.error("• Profil verisi çekilemedi.")
@@ -477,4 +489,4 @@ with tab_compare:
                 st.error("• Profillerden biri veya ikisi bulunamadı.")
     st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown('<div class="footer-light">MG BRAND OFFICE © 2026 | Enterprise Intelligence Engine</div>', unsafe_allow_html=True)
+st.markdown('<div class="footer-dark">MG BRAND OFFICE © 2026 | Enterprise Intelligence Engine</div>', unsafe_allow_html=True)
