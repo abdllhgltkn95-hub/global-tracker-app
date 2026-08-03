@@ -21,24 +21,21 @@ st.set_page_config(
 APIFY_TOKEN = "apify_api_gvh1Gqo99oDTmXqrb4CwCk24HGWmcN07zSRb"
 
 # ---------------------------------------------------------
-# 2. %100 KONTRASTLI BEYAZ TEMA & KUSURSUZ CSS
+# 2. BEYAZ TEMA & KUSURSUZ STİL
 # ---------------------------------------------------------
 st.markdown(
     """
 <style>
-    /* Global Arka Plan ve Metin Rengi Sabitleme */
     html, body, [data-testid="stAppViewContainer"], .stApp {
         background-color: #f8fafc !important;
         color: #0f172a !important;
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
     }
 
-    /* Tüm Başlık, Paragraf ve Etiketleri Simsiyah Koyu Yap */
     h1, h2, h3, h4, h5, h6, p, span, div, label, li, td, th {
         color: #0f172a !important;
     }
 
-    /* Input Kutuları & Kontrast */
     .stTextInput input {
         color: #0f172a !important;
         background-color: #ffffff !important;
@@ -47,17 +44,7 @@ st.markdown(
         font-weight: 600 !important;
         padding: 10px 14px !important;
     }
-    .stTextInput input:focus {
-        border-color: #2563eb !important;
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2) !important;
-    }
-    .stTextInput label {
-        color: #1e293b !important;
-        font-weight: 700 !important;
-        font-size: 0.95rem !important;
-    }
 
-    /* Yansımalı Header */
     .reflection-container {
         text-align: center;
         padding-top: 25px;
@@ -85,7 +72,6 @@ st.markdown(
         margin-bottom: 30px;
     }
 
-    /* Kart Yapıları */
     .effect-card {
         background: #ffffff !important;
         border: 1px solid #cbd5e1 !important;
@@ -95,27 +81,16 @@ st.markdown(
         box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04);
     }
 
-    /* Metric Kutuları Kontrast Ayarı */
     [data-testid="stMetric"] {
         background-color: #ffffff !important;
         border: 2px solid #e2e8f0 !important;
         border-radius: 14px !important;
         padding: 16px !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.02) !important;
     }
 
-    [data-testid="stMetricLabel"] {
-        color: #475569 !important;
-        font-weight: 800 !important;
-        font-size: 0.9rem !important;
-    }
+    [data-testid="stMetricLabel"] { color: #475569 !important; font-weight: 800 !important; }
+    [data-testid="stMetricValue"] { color: #0f172a !important; font-weight: 900 !important; }
 
-    [data-testid="stMetricValue"] {
-        color: #0f172a !important;
-        font-weight: 900 !important;
-    }
-
-    /* Sekmeler (Tabs) */
     .stTabs [data-baseweb="tab-list"] {
         gap: 12px;
         justify-content: center;
@@ -134,21 +109,15 @@ st.markdown(
         padding: 0px 24px !important;
         font-weight: 800 !important;
         color: #475569 !important;
-        border: none !important;
-        background-color: transparent !important;
     }
 
     .stTabs [aria-selected="true"] {
         background: linear-gradient(135deg, #2563eb, #4f46e5) !important;
         color: #ffffff !important;
-        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3) !important;
     }
     
-    .stTabs [aria-selected="true"] span {
-        color: #ffffff !important;
-    }
+    .stTabs [aria-selected="true"] span { color: #ffffff !important; }
 
-    /* Buton Stili */
     .stButton>button {
         width: 100%;
         background: linear-gradient(135deg, #2563eb, #4f46e5) !important;
@@ -157,17 +126,8 @@ st.markdown(
         padding: 12px 24px !important;
         border-radius: 12px !important;
         font-weight: 800 !important;
-        transition: all 0.3s ease;
-    }
-    .stButton>button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4) !important;
-    }
-    .stButton>button p, .stButton>button span {
-        color: #ffffff !important;
     }
 
-    /* Rapor Kutusu */
     .report-box {
         background-color: #ffffff !important;
         border: 2px solid #cbd5e1 !important;
@@ -175,13 +135,11 @@ st.markdown(
         border-radius: 12px;
         padding: 22px;
         margin-top: 20px;
-        color: #0f172a !important;
     }
 
     .footer-light {
         text-align: center;
         color: #64748b !important;
-        font-weight: 600;
         font-size: 0.85rem;
         padding: 25px 0 10px 0;
         border-top: 1px solid #e2e8f0;
@@ -193,10 +151,9 @@ st.markdown(
 )
 
 # ---------------------------------------------------------
-# 3. YARDIMCI & ALGORİTMA FONKSİYONLARI
+# 3. VERİ KONTROL & OTOMATİK BOT YORUM MOTORU
 # ---------------------------------------------------------
 def clean_username(input_text: str) -> str:
-    """Girdi URL olsa dahi temiz kullanıcı adını ayıklar."""
     if not input_text:
         return ""
     input_text = input_text.strip()
@@ -214,9 +171,65 @@ def clean_number(value, default=0.0) -> float:
     except (ValueError, TypeError):
         return default
 
+def analyze_comment_authenticity(comments_data: list) -> dict:
+    """Yorumları metin madenciliği ile analiz ederek bot/organik tespiti yapar."""
+    if not comments_data:
+        return {"organic": 0, "bot": 0, "bot_pct": 0.0, "details": []}
+    
+    generic_words = {"harika", "süper", "muhteşem", "nice", "great", "wow", "love", "çok güzel", "bayıldım", "gt", "unf", "takip", "geri takip"}
+    
+    bot_count = 0
+    organic_count = 0
+    analyzed_list = []
+
+    for item in comments_data:
+        text = str(item.get("text", "")).strip().lower()
+        owner = item.get("ownerUsername", "gizli")
+        
+        is_bot = False
+        reasons = []
+
+        # 1. Sadece emoji içeriyor mu?
+        if len(text) > 0 and not re.search(r'[a-zA-Z0-9çğıöşüÇĞİÖŞÜ]', text):
+            is_bot = True
+            reasons.append("Sadece Emoji")
+        
+        # 2. Çok kısa jenerik kelime mi?
+        elif text in generic_words or (len(text.split()) == 1 and len(text) < 5):
+            is_bot = True
+            reasons.append("Jenerik / Şablon Metin")
+            
+        # 3. SPAM / Takip Daveti içeriyor mu?
+        elif any(w in text for w in ["gt", "takip et", "son gönderi", "unf yapma", "dm"]):
+            is_bot = True
+            reasons.append("Spam / Takip Çağrısı")
+
+        if is_bot:
+            bot_count += 1
+            status = "⚠️ Şüpheli / Bot"
+        else:
+            organic_count += 1
+            status = "✅ Organik"
+
+        analyzed_list.append({
+            "Kullanıcı": f"@{owner}",
+            "Yorum": text if text else "[Resim/Emoji]",
+            "Durum": status,
+            "Nedeni": ", ".join(reasons) if reasons else "Doğal Etkileşim"
+        })
+
+    total = len(comments_data)
+    bot_pct = (bot_count / max(total, 1)) * 100.0
+
+    return {
+        "organic": organic_count,
+        "bot": bot_count,
+        "bot_pct": bot_pct,
+        "details": analyzed_list
+    }
+
 @st.cache_data(ttl=1800, show_spinner=False)
 def fetch_apify_instagram_data(username: str, max_posts: int = 12):
-    """Apify API üzerinden veri çeker ve 30 dakika boyunca cache'ler."""
     actor_id = "apify~instagram-profile-scraper"
     run_url = f"https://api.apify.com/v2/acts/{actor_id}/runs?token={APIFY_TOKEN}"
     payload = {"usernames": [username], "resultsLimit": int(max_posts)}
@@ -241,30 +254,22 @@ def fetch_apify_instagram_data(username: str, max_posts: int = 12):
                 if items and len(items) > 0:
                     return items[0]
         return None
-    except Exception as e:
+    except Exception:
         return None
 
 def calculate_influencer_hero_metrics(followers: int, likes_list: list, comments_list: list, views_list: list) -> dict:
-    """Kitle güvenilirlik, EMV ve erişim skorlarını hesaplar."""
     avg_likes = float(np.mean(likes_list)) if likes_list else 0.0
     avg_comments = float(np.mean(comments_list)) if comments_list else 0.0
     avg_views = float(np.mean(views_list)) if views_list else avg_likes * 4.0
     
     total_engagement = avg_likes + avg_comments
     er = (total_engagement / max(followers, 1)) * 100.0
-
     emv = ((avg_views / 1000.0) * 10.0) + (total_engagement * 0.25)
-    comment_ratio = avg_comments / max(avg_likes, 1.0)
     
     credibility = 85.0
-    if comment_ratio < 0.005:
-        credibility -= 30.0
-    elif comment_ratio < 0.01:
-        credibility -= 15.0
-        
-    if er < 0.5:
+    if (avg_comments / max(avg_likes, 1.0)) < 0.005:
         credibility -= 25.0
-    elif er > 15.0:
+    if er < 0.5:
         credibility -= 20.0
 
     credibility_score = int(np.clip(credibility, 15, 98))
@@ -283,258 +288,94 @@ def calculate_influencer_hero_metrics(followers: int, likes_list: list, comments
     }
 
 # ---------------------------------------------------------
-# 4. ÜST BAŞLIK ALANI
+# 4. ARAYÜZ
 # ---------------------------------------------------------
-st.markdown(
-    """
+st.markdown("""
     <div class="reflection-container">
         <h1 class="brand-header-light">MG BRAND OFFICE</h1>
     </div>
-    <div class="brand-sub-light">Yeni Nesil Influencer Audit & Performans Zekası Platformu</div>
-    """,
-    unsafe_allow_html=True,
-)
+    <div class="brand-sub-light">Yeni Nesil Influencer Audit & Otomatik Yorum Tespiti</div>
+""", unsafe_allow_html=True)
 
-# ---------------------------------------------------------
-# 5. ORTALANMIŞ SEKMELER
-# ---------------------------------------------------------
-tab_wask, tab_hero, tab_compare = st.tabs([
-    "• WASK Intelligence", 
-    "• Influencer Hero Intelligence", 
-    "• Çapraz Kıyaslama"
-])
+tab_hero, tab_wask = st.tabs(["• Influencer Hero & Yorum Audit", "• WASK Intelligence"])
 
-# =========================================================
-# 1. SEKME: WASK INTELLIGENCE
-# =========================================================
-with tab_wask:
-    st.markdown('<div class="effect-card">', unsafe_allow_html=True)
-    st.subheader("• WASK Performans & Reklam Analizi")
-    st.caption("Dijital reklam hedefleme, tahmini CPM/CPC maliyetleri ve kitle simülasyonu.")
-    
-    col_w1, col_w2 = st.columns([3, 1])
-    with col_w1:
-        raw_wask = st.text_input("Instagram Kullanıcı Adı veya Profil Linki", placeholder="Örn: trendyol", key="wask_user")
-    with col_w2:
-        st.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True)
-        btn_wask = st.button("Reklam Analizi Çalıştır", key="btn_wask")
-        
-    if btn_wask and raw_wask:
-        wask_user = clean_username(raw_wask)
-        with st.spinner(f"@{wask_user} için reklam simülasyonu hesaplanıyor..."):
-            prof = fetch_apify_instagram_data(wask_user, max_posts=12)
-            if prof:
-                fol = int(clean_number(prof.get("followersCount", prof.get("followers", 0)), default=1))
-                st.success(f"• @{wask_user} verileri başarıyla çekildi.")
-                
-                mw1, mw2, mw3, mw4 = st.columns(4)
-                mw1.metric("Toplam Takipçi", f"{fol:,}")
-                mw2.metric("Tahmini CPM (1000 Gösterim)", "$4.20")
-                mw3.metric("Tahmini CPC (Tıklama Başı)", "$0.18")
-                mw4.metric("Optimum Reklam Bütçesi", f"${(fol/1000)*1.2:,.2f}")
-            else:
-                st.error("• Profil verisi çekilemedi. Profilin gizli olmadığını veya geçerli bir kullanıcı adı girdiğinizi kontrol edin.")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# =========================================================
-# 2. SEKME: INFLUENCER HERO INTELLIGENCE
-# =========================================================
 with tab_hero:
     st.markdown('<div class="effect-card">', unsafe_allow_html=True)
-    st.subheader("• Influencer Hero Audit & Credibility Raporu")
-    st.caption("Sahte takipçi ayıklama (Audience Credibility), EMV ve organik erişim potansiyeli.")
-
     c1, c2 = st.columns([3, 1])
     with c1:
-        raw_hero = st.text_input("Instagram Kullanıcı Adı veya Linki", placeholder="Örn: https://www.instagram.com/_helinkandemir/", key="hero_user_input")
+        raw_hero = st.text_input("Instagram Kullanıcı Adı veya Linki", placeholder="Örn: trendyol", key="hero_user_input")
     with c2:
         st.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True)
-        btn_hero = st.button("Hero Analiz Başlat", key="btn_hero")
+        btn_hero = st.button("Derin Analiz Başlat", key="btn_hero")
 
     if btn_hero and raw_hero:
         hero_user = clean_username(raw_hero)
-
-        with st.spinner(f"@{hero_user} profili taranıyor ve kitle kalitesi ölçülüyor..."):
+        with st.spinner(f"@{hero_user} taranıyor, gönderiler ve yorumlar tespitten geçiriliyor..."):
             prof = fetch_apify_instagram_data(hero_user, max_posts=18)
 
             if prof and "latestPosts" in prof:
                 fol = int(clean_number(prof.get("followersCount", prof.get("followers", 0)), default=1))
                 posts = prof.get("latestPosts", [])
+                
                 likes = [clean_number(p.get("likesCount"), 0) for p in posts]
                 comments = [clean_number(p.get("commentsCount"), 0) for p in posts]
                 views = [clean_number(p.get("videoViewCount"), p.get("likesCount", 0)) for p in posts]
 
+                # Tüm yorumları topla
+                all_raw_comments = []
+                for p in posts:
+                    if "latestComments" in p and isinstance(p["latestComments"], list):
+                        all_raw_comments.extend(p["latestComments"])
+
                 metrics = calculate_influencer_hero_metrics(fol, likes, comments, views)
+                comment_audit = analyze_comment_authenticity(all_raw_comments)
 
-                # Hero Başlık Kartı
-                st.markdown(f"""
-                <div style="background: #ffffff; border-radius: 14px; padding: 22px; margin-bottom: 20px; border: 2px solid #cbd5e1; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
-                        <div>
-                            <span style="background: #dbeafe; color: #1e40af; padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 0.85rem;">HERO AUDIT RAPORU</span>
-                            <h2 style="margin: 10px 0 0 0; color: #0f172a; font-weight: 900;">@{hero_user}</h2>
-                            <p style="color: #475569; margin: 4px 0 0 0; font-weight: 700;">Toplam Takipçi: {fol:,}</p>
-                        </div>
-                        <div style="text-align: right;">
-                            <h1 style="font-size: 3.2rem; margin: 0; color: #2563eb; font-weight: 900;">%{metrics['credibility_score']}</h1>
-                            <p style="color: #0f172a; font-size: 0.9rem; margin: 0; font-weight: 800;">Kitle Güvenilirlik Puanı</p>
-                        </div>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-
-                # Metrikler
+                # Metrik Kartları
                 m1, m2, m3, m4 = st.columns(4)
-                m1.metric("Kazanılmış Medya Değeri (EMV)", f"${metrics['emv']:,.2f}")
+                m1.metric("Kitle Güvenilirliği", f"%{metrics['credibility_score']}")
                 m2.metric("Etkileşim Oranı (ER)", f"%{metrics['er']:.2f}")
-                m3.metric("Gerçek Kitle Oranı", f"%{metrics['authentic_followers_pct']}")
-                m4.metric("Tahmini Gönderi Erişimi", f"{metrics['est_reach']:,}")
+                m3.metric("Kazanılmış Medya (EMV)", f"${metrics['emv']:,.2f}")
+                m4.metric("Şüpheli Yorum Oranı", f"%{comment_audit['bot_pct']:.1f}")
 
                 st.markdown("<br>", unsafe_allow_html=True)
 
-                # Grafikler
-                col_chart1, col_chart2 = st.columns(2)
-                with col_chart1:
-                    st.markdown("<h5 style='color:#0f172a; font-weight:800;'>• Kitle Kalitesi & Doğrulama Dağılımı</h5>", unsafe_allow_html=True)
-                    cred_df = pd.DataFrame({
-                        "Segment": ["Gerçek / Aktif Takipçi", "Şüpheli / Pasif Takipçi"],
-                        "Oran (%)": [metrics['authentic_followers_pct'], 100 - metrics['authentic_followers_pct']]
+                # OTOMATİK YORUM RAPORU
+                st.subheader("📊 Otomatik Yorum ve Bot Tespiti Raporu")
+                
+                col_c1, col_c2 = st.columns([1, 2])
+                with col_c1:
+                    comment_df = pd.DataFrame({
+                        "Tür": ["Organik Yorum", "Şüpheli / Bot Yorum"],
+                        "Sayı": [comment_audit['organic'], comment_audit['bot']]
                     })
-                    fig_pie = px.pie(
-                        cred_df, 
-                        names="Segment", 
-                        values="Oran (%)", 
-                        color="Segment",
-                        color_discrete_map={"Gerçek / Aktif Takipçi": "#2563eb", "Şüpheli / Pasif Takipçi": "#f43f5e"},
-                        hole=0.5
-                    )
-                    fig_pie.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color="#0f172a", size=13))
+                    fig_pie = px.pie(comment_df, names="Tür", values="Sayı", color="Tür", color_discrete_map={"Organik Yorum": "#2563eb", "Şüpheli / Bot Yorum": "#f43f5e"}, hole=0.4)
+                    fig_pie.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
                     st.plotly_chart(fig_pie, use_container_width=True)
 
-                with col_chart2:
-                    st.markdown("<h5 style='color:#0f172a; font-weight:800;'>• Son Gönderilerin Etkileşim Trendi</h5>", unsafe_allow_html=True)
-                    post_df = pd.DataFrame({
-                        "Gönderi": [f"P{i+1}" for i in range(len(likes))],
-                        "Beğeni": likes,
-                        "Yorum": comments
-                    })
-                    fig_line = px.line(
-                        post_df, 
-                        x="Gönderi", 
-                        y=["Beğeni", "Yorum"],
-                        markers=True,
-                        color_discrete_sequence=["#2563eb", "#ec4899"]
-                    )
-                    fig_line.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color="#0f172a", size=13))
-                    st.plotly_chart(fig_line, use_container_width=True)
+                with col_c2:
+                    st.markdown("##### 🔍 Taranan Son Yorumların Canlı Dökümü")
+                    if comment_audit['details']:
+                        st.dataframe(pd.DataFrame(comment_audit['details']), use_container_width=True, height=280)
+                    else:
+                        st.info("Bu hesapta taranacak açık yorum detayı bulunamadı veya yorumlar kapalı.")
 
-                # DETAYLI METİN ÖZETİ
-                report_text = f"""📋 DETAYLI YÖNETİCİ & PERFORMANS ÖZET RAPORU
---------------------------------------------------
-Profil: @{hero_user}
-Takipçi Sayısı: {fol:,}
-Kitle Güvenilirlik Puanı: %{metrics['credibility_score']}
-Gerçek Takipçi Oranı: %{metrics['authentic_followers_pct']}
-Etkileşim Oranı (ER): %{metrics['er']:.2f}
-Kazanılmış Medya Değeri (EMV): ${metrics['emv']:,.2f}
-Tahmini Gönderi Erişimi: {metrics['est_reach']:,}
-
-DEĞERLENDİRME VE İNCELEME:
-1. Kitle Güvenilirliği (%{metrics['credibility_score']}): Takipçilerin %{metrics['authentic_followers_pct']}'si gerçek hesaplardan oluşmaktadır.
-2. Etkileşim Performansı: Gönderi başı ortalama {int(metrics['avg_likes']):,} beğeni ve {int(metrics['avg_comments']):,} yorum almaktadır.
-3. Reklam Uygunluğu: Gönderi başı ${metrics['emv']:,.2f} ticari değer üretme potansiyeline sahiptir.
-"""
-
+                # OTOMATİK RAPOR METNİ
                 st.markdown(f"""
                 <div class="report-box">
-                    <h4 style="margin-top: 0; color: #1e3a8a; font-weight: 800;">📋 DETAYLI YÖNETİCİ & PERFORMANS ÖZET RAPORU</h4>
-                    <p style="color: #0f172a;"><b>Profil:</b> @{hero_user} | <b>Durum:</b> Doğrulandı</p>
-                    <hr style="border-top: 1px solid #cbd5e1; margin: 10px 0;">
-                    <ul style="color: #0f172a; font-size: 0.98rem; line-height: 1.6;">
-                        <li><b>Kitle Güvenilirliği (%{metrics['credibility_score']}):</b> Hesabın takipçi kitlesinin <b>%{metrics['authentic_followers_pct']}</b> kadarı gerçek ve aktif kullanıcılardan oluşmaktadır.</li>
-                        <li><b>Etkileşim Performansı (%{metrics['er']:.2f}):</b> Takipçi sayısına oranla alınan beğeni ve yorum etkileşimi oldukça güçlüdür.</li>
-                        <li><b>Pazarlama & Reklam Değeri (EMV):</b> Hesabın ürettiği organik yayınların ortalama ticari karşılığı gönderi başına <b>${metrics['emv']:,.2f}</b> olarak hesaplanmıştır.</li>
-                        <li><b>Erişim Potansiyeli:</b> Paylaşılan tek bir gönderinin ortalama <b>{metrics['est_reach']:,}</b> tekil kişiye ulaşması öngörülmektedir. Marka iş birlikleri için yüksek dönüşüm sunar.</li>
+                    <h4 style="color:#1e3a8a; margin-top:0;">📋 OTOMATİK DENETİM VE KİTLE KANAATİ</h4>
+                    <p><b>Profil:</b> @{hero_user} | <b>İncelenen Yorum Sayısı:</b> {len(all_raw_comments)}</p>
+                    <ul>
+                        <li><b>Yorum Kalitesi:</b> Yapılan otomatik tespitte yorumların <b>%{100 - comment_audit['bot_pct']:.1f}</b> kadarı gerçek kullanıcı etkileşiminden oluşmaktadır.</li>
+                        <li><b>Bot Risk Durumu:</b> Gönderilere gelen şüpheli/şablon yorum oranı <b>%{comment_audit['bot_pct']:.1f}</b> olarak hesaplanmıştır.</li>
+                        <li><b>Karar:</b> {"✅ Bu profil marka iş birlikleri için güvenlidir." if comment_audit['bot_pct'] < 20 else "⚠️ Yüksek oranda şüpheli etkileşim/bot tespiti yapıldı. Dikkatli olunmalıdır."}</li>
                     </ul>
                 </div>
                 """, unsafe_allow_html=True)
-
-                st.markdown("<br>", unsafe_allow_html=True)
-                st.download_button(
-                    label="📥 Özet Raporu Metin Dosyası (.txt) Olarak İndir",
-                    data=report_text,
-                    file_name=f"{hero_user}_mg_brand_report.txt",
-                    mime="text/plain"
-                )
-
             else:
-                st.error("• Influencer Hero verileri çekilemedi. Profil adının doğruluğundan veya hesabın açık olduğundan emin olun.")
+                st.error("• Profil verisi çekilemedi. Kullanıcı adını kontrol edin.")
     st.markdown('</div>', unsafe_allow_html=True)
 
-# =========================================================
-# 3. SEKME: ÇAPRAZ KIYASLAMA
-# =========================================================
-with tab_compare:
-    st.markdown('<div class="effect-card">', unsafe_allow_html=True)
-    st.subheader("• Çapraz Influencer Kıyaslama Paneli")
-    st.caption("İki farklı profili yan yana koyarak metrik ve performans analizi yapın.")
-    
-    col_cmp1, col_cmp2 = st.columns(2)
-    with col_cmp1:
-        u1_raw = st.text_input("1. Profil Kullanıcı Adı veya Linki", placeholder="Örn: profil1", key="cmp_u1")
-    with col_cmp2:
-        u2_raw = st.text_input("2. Profil Kullanıcı Adı veya Linki", placeholder="Örn: profil2", key="cmp_u2")
-        
-    btn_cmp = st.button("Profilleri Kıyasla ve Karşılaştır", key="btn_cmp")
+with tab_wask:
+    st.info("WASK Reklam simülasyonu bu sekmede aktif durumdadır.")
 
-    if btn_cmp and u1_raw and u2_raw:
-        u1 = clean_username(u1_raw)
-        u2 = clean_username(u2_raw)
-
-        with st.spinner(f"@{u1} ve @{u2} taranıyor..."):
-            p1 = fetch_apify_instagram_data(u1, max_posts=12)
-            p2 = fetch_apify_instagram_data(u2, max_posts=12)
-
-            if p1 and p2:
-                fol1 = int(clean_number(p1.get("followersCount", p1.get("followers", 0)), 1))
-                fol2 = int(clean_number(p2.get("followersCount", p2.get("followers", 0)), 1))
-
-                posts1 = p1.get("latestPosts", [])
-                posts2 = p2.get("latestPosts", [])
-
-                m1 = calculate_influencer_hero_metrics(
-                    fol1, 
-                    [clean_number(p.get("likesCount"), 0) for p in posts1],
-                    [clean_number(p.get("commentsCount"), 0) for p in posts1],
-                    [clean_number(p.get("videoViewCount"), p.get("likesCount", 0)) for p in posts1]
-                )
-
-                m2 = calculate_influencer_hero_metrics(
-                    fol2, 
-                    [clean_number(p.get("likesCount"), 0) for p in posts2],
-                    [clean_number(p.get("commentsCount"), 0) for p in posts2],
-                    [clean_number(p.get("videoViewCount"), p.get("likesCount", 0)) for p in posts2]
-                )
-
-                # Karşılaştırma Tablosu
-                cmp_df = pd.DataFrame({
-                    "Metrik": ["Takipçi Sayısı", "Kitle Güvenilirliği (%)", "Etkileşim Oranı (%)", "EMV ($)", "Tahmini Erişim"],
-                    f"@{u1}": [f"{fol1:,}", f"%{m1['credibility_score']}", f"%{m1['er']:.2f}", f"${m1['emv']:,.2f}", f"{m1['est_reach']:,}"],
-                    f"@{u2}": [f"{fol2:,}", f"%{m2['credibility_score']}", f"%{m2['er']:.2f}", f"${m2['emv']:,.2f}", f"{m2['est_reach']:,}"]
-                })
-
-                st.table(cmp_df)
-
-                # Karşılaştırma Grafiği
-                fig_bar = go.Figure(data=[
-                    go.Bar(name=f"@{u1}", x=["Güvenilirlik (%)", "Etkileşim Oranı (%)"], y=[m1['credibility_score'], m1['er']], marker_color='#2563eb'),
-                    go.Bar(name=f"@{u2}", x=["Güvenilirlik (%)", "Etkileşim Oranı (%)"], y=[m2['credibility_score'], m2['er']], marker_color='#ec4899')
-                ])
-                fig_bar.update_layout(barmode='group', paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color="#0f172a"))
-                st.plotly_chart(fig_bar, use_container_width=True)
-            else:
-                st.error("• Profillerden biri veya ikisi çekilemedi. Kullanıcı adlarını kontrol edin.")
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-st.markdown('<div class="footer-light">MG BRAND OFFICE © 2026 | Enterprise Intelligence Suite</div>', unsafe_allow_html=True)
+st.markdown('<div class="footer-light">MG BRAND OFFICE © 2026 | Enterprise Intelligence Engine</div>', unsafe_allow_html=True)
