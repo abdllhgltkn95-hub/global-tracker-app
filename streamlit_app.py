@@ -20,7 +20,7 @@ st.set_page_config(
 APIFY_TOKEN = st.secrets.get("APIFY_TOKEN", "apify_api_gvh1Gqo99oDTmXqrb4CwCk24HGWmcN07zSRb")
 
 # ---------------------------------------------------------
-# 2. CSS STİLLERİ: SİMSİYAH TEMA VE ŞIK TASARIM
+# 2. CSS STİLLERİ: SİMSİYAH TEMA VE ORANTILI FORMLAR
 # ---------------------------------------------------------
 st.markdown(
     """
@@ -43,10 +43,10 @@ st.markdown(
         100% { background-position: 0% 50%; }
     }
 
-    /* 1. EN ÜST LOGO BAŞLIĞI - YUKARI ÇEKİLDİ */
+    /* 1. EN ÜST LOGO BAŞLIĞI */
     .reflection-container {
         text-align: center;
-        padding-top: 5px; /* Daha yukarıya alındı */
+        padding-top: 15px;
         padding-bottom: 25px;
     }
 
@@ -71,6 +71,7 @@ st.markdown(
         border-bottom: none !important;
         margin: 0 auto 30px auto !important;
         gap: 16px !important;
+        width: 100% !important;
     }
 
     div[data-baseweb="tab"] {
@@ -97,12 +98,13 @@ st.markdown(
         color: #ffffff !important;
     }
 
-    /* 3. INPUT (ARAMA KUTUSU) TASARIMI - KÜÇÜLTÜLDÜ VE ORTALANDI */
-    div[data-testid="stTextInput"], div[data-testid="stButton"] {
+    /* 3. INPUT (ARAMA KUTUSU) TASARIMI: DAHA UZUN VE GENİŞ */
+    div[data-testid="stTextInput"] {
+        max-width: 450px !important; /* Giriş kutusu daha uzun */
         width: 100% !important;
-        max-width: 320px !important; /* Daha da daraltıldı */
         margin-left: auto !important;
         margin-right: auto !important;
+        margin-bottom: 5px !important;
     }
 
     .stTextInput input {
@@ -111,8 +113,8 @@ st.markdown(
         border: 2px solid #21262d !important;
         border-radius: 12px !important;
         font-weight: 700 !important;
-        padding: 8px 12px !important; /* Yüksekliği inceltildi */
-        font-size: 0.9rem !important;
+        padding: 12px 14px !important;
+        font-size: 0.95rem !important;
         text-align: center !important;
     }
     .stTextInput input:focus {
@@ -122,17 +124,20 @@ st.markdown(
     .stTextInput label {
         color: #ffffff !important;
         font-weight: 800 !important;
-        font-size: 0.95rem !important;
+        font-size: 1rem !important;
         display: block !important;
         text-align: center !important;
-        margin-bottom: 6px !important;
+        margin-bottom: 10px !important;
     }
 
-    /* 4. DİNAMİK BUTON TASARIMI - KÜÇÜLTÜLDÜ */
+    /* 4. BUTON TASARIMI: KÜÇÜLTÜLMÜŞ, HAP ŞEKLİNDE VE TAM ORTALANMIŞ */
     div[data-testid="stButton"] {
         display: flex !important;
         justify-content: center !important;
-        margin-top: 8px !important;
+        max-width: 250px !important; /* Buton daha kısa ve kompakt */
+        width: 100% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
     }
 
     .stButton>button {
@@ -142,15 +147,16 @@ st.markdown(
         animation: colorChange 5s ease infinite !important;
         color: #ffffff !important;
         border: none !important;
-        padding: 10px 20px !important; /* Yüksekliği inceltildi */
-        border-radius: 12px !important;
+        padding: 10px 20px !important;
+        border-radius: 20px !important; /* Daha yuvarlak (hap stili) buton */
         font-weight: 900 !important;
         font-size: 0.95rem !important;
         box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4) !important;
         transition: all 0.3s ease !important;
+        margin-top: 2px !important;
     }
     .stButton>button:hover {
-        transform: scale(1.02);
+        transform: scale(1.04);
         box-shadow: 0 6px 30px rgba(168, 85, 247, 0.6) !important;
     }
     .stButton>button p, .stButton>button span {
@@ -340,7 +346,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# SEKMELER
+# SEKMELER 
 tab_hero, tab_wask, tab_compare = st.tabs([
     "• Influencer Hero & Audit", 
     "• WASK Performans & Benchmark", 
@@ -351,8 +357,7 @@ tab_hero, tab_wask, tab_compare = st.tabs([
 # SEKME 1: INFLUENCER HERO & AUDIT
 # =========================================================
 with tab_hero:
-    # NATIVE STREAMLIT SÜTUNLARIYLA TAM ORTALAMA EKSENİ
-    _, col_center, _ = st.columns([1.5, 2, 1.5])
+    _, col_center, _ = st.columns([1.5, 3, 1.5])
     
     with col_center:
         raw_hero = st.text_input("Instagram Kullanıcı Adı veya Profil Linki", placeholder="Örn: https://www.instagram.com/_helinkandemir/", key="hero_user_input")
@@ -444,7 +449,7 @@ with tab_hero:
 # SEKME 2: WASK PERFORMANS & BENCHMARK
 # =========================================================
 with tab_wask:
-    _, col_center_wask, _ = st.columns([1.5, 2, 1.5])
+    _, col_center_wask, _ = st.columns([1.5, 3, 1.5])
     
     with col_center_wask:
         wask_raw = st.text_input("Kullanıcı Adı veya Profil Linki Girin", placeholder="Örn: trendyol", key="wask_inp")
@@ -482,7 +487,7 @@ with tab_wask:
 # SEKME 3: ÇAPRAZ KIYASLAMA PANENLİ
 # =========================================================
 with tab_compare:
-    _, col_center_cmp, _ = st.columns([1.5, 2, 1.5])
+    _, col_center_cmp, _ = st.columns([1.5, 3, 1.5])
     
     with col_center_cmp:
         c_u1 = st.text_input("1. Profil Kullanıcı Adı", key="cmp1")
