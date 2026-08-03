@@ -31,7 +31,7 @@ st.markdown(
         background-color: #000000 !important;
         color: #ffffff !important;
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-        padding-bottom: 60px !important;
+        padding-bottom: 60px !important; 
     }
 
     h1, h2, h3, h4, h5, h6, p, span, div, label, li, td, th {
@@ -261,7 +261,7 @@ def fetch_apify_instagram_data(username: str, max_posts: int = 18):
         return None
 
 # ---------------------------------------------------------
-# 4. GÜÇLENDİRİLMİŞ ALGORİTMA ENGINE (ENTERPRISE STANDARDS)
+# 4. GÜÇLENDİRİLMİŞ ALGORİTMA ENGINE (İŞ BİRLİĞİ VE NLP EKLENDİ)
 # ---------------------------------------------------------
 def run_all_algorithms(followers: int, posts: list):
     likes = [clean_number(p.get("likesCount"), 0) for p in posts]
@@ -273,16 +273,15 @@ def run_all_algorithms(followers: int, posts: list):
     total_eng = avg_likes + avg_comments
     er = (total_eng / max(followers, 1)) * 100.0
 
-    # 1. KADEMELİ ER BENCHMARK (Endüstri Standartlarına Göre 5 Kademe)
-    if followers < 10000:          # Nano
+    if followers < 10000:
         benchmark_er = 4.5
-    elif followers < 50000:        # Micro
+    elif followers < 50000:
         benchmark_er = 3.5
-    elif followers < 100000:       # Mid-Tier
+    elif followers < 100000:
         benchmark_er = 2.5
-    elif followers < 500000:       # Macro
+    elif followers < 500000:
         benchmark_er = 1.8
-    else:                          # Mega
+    else:
         benchmark_er = 1.2
 
     er_score = min(40.0, (er / benchmark_er) * 40.0)
@@ -294,11 +293,37 @@ def run_all_algorithms(followers: int, posts: list):
     stability_score = max(0.0, 20.0 * (1.0 - min(cv, 1.0)))
     aqs_score = int(np.clip(er_score + comment_score + stability_score, 10, 99))
 
-    # 2. DETERMINİSTİK SKORLAMA (np.random Kaldırıldı, Stabil Modül Eklendi)
-    modifier = (followers % 5) - 2 # -2 ile +2 arası sabit sapma
+    modifier = (followers % 5) - 2 
     credibility_score = int(np.clip(aqs_score * 0.95 + modifier, 15, 98))
     authentic_pct = int(np.clip(credibility_score + 2, 10, 95))
     est_reach = min(int(followers * (er / 100.0) * 3.5) if er > 0 else int(followers * 0.05), followers)
+
+    # --- YENİ EKLENTİ: İŞ BİRLİĞİ VE SEKTÖR ANALİZ MOTORU ---
+    collab_keywords = ["#reklam", "#işbirliği", "#isbirligi", "#sponsorlu", "işbirliği", "partnership", "iş ortaklığı"]
+    sector_keywords = {
+        "Moda & Giyim": ["kombin", "elbise", "tarz", "kıyafet", "moda", "giyim", "çanta", "ayakkabı", "trendyol", "zara", "aksesuar"],
+        "Kozmetik & Güzellik": ["makyaj", "cilt", "krem", "ruj", "saç", "güzellik", "bakım", "parfüm", "serum", "kozmetik"],
+        "Teknoloji & Dijital": ["telefon", "bilgisayar", "teknoloji", "app", "uygulama", "oyun", "gaming", "dijital", "ekran"],
+        "Seyahat & Mekan": ["otel", "tatil", "mekan", "gezilecek", "restoran", "bilet", "kamp", "rota"],
+        "Gıda & Yeme-İçme": ["yemek", "tarif", "lezzet", "tatlı", "kahve", "kafe", "mutfak", "atıştırmalık"]
+    }
+
+    collab_count = 0
+    detected_sectors = {}
+
+    for p in posts:
+        caption = str(p.get("caption", "")).lower()
+        if any(kw in caption for kw in collab_keywords):
+            collab_count += 1
+            for sector, kws in sector_keywords.items():
+                if any(kw in caption for kw in kws):
+                    detected_sectors[sector] = detected_sectors.get(sector, 0) + 1
+
+    collab_ratio = (collab_count / max(len(posts), 1)) * 100.0
+    top_sectors = [s[0] for s in sorted(detected_sectors.items(), key=lambda item: item[1], reverse=True)[:2]]
+    if not top_sectors:
+        top_sectors = ["Genel Lifestyle"]
+    # -----------------------------------------------------------
 
     all_comments = []
     for p in posts:
@@ -324,13 +349,11 @@ def run_all_algorithms(followers: int, posts: list):
             elif text in generic_words or (len(text.split()) == 1 and len(text) < 4):
                 is_bot = True
                 reason = "Jenerik / Şablon Metin"
-            # 3. REGEX WORD BOUNDARY BOT TESPİTİ (\b)
             elif re.search(r'\b(gt|takip|unf|dm)\b', text):
                 is_bot = True
                 reason = "Spam / Takip Çağrısı"
 
             if is_bot: bot_count += 1
-            # Emojiler tamamen kaldırıldı, kalın nokta entegre edildi
             status = "• Şüpheli / Bot" if is_bot else "• Organik"
             analyzed_list.append({"Kullanıcı": f"@{owner}", "Yorum Metni": text if text else "[Emoji]", "Durum": status, "Tespit Sebebi": reason})
         bot_pct = (bot_count / len(all_comments)) * 100.0
@@ -353,6 +376,8 @@ def run_all_algorithms(followers: int, posts: list):
         "authentic_pct": authentic_pct,
         "est_reach": est_reach,
         "bot_pct": bot_pct,
+        "collab_ratio": collab_ratio,
+        "top_sectors": top_sectors,
         "comments_details": analyzed_list,
         "likes_list": likes,
         "comments_list": comments
@@ -362,7 +387,6 @@ def run_all_algorithms(followers: int, posts: list):
 # 5. ARAYÜZ YAPISI
 # ---------------------------------------------------------
 
-# EN ÜSTTE BAŞLIK VE YARIYA İNDİRİLMİŞ 3 SATIRLIK (70px) BOŞLUK BLOKU
 st.markdown("""
     <div class="reflection-container">
         <h1 class="brand-header-animated">MG BRAND OFFICE</h1>
@@ -370,7 +394,7 @@ st.markdown("""
     <div style="height: 70px;"></div>
 """, unsafe_allow_html=True)
 
-# SEKMELER (Sadece beyaz metin ve kalın nokta)
+# SEKMELER
 tab_hero, tab_wask, tab_compare = st.tabs([
     "• Influencer Hero & Audit", 
     "• WASK Performans & Benchmark", 
@@ -392,7 +416,7 @@ with tab_hero:
 
     if btn_hero and raw_hero:
         hero_user = clean_username(raw_hero)
-        with st.spinner(f"@{hero_user} profili inceleniyor..."):
+        with st.spinner(f"• @{hero_user} profili inceleniyor..."):
             prof = fetch_apify_instagram_data(hero_user, max_posts=18)
 
             if prof and "latestPosts" in prof:
@@ -464,7 +488,7 @@ with tab_hero:
                         <li><b>Kitle Kalitesi ve Güvenilirlik (%{m['credibility_score']}):</b> Hesabın takipçi kitlesinin <b>%{m['authentic_pct']}</b> kadarının gerçek ve organik hareket eden kullanıcılardan oluştuğu tespit edilmiştir.</li>
                         <li><b>HypeAuditor Kalite Skoru (AQS - {m['aqs_score']}/100):</b> Profilin içerik üretme istikrarı, beğeni/yorum dengesi ve takipçi ölçeğine göre etkileşim performansı son derece yüksektir.</li>
                         <li><b>Erişim Gücü:</b> Yayınlanacak bir içeriğin organik olarak ortalama <b>{m['est_reach']:,}</b> tekil kullanıcıya ulaşacağı öngörülmektedir.</li>
-                        <li><b>Nihai Değerlendirme:</b> {"• Bu profil organik etkileşimi ve kitle kalitesi yüksek bir yapıya sahiptir." if m['bot_pct'] < 25 else "• Şüpheli etkileşim oranı nedeniyle detaylı inceleme yapılması önerilir."}</li>
+                        <li><b>Sektörel Dağılım ve İş Birliği:</b> Aktif olarak <b>{", ".join(m['top_sectors'])}</b> alanlarında paylaşım ve sponsorluk yapmaktadır (Tahmini İş Birliği Oranı: %{m['collab_ratio']:.1f}).</li>
                     </ul>
                 </div>
                 """, unsafe_allow_html=True)
@@ -498,10 +522,10 @@ with tab_wask:
                 w3.metric("Ortalama Yorum", f"{int(m_wask['avg_comments']):,}")
 
                 st.markdown("<br>### • Sektör Etkileşim Kıyaslaması (WASK)", unsafe_allow_html=True)
-                # Yeni kademeli sistem benchmark ER değerini yukarıda ayarladı.
+                benchmark_er = 2.0 if f >= 100000 else 3.5
                 wask_chart_df = pd.DataFrame({
                     "Kategori": ["Düşük Performans", "Sektör Standardı", f"@{w_user} Performansı", "Yüksek Performans"],
-                    "Etkileşim Oranı (%)": [m_wask['er'] * 0.5, m_wask['er'], m_wask['er'], m_wask['er'] * 1.5] # Örnekleme için scale edildi
+                    "Etkileşim Oranı (%)": [m_wask['er'] * 0.5, m_wask['er'], m_wask['er'], m_wask['er'] * 1.5]
                 })
                 fig_wask = px.bar(wask_chart_df, x="Kategori", y="Etkileşim Oranı (%)", color="Kategori", text="Etkileşim Oranı (%)")
                 fig_wask.update_traces(texttemplate='%{text:.2f}%', textposition='outside')
@@ -511,7 +535,7 @@ with tab_wask:
                 st.error("• Profil verisi çekilemedi.")
 
 # =========================================================
-# SEKME 3: ÇAPRAZ KIYASLAMA PANENLİ
+# SEKME 3: ÇAPRAZ KIYASLAMA VE İŞ BİRLİĞİ RAPORU
 # =========================================================
 with tab_compare:
     _, col_center_cmp, _ = st.columns([1.5, 3, 1.5])
@@ -540,6 +564,37 @@ with tab_compare:
                     f"@{u2}": [f"{f2:,}", m2['aqs_score'], f"%{m2['credibility_score']}", f"%{m2['er']:.2f}", f"{m2['est_reach']:,}"]
                 })
                 st.table(cmp_table)
+
+                # YENİ EKLENEN İŞ BİRLİĞİ VE KIYASLAMA RAPORU METİN MANTIĞI
+                winner_aqs = u1 if m1['aqs_score'] >= m2['aqs_score'] else u2
+                winner_collab = u1 if m1['collab_ratio'] > m2['collab_ratio'] else (u2 if m2['collab_ratio'] > m1['collab_ratio'] else "eşit")
+
+                aqs_text = f"Kitle kalitesi ve etkileşim gücü bakımından <b>@{winner_aqs}</b> markalar için daha stabil bir zemin sunmaktadır."
+                
+                if winner_collab == "eşit":
+                    collab_text = "Her iki profil de ticari paylaşımlara benzer oranda yer vermektedir."
+                else:
+                    collab_text = f"Bu durum, <b>@{winner_collab}</b> profilinin ticari çalışmalara daha yatkın ve marka iş birliklerine aktif olarak daha fazla yer verdiğini göstermektedir."
+
+                if winner_aqs == winner_collab or winner_collab == "eşit":
+                    rec_text = f"Hem kitle kalitesi hem de ticari içerik tecrübesi göz önüne alındığında <b>@{winner_aqs}</b> ile yapılacak bir kampanya oldukça güvenli bir yatırım olacaktır."
+                else:
+                    rec_text = f"Eğer hedef yüksek kitle güveni ve organik etkileşim ise <b>@{winner_aqs}</b> tercih edilmeli; ancak ticari içerik tecrübesine ve iş birliği alışkanlığına öncelik veriliyorsa <b>@{winner_collab}</b> alternatif olarak değerlendirilebilir."
+
+                st.markdown(f"""
+                <div class="report-box">
+                    <h4 style="color:#c084fc; margin-top:0; font-weight:800;">• DETAYLI KIYASLAMA VE İŞ BİRLİĞİ RAPORU</h4>
+                    <p style="color:#ffffff;"><b>Analiz Edilen Profiller:</b> @{u1} ve @{u2}</p>
+                    <hr style="border-top:1px solid #21262d; margin:12px 0;">
+                    <ul style="line-height:1.7; color:#ffffff;">
+                        <li><b>Skor ve Kitle Kalitesi:</b> @{u1} profilinin AQS skoru {m1['aqs_score']}/100, @{u2} profilinin ise {m2['aqs_score']}/100 olarak ölçülmüştür. {aqs_text}</li>
+                        <li><b>İş Birliği Sıklığı:</b> Son gönderiler baz alındığında @{u1} %{m1['collab_ratio']:.1f} oranında, @{u2} ise %{m2['collab_ratio']:.1f} oranında sponsorlu içerik (iş birliği) üretmektedir. {collab_text}</li>
+                        <li><b>Aktif Sektörler (@{u1}):</b> Ağırlıklı olarak {", ".join(m1['top_sectors'])} alanlarında içerik üretimi ve marka anlaşmaları yapmaktadır.</li>
+                        <li><b>Aktif Sektörler (@{u2}):</b> Ağırlıklı olarak {", ".join(m2['top_sectors'])} alanlarında içerik üretimi ve marka anlaşmaları yapmaktadır.</li>
+                        <li><b>MG BRAND OFFICE Önerisi:</b> {rec_text}</li>
+                    </ul>
+                </div>
+                """, unsafe_allow_html=True)
             else:
                 st.error("• Profillerden biri veya ikisi bulunamadı.")
 
