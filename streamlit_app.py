@@ -298,7 +298,7 @@ def run_all_algorithms(followers: int, posts: list):
     authentic_pct = int(np.clip(credibility_score + 2, 10, 95))
     est_reach = min(int(followers * (er / 100.0) * 3.5) if er > 0 else int(followers * 0.05), followers)
 
-    # --- YENİ EKLENTİ: İŞ BİRLİĞİ VE SEKTÖR ANALİZ MOTORU ---
+    # --- İŞ BİRLİĞİ VE SEKTÖR ANALİZ MOTORU ---
     collab_keywords = ["#reklam", "#işbirliği", "#isbirligi", "#sponsorlu", "işbirliği", "partnership", "iş ortaklığı"]
     sector_keywords = {
         "Moda & Giyim": ["kombin", "elbise", "tarz", "kıyafet", "moda", "giyim", "çanta", "ayakkabı", "trendyol", "zara", "aksesuar"],
@@ -488,7 +488,6 @@ with tab_hero:
                         <li><b>Kitle Kalitesi ve Güvenilirlik (%{m['credibility_score']}):</b> Hesabın takipçi kitlesinin <b>%{m['authentic_pct']}</b> kadarının gerçek ve organik hareket eden kullanıcılardan oluştuğu tespit edilmiştir.</li>
                         <li><b>HypeAuditor Kalite Skoru (AQS - {m['aqs_score']}/100):</b> Profilin içerik üretme istikrarı, beğeni/yorum dengesi ve takipçi ölçeğine göre etkileşim performansı son derece yüksektir.</li>
                         <li><b>Erişim Gücü:</b> Yayınlanacak bir içeriğin organik olarak ortalama <b>{m['est_reach']:,}</b> tekil kullanıcıya ulaşacağı öngörülmektedir.</li>
-                        <li><b>Sektörel Dağılım ve İş Birliği:</b> Aktif olarak <b>{", ".join(m['top_sectors'])}</b> alanlarında paylaşım ve sponsorluk yapmaktadır (Tahmini İş Birliği Oranı: %{m['collab_ratio']:.1f}).</li>
                     </ul>
                 </div>
                 """, unsafe_allow_html=True)
@@ -535,7 +534,7 @@ with tab_wask:
                 st.error("• Profil verisi çekilemedi.")
 
 # =========================================================
-# SEKME 3: ÇAPRAZ KIYASLAMA VE İŞ BİRLİĞİ RAPORU
+# SEKME 3: ÇAPRAZ KIYASLAMA PANENLİ VE ÖZET RAPOR
 # =========================================================
 with tab_compare:
     _, col_center_cmp, _ = st.columns([1.5, 3, 1.5])
@@ -558,41 +557,63 @@ with tab_compare:
                 m1 = run_all_algorithms(f1, p1.get("latestPosts", []))
                 m2 = run_all_algorithms(f2, p2.get("latestPosts", []))
 
+                # 1. TÜM VERİLERİN (İŞ BİRLİĞİ DAHİL) TABLO OLARAK GÖSTERİLMESİ
                 cmp_table = pd.DataFrame({
-                    "Metrik / İnceleme": ["Takipçi Sayısı", "AQS Skoru", "Kitle Güvenilirliği (%)", "Etkileşim Oranı (%)", "Tahmini Gönderi Erişimi"],
-                    f"@{u1}": [f"{f1:,}", m1['aqs_score'], f"%{m1['credibility_score']}", f"%{m1['er']:.2f}", f"{m1['est_reach']:,}"],
-                    f"@{u2}": [f"{f2:,}", m2['aqs_score'], f"%{m2['credibility_score']}", f"%{m2['er']:.2f}", f"{m2['est_reach']:,}"]
+                    "Metrik / İnceleme": [
+                        "Takipçi Sayısı", 
+                        "AQS Skoru", 
+                        "Kitle Güvenilirliği (%)", 
+                        "Etkileşim Oranı (%)", 
+                        "Tahmini Gönderi Erişimi",
+                        "Sponsorlu İş Birliği Oranı",
+                        "Ağırlıklı Üretim Sektörleri"
+                    ],
+                    f"@{u1}": [
+                        f"{f1:,}", 
+                        m1['aqs_score'], 
+                        f"%{m1['credibility_score']}", 
+                        f"%{m1['er']:.2f}", 
+                        f"{m1['est_reach']:,}",
+                        f"%{m1['collab_ratio']:.1f}",
+                        ", ".join(m1['top_sectors'])
+                    ],
+                    f"@{u2}": [
+                        f"{f2:,}", 
+                        m2['aqs_score'], 
+                        f"%{m2['credibility_score']}", 
+                        f"%{m2['er']:.2f}", 
+                        f"{m2['est_reach']:,}",
+                        f"%{m2['collab_ratio']:.1f}",
+                        ", ".join(m2['top_sectors'])
+                    ]
                 })
                 st.table(cmp_table)
 
-                # YENİ EKLENEN İŞ BİRLİĞİ VE KIYASLAMA RAPORU METİN MANTIĞI
+                # 2. DİNAMİK YÖNETİCİ ÖZETİ (YAZI FORMATINDA)
                 winner_aqs = u1 if m1['aqs_score'] >= m2['aqs_score'] else u2
                 winner_collab = u1 if m1['collab_ratio'] > m2['collab_ratio'] else (u2 if m2['collab_ratio'] > m1['collab_ratio'] else "eşit")
 
-                aqs_text = f"Kitle kalitesi ve etkileşim gücü bakımından <b>@{winner_aqs}</b> markalar için daha stabil bir zemin sunmaktadır."
+                aqs_text = f"Kitle kalitesi ve etkileşim gücü bakımından <b>@{winner_aqs}</b> profili, markalar için algoritmik olarak daha stabil ve güvenilir bir zemin sunmaktadır."
                 
                 if winner_collab == "eşit":
-                    collab_text = "Her iki profil de ticari paylaşımlara benzer oranda yer vermektedir."
+                    collab_text = "Her iki profil de geçmiş içeriklerinde ticari paylaşımlara benzer oranda yer vermiştir. Her ikisinin de reklam ve sponsorluk deneyimi denktir."
                 else:
-                    collab_text = f"Bu durum, <b>@{winner_collab}</b> profilinin ticari çalışmalara daha yatkın ve marka iş birliklerine aktif olarak daha fazla yer verdiğini göstermektedir."
+                    collab_text = f"Sponsorlu içerik analizine göre, <b>@{winner_collab}</b> profilinin ticari çalışmalara daha yatkın olduğu ve marka iş birliklerine aktif olarak daha fazla yer verdiği tespit edilmiştir."
 
                 if winner_aqs == winner_collab or winner_collab == "eşit":
-                    rec_text = f"Hem kitle kalitesi hem de ticari içerik tecrübesi göz önüne alındığında <b>@{winner_aqs}</b> ile yapılacak bir kampanya oldukça güvenli bir yatırım olacaktır."
+                    rec_text = f"Hem yüksek kitle kalitesi hem de ticari içerik tecrübesi bir arada değerlendirildiğinde, <b>@{winner_aqs}</b> ile yapılacak bir kampanya yatırım getiriş (ROI) açısından en güvenli tercih olacaktır."
                 else:
-                    rec_text = f"Eğer hedef yüksek kitle güveni ve organik etkileşim ise <b>@{winner_aqs}</b> tercih edilmeli; ancak ticari içerik tecrübesine ve iş birliği alışkanlığına öncelik veriliyorsa <b>@{winner_collab}</b> alternatif olarak değerlendirilebilir."
+                    rec_text = f"Stratejik olarak; hedefiniz yüksek kitle güveni ve organik etkileşim ise <b>@{winner_aqs}</b> tercih edilmelidir. Ancak doğrudan ticari tecrübeye, satışa ve yoğun iş birliği alışkanlığına öncelik veriyorsanız <b>@{winner_collab}</b> daha uygun bir alternatif olarak öne çıkmaktadır."
 
                 st.markdown(f"""
                 <div class="report-box">
-                    <h4 style="color:#c084fc; margin-top:0; font-weight:800;">• DETAYLI KIYASLAMA VE İŞ BİRLİĞİ RAPORU</h4>
-                    <p style="color:#ffffff;"><b>Analiz Edilen Profiller:</b> @{u1} ve @{u2}</p>
-                    <hr style="border-top:1px solid #21262d; margin:12px 0;">
-                    <ul style="line-height:1.7; color:#ffffff;">
-                        <li><b>Skor ve Kitle Kalitesi:</b> @{u1} profilinin AQS skoru {m1['aqs_score']}/100, @{u2} profilinin ise {m2['aqs_score']}/100 olarak ölçülmüştür. {aqs_text}</li>
-                        <li><b>İş Birliği Sıklığı:</b> Son gönderiler baz alındığında @{u1} %{m1['collab_ratio']:.1f} oranında, @{u2} ise %{m2['collab_ratio']:.1f} oranında sponsorlu içerik (iş birliği) üretmektedir. {collab_text}</li>
-                        <li><b>Aktif Sektörler (@{u1}):</b> Ağırlıklı olarak {", ".join(m1['top_sectors'])} alanlarında içerik üretimi ve marka anlaşmaları yapmaktadır.</li>
-                        <li><b>Aktif Sektörler (@{u2}):</b> Ağırlıklı olarak {", ".join(m2['top_sectors'])} alanlarında içerik üretimi ve marka anlaşmaları yapmaktadır.</li>
-                        <li><b>MG BRAND OFFICE Önerisi:</b> {rec_text}</li>
-                    </ul>
+                    <h4 style="color:#c084fc; margin-top:0; font-weight:800;">• YÖNETİCİ ÖZETİ VE STRATEJİK ÖNERİ</h4>
+                    <p style="color:#8b949e; font-size: 0.95rem; margin-bottom: 15px;"><b>Analiz Edilen Profiller:</b> @{u1} ve @{u2}</p>
+                    <div style="line-height:1.7; color:#ffffff; font-size: 1.05rem;">
+                        <p>• <b>Kitle Karşılaştırması:</b> {aqs_text}</p>
+                        <p>• <b>Ticari Eğilim ve Sektör:</b> {collab_text}</p>
+                        <p>• <b>Nihai Karar:</b> {rec_text}</p>
+                    </div>
                 </div>
                 """, unsafe_allow_html=True)
             else:
