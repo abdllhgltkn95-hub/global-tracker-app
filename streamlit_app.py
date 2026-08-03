@@ -386,6 +386,8 @@ def run_all_algorithms(followers: int, posts: list, budget: float = 0.0):
 
     return {
         "er": er,
+        "avg_likes": avg_likes,
+        "avg_comments": avg_comments,
         "aqs_score": aqs_score,
         "er_score": er_score,
         "comment_score": comment_score,
@@ -463,7 +465,6 @@ with tab_hero:
                 m3.metric("Gerçek Kitle Oranı", f"%{m['authentic_pct']}")
                 m4.metric("Şüpheli Yorum Oranı", f"%{m['bot_pct']:.1f}")
 
-                # EĞER BÜTÇE GİRİLDİYSE MALİYET METRİKLERİ GÖSTERİLİR
                 if budget_hero > 0:
                     st.markdown("<br><h5 style='color:#a855f7; font-weight:800;'>• Maliyet ve ROI Analizi (Bütçe: ₺{:,})</h5>".format(budget_hero), unsafe_allow_html=True)
                     c1, c2, c3 = st.columns(3)
@@ -473,7 +474,6 @@ with tab_hero:
 
                 st.markdown("<br>", unsafe_allow_html=True)
 
-                # GRAFİKLER (4 Adet: Bot, Duygu Analizi, Format, Demografi)
                 row1_col1, row1_col2 = st.columns(2)
                 with row1_col1:
                     st.markdown("<h5 style='color:#ffffff; font-weight:800;'>• Kitle Kalite & Bot Ayrımı</h5>", unsafe_allow_html=True)
@@ -507,7 +507,6 @@ with tab_hero:
                 st.subheader("• Yorum Denetimi ve Bot Tespiti Dökümü")
                 st.dataframe(pd.DataFrame(m['comments_details']), use_container_width=True, height=200)
                 
-                # CSV DIŞA AKTARMA BUTONU
                 csv_data = pd.DataFrame(m['comments_details']).to_csv(index=False).encode('utf-8')
                 st.download_button(
                     label="• Yorum Veri Setini İndir (CSV)",
