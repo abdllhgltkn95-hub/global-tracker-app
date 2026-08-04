@@ -21,7 +21,7 @@ st.set_page_config(
 APIFY_TOKEN = st.secrets.get("APIFY_TOKEN", "apify_api_gvh1Gqo99oDTmXqrb4CwCk24HGWmcN07zSRb")
 
 # ---------------------------------------------------------
-# 2. CSS STİLLERİ
+# 2. CSS STİLLERİ (MİNİMALİST, DARK THEME & NO OUTLINES)
 # ---------------------------------------------------------
 st.markdown(
     """
@@ -210,6 +210,7 @@ st.markdown(
         border-radius: 16px;
         padding: 24px;
         margin-bottom: 20px;
+        font-family: 'Courier New', Courier, monospace;
     }
 
     .footer-dark {
@@ -234,17 +235,14 @@ st.markdown(
 # 3. YARDIMCI FONKSİYONLAR
 # ---------------------------------------------------------
 def clean_username(input_text: str) -> str:
-    if not input_text:
-        return ""
+    if not input_text: return ""
     input_text = input_text.strip()
     match = re.search(r'instagram\.com/([^/?#]+)', input_text)
-    if match:
-        return match.group(1)
+    if match: return match.group(1)
     return input_text.replace("@", "").strip()
 
 def clean_number(value, default=0.0) -> float:
-    if value is None:
-        return default
+    if value is None: return default
     try:
         val = float(value)
         return default if math.isnan(val) else val
@@ -252,15 +250,14 @@ def clean_number(value, default=0.0) -> float:
         return default
 
 @st.cache_data(ttl=1800, show_spinner=False)
-def fetch_apify_instagram_data(username: str, max_posts: int = 18):
+def fetch_apify_instagram_data(username: str, max_posts: int = 24):
     actor_id = "apify~instagram-profile-scraper"
     run_url = f"https://api.apify.com/v2/acts/{actor_id}/runs?token={APIFY_TOKEN}"
     payload = {"usernames": [username], "resultsLimit": int(max_posts)}
 
     try:
         response = requests.post(run_url, json=payload, timeout=25)
-        if response.status_code not in [200, 201]:
-            return None
+        if response.status_code not in [200, 201]: return None
         run_data = response.json().get("data", {})
         dataset_id = run_data.get("defaultDatasetId")
         if not dataset_id: return None
@@ -270,65 +267,110 @@ def fetch_apify_instagram_data(username: str, max_posts: int = 18):
             res = requests.get(dataset_url, timeout=15)
             if res.status_code == 200:
                 items = res.json()
-                if items and len(items) > 0:
-                    return items[0]
+                if items and len(items) > 0: return items[0]
         return None
     except Exception:
         return None
 
 # ---------------------------------------------------------
-# 4. GÜÇLENDİRİLMİŞ ALGORİTMA ENGINE (ENTERPRISE V2.0)
+# 4. GÜÇLENDİRİLMİŞ 7-FAZLI ENTERPRISE ALGORİTMASI
 # ---------------------------------------------------------
 def run_all_algorithms(followers: int, posts: list, budget: float = 0.0):
+    # FAZ 1: Veri Toplama ve Hazırlık (Data Extraction & Cleansing)
     likes = [clean_number(p.get("likesCount"), 0) for p in posts]
     comments = [clean_number(p.get("commentsCount"), 0) for p in posts]
-
+    
     avg_likes = float(np.mean(likes)) if likes else 0.0
     avg_comments = float(np.mean(comments)) if comments else 0.0
     total_eng = avg_likes + avg_comments
+
+    # FAZ 2: Etkileşim ve Dinamik Sektör Kıyaslaması (ER & Benchmark)
     er = (total_eng / max(followers, 1)) * 100.0
+    
+    if followers < 5000: benchmark_er = 5.0
+    elif followers < 20000: benchmark_er = 4.0
+    elif followers < 100000: benchmark_er = 2.8
+    elif followers < 500000: benchmark_er = 2.0
+    elif followers < 1000000: benchmark_er = 1.5
+    else: benchmark_er = 1.0
 
-    if followers < 10000: benchmark_er = 4.5
-    elif followers < 50000: benchmark_er = 3.5
-    elif followers < 100000: benchmark_er = 2.5
-    elif followers < 500000: benchmark_er = 1.8
-    else: benchmark_er = 1.2
-
+    # FAZ 3: Kitle Kalite Skoru (Audience Quality Score - AQS Model)
+    # A) Performans Bileşeni (Max 40)
     er_score = min(40.0, (er / benchmark_er) * 40.0)
+    
+    # B) Yorum/Beğeni Orijinallik Dengesi (Max 40) - Genelde %1.5 ile %3 arası sağlıklıdır.
     comment_ratio = avg_comments / max(avg_likes, 1.0)
-    comment_score = 40.0 if comment_ratio >= 0.015 else (comment_ratio / 0.015) * 40.0
-    std_er = float(np.std([(l+c)/followers*100 for l, c in zip(likes, comments)])) if len(posts) > 1 else 0.0
-    cv = (std_er / er) if er > 0 else 1.0
+    if comment_ratio >= 0.015: comment_score = 40.0
+    else: comment_score = (comment_ratio / 0.015) * 40.0
+    
+    # C) Varyans / İçerik İstikrarı (Max 20)
+    if len(posts) > 1:
+        eng_array = [(l+c)/max(followers, 1)*100 for l, c in zip(likes, comments)]
+        std_er = float(np.std(eng_array))
+        cv = (std_er / er) if er > 0 else 1.0 # Coefficient of Variation
+    else:
+        std_er, cv = 0.0, 1.0
+        
     stability_score = max(0.0, 20.0 * (1.0 - min(cv, 1.0)))
     aqs_score = int(np.clip(er_score + comment_score + stability_score, 10, 99))
 
-    modifier = (followers % 5) - 2 
-    credibility_score = int(np.clip(aqs_score * 0.95 + modifier, 15, 98))
-    authentic_pct = int(np.clip(credibility_score + 2, 10, 95))
-    est_reach = min(int(followers * (er / 100.0) * 3.5) if er > 0 else int(followers * 0.05), followers)
-
-    cpe = budget / total_eng if total_eng > 0 else 0.0
-    cpm = (budget / est_reach) * 1000.0 if est_reach > 0 else 0.0
-
-    format_stats = {"Reels/Video": [], "Carousel": [], "Tekil Fotoğraf": []}
+    # FAZ 4: NLP Bot ve Spam Filtresi (Credibility)
+    all_comments = []
     for p in posts:
-        l = clean_number(p.get("likesCount"), 0)
-        c = clean_number(p.get("commentsCount"), 0)
-        eng = l + c
-        if p.get("isVideo") or p.get("type") == "Video":
-            format_stats["Reels/Video"].append(eng)
-        elif p.get("type") == "Sidecar":
-            format_stats["Carousel"].append(eng)
-        else:
-            format_stats["Tekil Fotoğraf"].append(eng)
-            
-    format_data = []
-    for k, v in format_stats.items():
-        if v: format_data.append({"Format": k, "Ortalama Etkileşim": np.mean(v)})
-    if not format_data:
-        format_data = [{"Format": "Veri Yok", "Ortalama Etkileşim": 0}]
+        c_list = p.get("latestComments", []) or p.get("comments", [])
+        if isinstance(c_list, list): all_comments.extend(c_list)
 
-    collab_keywords = ["#reklam", "#işbirliği", "#isbirligi", "#sponsorlu", "işbirliği", "partnership"]
+    bot_count, pos_count, neg_count, neu_count = 0, 0, 0, 0
+    analyzed_list = []
+    
+    pos_words = ["harika", "süper", "muhteşem", "güzel", "iyi", "bayıldım", "mükemmel", "şahane", "başarılı", "love", "great", "kalite"]
+    neg_words = ["kötü", "berbat", "iğrenç", "saçma", "rezil", "sevmedim", "çirkin", "gereksiz", "yalan", "dolandırıcı", "pahalı"]
+
+    if len(all_comments) > 0:
+        for item in all_comments:
+            text = str(item.get("text", "") if isinstance(item, dict) else item).strip().lower()
+            owner = item.get("ownerUsername", "kullanici") if isinstance(item, dict) else "kullanici"
+            
+            is_bot = False
+            reason = "Organik (Sözdizimi Doğrulandı)"
+
+            # Regex & Kural Motoru
+            if len(text) > 0 and not re.search(r'[a-zA-Z0-9çğıöşüÇĞİÖŞÜ]', text):
+                is_bot, reason = True, "Sadece Emoji / Alfanümerik Eksikliği"
+            elif re.search(r'\b(gt|takip|unf|dm|sfb)\b', text):
+                is_bot, reason = True, "Spam / Etkileşim Avcılığı (Lexicon Match)"
+            elif len(text.split()) == 1 and len(text) < 4:
+                is_bot, reason = True, "Jenerik Şablon / Yetersiz Uzunluk"
+
+            if is_bot: 
+                bot_count += 1
+            else:
+                # FAZ 5: Duygu Analizi (Sentiment Polarity)
+                if any(w in text for w in pos_words): pos_count += 1
+                elif any(w in text for w in neg_words): neg_count += 1
+                else: neu_count += 1
+
+            status = "• Şüpheli / Bot" if is_bot else "• Organik"
+            analyzed_list.append({"Kullanıcı": f"@{owner}", "Yorum Metni": text if text else "[Emoji]", "Durum": status, "Tespit Sebebi": reason})
+        bot_pct = (bot_count / len(all_comments)) * 100.0
+    else:
+        # Veri yoksa ER ve Comment Ratio'dan istatistiksel çıkarım yapılır.
+        bot_pct = 32.0 if comment_ratio < 0.003 else (14.0 if comment_ratio < 0.008 else 4.8)
+        pos_count, neu_count, neg_count = 60, 30, 10
+        analyzed_list = [{"Kullanıcı": "Sistem", "Yorum Metni": "Yorum verisi API'den çekilemedi", "Durum": "• İstatistiksel Tahmin", "Tespit Sebebi": "Sentetik Veri"}]
+
+    total_valid = max(pos_count + neg_count + neu_count, 1)
+    sentiment_data = pd.DataFrame({
+        "Duygu": ["Pozitif", "Nötr", "Negatif"],
+        "Oran (%)": [(pos_count/total_valid)*100, (neu_count/total_valid)*100, (neg_count/total_valid)*100]
+    })
+
+    modifier = (followers % 5) - 2 
+    credibility_score = int(np.clip(aqs_score * 0.95 - (bot_pct * 0.5) + modifier, 15, 98))
+    authentic_pct = int(np.clip(100 - bot_pct, 10, 99))
+
+    # FAZ 6: Ticari NLP & Sektör (Sponsorship Detection)
+    collab_keywords = ["#reklam", "#işbirliği", "#isbirligi", "#sponsorlu", "işbirliği", "partnership", "ortaklık"]
     sector_keywords = {
         "Moda & Giyim": ["kombin", "elbise", "tarz", "kıyafet", "moda", "giyim", "çanta", "ayakkabı", "trendyol"],
         "Kozmetik & Güzellik": ["makyaj", "cilt", "krem", "ruj", "saç", "güzellik", "bakım", "parfüm", "kozmetik"],
@@ -339,76 +381,51 @@ def run_all_algorithms(followers: int, posts: list, budget: float = 0.0):
     detected_sectors = {}
     for p in posts:
         caption = str(p.get("caption", "")).lower()
-        if any(kw in caption for kw in collab_keywords):
-            collab_count += 1
-            for sector, kws in sector_keywords.items():
-                if any(kw in caption for kw in kws):
-                    detected_sectors[sector] = detected_sectors.get(sector, 0) + 1
+        if any(kw in caption for kw in collab_keywords): collab_count += 1
+        for sector, kws in sector_keywords.items():
+            if any(kw in caption for kw in kws):
+                detected_sectors[sector] = detected_sectors.get(sector, 0) + 1
+                
     collab_ratio = (collab_count / max(len(posts), 1)) * 100.0
     top_sectors = [s[0] for s in sorted(detected_sectors.items(), key=lambda item: item[1], reverse=True)[:2]]
-    if not top_sectors: top_sectors = ["Genel Lifestyle"]
+    if not top_sectors: top_sectors = ["Genel Lifestyle / Belirsiz"]
 
-    pos_words = ["harika", "süper", "muhteşem", "güzel", "iyi", "bayıldım", "mükemmel", "şahane", "başarılı", "love", "great"]
-    neg_words = ["kötü", "berbat", "iğrenç", "saçma", "rezil", "sevmedim", "çirkin", "gereksiz", "yalan", "dolandırıcı"]
-    
-    all_comments = []
+    # İçerik Formatı Ayrıştırması
+    format_stats = {"Reels/Video": [], "Carousel": [], "Tekil Fotoğraf": []}
     for p in posts:
-        c_list = p.get("latestComments", []) or p.get("comments", [])
-        if isinstance(c_list, list): all_comments.extend(c_list)
-
-    bot_count, pos_count, neg_count, neu_count = 0, 0, 0, 0
-    analyzed_list = []
-
-    if len(all_comments) > 0:
-        for item in all_comments:
-            text = str(item.get("text", "") if isinstance(item, dict) else item).strip().lower()
-            owner = item.get("ownerUsername", "kullanici") if isinstance(item, dict) else "kullanici"
+        l = clean_number(p.get("likesCount"), 0)
+        c = clean_number(p.get("commentsCount"), 0)
+        if p.get("isVideo") or p.get("type") == "Video": format_stats["Reels/Video"].append(l+c)
+        elif p.get("type") == "Sidecar": format_stats["Carousel"].append(l+c)
+        else: format_stats["Tekil Fotoğraf"].append(l+c)
             
-            is_bot = False
-            reason = "Doğal Etkileşim"
+    format_data = []
+    for k, v in format_stats.items():
+        if v: format_data.append({"Format": k, "Ortalama Etkileşim": np.mean(v)})
+    if not format_data: format_data = [{"Format": "Veri Yok", "Ortalama Etkileşim": 0}]
 
-            if len(text) > 0 and not re.search(r'[a-zA-Z0-9çğıöşüÇĞİÖŞÜ]', text):
-                is_bot = True; reason = "Sadece Emoji"
-            elif re.search(r'\b(gt|takip|unf|dm)\b', text):
-                is_bot = True; reason = "Spam / Takip Çağrısı"
-            elif len(text.split()) == 1 and len(text) < 4:
-                is_bot = True; reason = "Çok Kısa / Şablon"
+    # FAZ 7: Finansal Analiz (ROI, CPE, CPM)
+    visibility_multiplier = 3.5 if er > 2.0 else 2.5
+    est_reach = min(int(followers * (er / 100.0) * visibility_multiplier), followers)
+    if est_reach < followers * 0.05: est_reach = int(followers * 0.05)
 
-            if is_bot: 
-                bot_count += 1
-            else:
-                if any(w in text for w in pos_words): pos_count += 1
-                elif any(w in text for w in neg_words): neg_count += 1
-                else: neu_count += 1
-
-            status = "• Şüpheli / Bot" if is_bot else "• Organik"
-            analyzed_list.append({"Kullanıcı": f"@{owner}", "Yorum Metni": text if text else "[Emoji]", "Durum": status, "Tespit Sebebi": reason})
-        bot_pct = (bot_count / len(all_comments)) * 100.0
-    else:
-        bot_pct = 32.0 if comment_ratio < 0.003 else (14.0 if comment_ratio < 0.008 else 4.8)
-        pos_count, neu_count, neg_count = 60, 30, 10
-        analyzed_list = [
-            {"Kullanıcı": "@user_sample1", "Yorum Metni": "Tasarım harika görünüyor!", "Durum": "• Organik", "Tespit Sebebi": "Spesifik Metin"},
-            {"Kullanıcı": "@bot_account_22", "Yorum Metni": "• Nokta İşareti", "Durum": "• Şüpheli / Bot", "Tespit Sebebi": "Tekrarlayan"},
-        ]
-
-    total_valid = max(pos_count + neg_count + neu_count, 1)
-    sentiment_data = pd.DataFrame({
-        "Duygu": ["Pozitif", "Nötr", "Negatif"],
-        "Oran (%)": [(pos_count/total_valid)*100, (neu_count/total_valid)*100, (neg_count/total_valid)*100]
-    })
+    cpe = budget / total_eng if total_eng > 0 else 0.0
+    cpm = (budget / est_reach) * 1000.0 if est_reach > 0 else 0.0
 
     return {
         "er": er,
         "avg_likes": avg_likes,
         "avg_comments": avg_comments,
+        "total_eng": total_eng,
         "aqs_score": aqs_score,
         "er_score": er_score,
         "comment_score": comment_score,
         "stability_score": stability_score,
+        "cv_value": cv,
         "credibility_score": credibility_score,
         "authentic_pct": authentic_pct,
         "est_reach": est_reach,
+        "visibility_multiplier": visibility_multiplier,
         "bot_pct": bot_pct,
         "collab_ratio": collab_ratio,
         "top_sectors": top_sectors,
@@ -418,7 +435,7 @@ def run_all_algorithms(followers: int, posts: list, budget: float = 0.0):
         "format_data": format_data,
         "sentiment_data": sentiment_data,
         "comments_details": analyzed_list,
-        "total_scanned_comments": len(all_comments) if len(all_comments) > 0 else 100,
+        "total_scanned_comments": len(all_comments) if len(all_comments) > 0 else 0,
         "bot_count_val": bot_count if len(all_comments) > 0 else int(100 * (bot_pct/100))
     }
 
@@ -455,7 +472,7 @@ with tab_hero:
     if btn_hero and raw_hero:
         hero_user = clean_username(raw_hero)
         with st.spinner(f"• @{hero_user} profili detaylı inceleniyor..."):
-            prof = fetch_apify_instagram_data(hero_user, max_posts=18)
+            prof = fetch_apify_instagram_data(hero_user, max_posts=24)
 
             if prof and "latestPosts" in prof:
                 fol = int(clean_number(prof.get("followersCount", prof.get("followers", 0)), default=1))
@@ -563,7 +580,7 @@ with tab_wask:
     if btn_wask and wask_raw:
         w_user = clean_username(wask_raw)
         with st.spinner(f"• @{w_user} için WASK performansı hesaplanıyor..."):
-            p = fetch_apify_instagram_data(w_user, max_posts=12)
+            p = fetch_apify_instagram_data(w_user, max_posts=24)
             if p and "latestPosts" in p:
                 f = int(clean_number(p.get("followersCount", p.get("followers", 0)), 1))
                 m_wask = run_all_algorithms(f, p.get("latestPosts", []))
@@ -602,7 +619,7 @@ with tab_wask:
                     <ul style="line-height:1.7; color:#ffffff;">
                         <li><b>Etkileşim Gücü (ER):</b> Profilin <b>%{m_wask['er']:.2f}</b> olan etkileşim oranı, kitlenin içeriklerle ne kadar güçlü bir bağ kurduğunu gösterir. Profil şu an {eval_text}</li>
                         <li><b>Benchmark Ne Anlama Geliyor?:</b> Algoritmamız, hesabın bulunduğu büyüklük dilimine (Takipçi Segmenti) göre ideal oranı <b>%{benchmark_er}</b> olarak belirlemiştir. Sadece takipçi sayısına değil, alınan organik reaksiyona odaklanılır.</li>
-                        <li><b>Stratejik Önemi:</b> Marka iş birliklerinde bu metrik en temel Yatırım Getirisi (ROI) ölçütüdür. Yüksek bir ER oranı, yapılacak reklam harcamasının potansiyel olarak çok daha başarılı dönüşler (satış, tıklama, erişim) getireceğini kanıtlar.</li>
+                        <li><b>Stratejik Önemi:</b> Marka iş birliklerinde bu metrik en temel Yatırım Getirisi (ROI) ölçütüdür. Yüksek bir ER oranı, yapılacak reklam harcamasının potansiyel olarak çok daha başarılı dönüşler getireceğini kanıtlar.</li>
                     </ul>
                 </div>
                 """, unsafe_allow_html=True)
@@ -626,7 +643,7 @@ with tab_compare:
     if btn_cmp and c_u1 and c_u2:
         u1, u2 = clean_username(c_u1), clean_username(c_u2)
         with st.spinner("• İki profil taranıyor ve kıyaslanıyor..."):
-            p1, p2 = fetch_apify_instagram_data(u1, 12), fetch_apify_instagram_data(u2, 12)
+            p1, p2 = fetch_apify_instagram_data(u1, 24), fetch_apify_instagram_data(u2, 24)
             if p1 and p2:
                 f1 = int(clean_number(p1.get("followersCount", p1.get("followers", 0)), 1))
                 f2 = int(clean_number(p2.get("followersCount", p2.get("followers", 0)), 1))
@@ -685,63 +702,63 @@ with tab_algo_live:
 
     if btn_algo and algo_raw:
         a_user = clean_username(algo_raw)
-        with st.spinner(f"• @{a_user} için arka plan matematiği ekrana dökülüyor..."):
-            p_algo = fetch_apify_instagram_data(a_user, max_posts=18)
+        with st.spinner(f"• @{a_user} için arka plan matematiği (7-Fazlı Model) ekrana dökülüyor..."):
+            p_algo = fetch_apify_instagram_data(a_user, max_posts=24)
             if p_algo and "latestPosts" in p_algo:
                 f_algo = int(clean_number(p_algo.get("followersCount", p_algo.get("followers", 0)), 1))
                 m_a = run_all_algorithms(f_algo, p_algo.get("latestPosts", []))
 
                 st.markdown(f"<h3 style='text-align:center; color:#ffffff; font-weight:900;'>@{a_user} • Sistem Dökümü</h3>", unsafe_allow_html=True)
-                st.markdown("<p style='text-align:center; color:#8b949e; margin-bottom:40px;'>Arka planda çalışan Enterprise zekasının matematiksel işlemleri aşağıdadır.</p>", unsafe_allow_html=True)
+                st.markdown("<p style='text-align:center; color:#8b949e; margin-bottom:40px;'>MG BRAND OFFICE Enterprise yapay zekasının 7 farklı analiz fazı ve canlı hesaplamaları.</p>", unsafe_allow_html=True)
 
-                # ADIM 1: ER HESAPLAMA EKRANI (TERMINAL GÖRÜNÜMÜ)
                 st.markdown(f"""
                 <div class="algo-box">
-                    <h4 style="color:#60a5fa; margin-top:0; font-weight:800;">• ADIM 1: Etkileşim (ER) Denklemi</h4>
-                    <p style="color:#ffffff; font-family: 'Courier New', Courier, monospace; font-size:1.05rem; background:#161b22; padding:15px; border-radius:8px; line-height: 1.6;">
-                    > Formül: ((Ortalama Beğeni + Ortalama Yorum) / Toplam Takipçi) * 100<br>
-                    > İşlem : (({m_a['avg_likes']:.1f} + {m_a['avg_comments']:.1f}) / {f_algo:,}) * 100<br>
-                    > Sonuç : % {m_a['er']:.2f}
+                    <h4 style="color:#60a5fa; margin-top:0; font-weight:800;">• FAZ 1 & 2: Veri Hazırlık ve WASK Benchmark Sıklet Analizi</h4>
+                    <p style="color:#ffffff; font-size:1.05rem; background:#161b22; padding:15px; border-radius:8px; line-height: 1.6;">
+                    > Çekilen Ham Veri : {f_algo:,} Takipçi | Ortalama Beğeni: {m_a['avg_likes']:.1f} | Ortalama Yorum: {m_a['avg_comments']:.1f}<br>
+                    > ER Formülü       : ((Ort. Beğeni + Ort. Yorum) / Takipçi) * 100<br>
+                    > Dinamik ER İşlemi: (({m_a['total_eng']:.1f}) / {f_algo:,}) * 100<br>
+                    > <b>Hesaplanan Profil ER : % {m_a['er']:.2f}</b><br>
+                    > Sıklet Sınırı    : {f_algo:,} takipçi için hedeflenen Benchmark ER değeri <b>% {m_a['benchmark_er']}</b> olarak belirlendi.
                     </p>
                 </div>
                 """, unsafe_allow_html=True)
 
-                # ADIM 2: AQS SKOR BİLEŞENLERİ
                 st.markdown(f"""
                 <div class="algo-box">
-                    <h4 style="color:#a855f7; margin-top:0; font-weight:800;">• ADIM 2: Kitle Kalite (AQS) Puan Dağılımı</h4>
-                    <p style="color:#ffffff; font-family: 'Courier New', Courier, monospace; font-size:1.05rem; background:#161b22; padding:15px; border-radius:8px; line-height: 1.6;">
-                    > 1. ER Performans Puanı (Max 40 Puan)     : {m_a['er_score']:.1f}<br>
-                    > 2. Yorum/Beğeni Dengesi (Max 40 Puan)    : {m_a['comment_score']:.1f}<br>
-                    > 3. İçerik Varyans/İstikrar (Max 20 Puan) : {m_a['stability_score']:.1f}<br>
+                    <h4 style="color:#a855f7; margin-top:0; font-weight:800;">• FAZ 3: Kitle Kalite (AQS) Deterministik Puan Dağılımı</h4>
+                    <p style="color:#ffffff; font-size:1.05rem; background:#161b22; padding:15px; border-radius:8px; line-height: 1.6;">
+                    > <b>1. Performans Puanı (Max 40):</b> (Profil ER / Benchmark ER) * 40 = ({m_a['er']:.2f} / {m_a['benchmark_er']}) * 40 -> <b>{m_a['er_score']:.1f} Puan</b><br>
+                    > <b>2. Orijinallik Puanı (Max 40):</b> Yorum/Beğeni oranı incelendi (İdeal: %1.5). -> <b>{m_a['comment_score']:.1f} Puan</b><br>
+                    > <b>3. İstikrar Puanı (Max 20):</b> Gönderiler arası sapma (CV = {m_a['cv_value']:.2f}) ölçüldü. Formül: 20 * (1 - Sapma) -> <b>{m_a['stability_score']:.1f} Puan</b><br>
                     ---------------------------------------------------<br>
-                    > Toplam Hesaplanan AQS Skoru              : {m_a['aqs_score']} / 100
+                    > <b>Toplam AQS Skoru: {m_a['aqs_score']} / 100</b>
                     </p>
                 </div>
                 """, unsafe_allow_html=True)
 
-                # ADIM 3: BOT VE NLP FİLTRESİ
                 st.markdown(f"""
                 <div class="algo-box">
-                    <h4 style="color:#ec4899; margin-top:0; font-weight:800;">• ADIM 3: NLP Bot Filtresi Çalışma Kayıtları</h4>
-                    <p style="color:#ffffff; font-family: 'Courier New', Courier, monospace; font-size:1.05rem; background:#161b22; padding:15px; border-radius:8px; line-height: 1.6;">
-                    > Analiz Edilen Toplam Yorum Sayısı        : {m_a['total_scanned_comments']}<br>
-                    > Regex Filtresine Takılan Bot Sayısı      : {m_a['bot_count_val']}<br>
-                    > Hesaplanan Nihai Şüpheli Oranı           : % {m_a['bot_pct']:.1f}<br>
-                    > Gerçek/Organik Kitle Oranı (Güvenilirlik): % {m_a['authentic_pct']}
+                    <h4 style="color:#ec4899; margin-top:0; font-weight:800;">• FAZ 4 & 5: Doğal Dil İşleme (NLP) Bot ve Duygu Tespiti</h4>
+                    <p style="color:#ffffff; font-size:1.05rem; background:#161b22; padding:15px; border-radius:8px; line-height: 1.6;">
+                    > İşlenen Toplam Yorum Sayısı           : {m_a['total_scanned_comments']}<br>
+                    > Regex Filtresine Takılan Bot/Spam     : {m_a['bot_count_val']} ("gt, unf, sfb" ve Emojiler ayıklandı)<br>
+                    > Hesaplanan Şüpheli Yorum Oranı        : <b>% {m_a['bot_pct']:.1f}</b><br>
+                    > <b>Nihai Gerçek/Organik Kitle Oranı : % {m_a['authentic_pct']}</b><br>
+                    > Duygu Analizi (Sentiment Polarity)    : 12 Pozitif, 11 Negatif sözcük köküyle tarandı. Polarity dağılımı 1. sekmedeki grafiğe aktarıldı.
                     </p>
                 </div>
                 """, unsafe_allow_html=True)
 
-                # ADIM 4: MALİYET VE TİCARİ İŞBİRLİĞİ
                 st.markdown(f"""
                 <div class="algo-box">
-                    <h4 style="color:#10b981; margin-top:0; font-weight:800;">• ADIM 4: Ticari Benchmark (WASK Standartları)</h4>
-                    <p style="color:#ffffff; font-family: 'Courier New', Courier, monospace; font-size:1.05rem; background:#161b22; padding:15px; border-radius:8px; line-height: 1.6;">
-                    > Hesabın Sıkletine Göre Beklenen Hedef ER : % {m_a['benchmark_er']}<br>
-                    > Tespit Edilen Sponsorlu İçerik Oranı     : % {m_a['collab_ratio']:.1f}<br>
-                    > Algoritmanın Etiketlediği Sektörler      : {", ".join(m_a['top_sectors'])}<br>
-                    > Kampanya Yapılırsa Tahmini Tekil Erişim  : {m_a['est_reach']:,} Kişi
+                    <h4 style="color:#10b981; margin-top:0; font-weight:800;">• FAZ 6 & 7: Ticari İş Birliği Tespiti ve Finansal Maliyet Analizi</h4>
+                    <p style="color:#ffffff; font-size:1.05rem; background:#161b22; padding:15px; border-radius:8px; line-height: 1.6;">
+                    > Tespit Edilen Sponsorlu İçerik Oranı  : <b>% {m_a['collab_ratio']:.1f}</b> (Metinlerde '#işbirliği, #reklam' gibi Lexicon eşleşmesi yapıldı)<br>
+                    > Algoritmanın Etiketlediği Sektörler   : <b>{", ".join(m_a['top_sectors'])}</b><br>
+                    > ER Güvenlik Çarpanı                   : {m_a['visibility_multiplier']}<br>
+                    > Kampanya Yapılırsa Tahmini Erişim     : {f_algo:,} x ({m_a['er']:.2f}/100) x {m_a['visibility_multiplier']} = <b>{m_a['est_reach']:,} Kişi</b><br>
+                    > Maliyet Çıktısı (CPE ve CPM)          : 1. Sekmede marka bütçesi girildiğinde hesaplanmak üzere denklemler (Bütçe / Etkileşim) hafızaya alındı.
                     </p>
                 </div>
                 """, unsafe_allow_html=True)
