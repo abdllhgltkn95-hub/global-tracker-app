@@ -45,17 +45,18 @@ st.markdown(
     }
     .brand-subtitle { color: #64748b !important; font-size: 0.95rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; margin-top: 5px; }
 
-    [data-baseweb="tab-list"] { display: flex !important; justify-content: center !important; border-bottom: 1px solid #1e293b !important; margin: 0 auto 30px auto !important; gap: 20px !important; width: 100% !important; }
-    [data-baseweb="tab"] { background-color: transparent !important; border: none !important; border-radius: 0 !important; box-shadow: none !important; outline: none !important; padding: 12px 20px !important; margin: 0 !important; }
-    [data-baseweb="tab"] p, [data-baseweb="tab"] span { color: #64748b !important; font-weight: 700 !important; font-size: 1rem !important; text-transform: uppercase; letter-spacing: 0.5px;}
+    [data-baseweb="tab-list"] { display: flex !important; justify-content: center !important; border-bottom: 1px solid #1e293b !important; margin: 0 auto 30px auto !important; gap: 20px !important; width: 100% !important; flex-wrap: wrap; }
+    [data-baseweb="tab"] { background-color: transparent !important; border: none !important; border-radius: 0 !important; box-shadow: none !important; outline: none !important; padding: 12px 15px !important; margin: 0 !important; }
+    [data-baseweb="tab"] p, [data-baseweb="tab"] span { color: #64748b !important; font-weight: 700 !important; font-size: 0.95rem !important; text-transform: uppercase; letter-spacing: 0.5px;}
     [data-baseweb="tab"][aria-selected="true"] { border-bottom: 3px solid #3b82f6 !important; }
     [data-baseweb="tab"][aria-selected="true"] p, [data-baseweb="tab"][aria-selected="true"] span { color: #f8fafc !important; font-weight: 800 !important; }
 
     div[data-testid="stTextInput"], div[data-testid="stNumberInput"] { max-width: 500px !important; width: 100% !important; margin: 0 auto 10px auto !important; }
-    .stTextInput input, .stNumberInput input { background-color: #0f172a !important; border: 1px solid #334155 !important; border-radius: 8px !important; font-weight: 600 !important; padding: 14px 16px !important; font-size: 1rem !important; text-align: center !important; color: #f8fafc !important; transition: all 0.3s; }
-    .stTextInput input:focus, .stNumberInput input:focus { border-color: #3b82f6 !important; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important; }
+    div[data-testid="stTextArea"] { max-width: 600px !important; width: 100% !important; margin: 0 auto 10px auto !important; }
+    .stTextInput input, .stNumberInput input, .stTextArea textarea { background-color: #0f172a !important; border: 1px solid #334155 !important; border-radius: 8px !important; font-weight: 600 !important; padding: 14px 16px !important; font-size: 1rem !important; color: #f8fafc !important; transition: all 0.3s; }
+    .stTextInput input:focus, .stNumberInput input:focus, .stTextArea textarea:focus { border-color: #3b82f6 !important; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important; }
     
-    div[data-testid="stButton"] { display: flex !important; justify-content: center !important; max-width: 300px !important; margin: 10px auto 0 auto !important; width: 100% !important; }
+    div[data-testid="stButton"] { display: flex !important; justify-content: center !important; max-width: 350px !important; margin: 10px auto 0 auto !important; width: 100% !important; }
     .stButton>button { width: 100% !important; background-color: #2563eb !important; color: #ffffff !important; border: none !important; padding: 12px 24px !important; border-radius: 8px !important; font-weight: 700 !important; font-size: 0.95rem !important; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s !important; }
     .stButton>button:hover { background-color: #1d4ed8 !important; transform: translateY(-1px); }
 
@@ -164,7 +165,7 @@ def generate_html_report(user, data):
     return html
 
 # ---------------------------------------------------------
-# 4. ULTIMATE ENTERPRISE ALGORİTMASI (Anti-Fraud V5 & Summary)
+# 4. ULTIMATE ENTERPRISE ALGORİTMASI 
 # ---------------------------------------------------------
 def run_all_algorithms(followers: int, posts: list, budget: float = 0.0, username: str = ""):
     likes = [clean_number(p.get("likesCount"), 0) for p in posts]
@@ -217,22 +218,14 @@ def run_all_algorithms(followers: int, posts: list, budget: float = 0.0, usernam
     
     credibility_score = int(np.clip(authentic_pct * 0.85 + (er_score * 0.15), 5, 98))
 
-    # YÖNETİCİ ÖZETİ METNİ OLUŞTURMA (AI Text Generation)
     ai_summary = f"Sistem tarafından @{username} profilinin son verileri denetlendiğinde; kitle hacminin yaklaşık %{authentic_pct:.1f}'lik kısmının organik/aktif kullanıcılardan oluştuğu öngörülmektedir. "
-    
-    if bot_pct > 20:
-        ai_summary += f"Ancak, %{bot_pct:.1f} seviyesine ulaşan manipülasyon ve sentetik hesap (bot) riski tespit edilmiştir. Etkileşimlerdeki anormal sapmalar, profilin dışarıdan suni müdahaleler aldığını göstermekte olup, marka iş birlikleri için yüksek risk taşımaktadır. "
-    elif bot_pct > 10:
-        ai_summary += f"Sistemde %{bot_pct:.1f} seviyesinde şüpheli veya tamamen pasif kitle tespit edilmiştir. İstatistiksel sapmaların makul sınırların dışına çıkma eğilimi göstermesi sebebiyle bütçe optimizasyonunda bu fire oranının hesaba katılması önerilir. "
-    else:
-        ai_summary += f"Bot ve manipülasyon riski (%{bot_pct:.1f}) sektör standartlarının altında olup, oldukça güvenilir bir seviyededir. Gönderiler arası geçişler insan doğasına uygun ve manipülasyondan uzaktır. "
+    if bot_pct > 20: ai_summary += f"Ancak, %{bot_pct:.1f} seviyesine ulaşan manipülasyon ve sentetik hesap (bot) riski tespit edilmiştir. Etkileşimlerdeki anormal sapmalar, profilin dışarıdan suni müdahaleler aldığını göstermekte olup, marka iş birlikleri için yüksek risk taşımaktadır. "
+    elif bot_pct > 10: ai_summary += f"Sistemde %{bot_pct:.1f} seviyesinde şüpheli veya tamamen pasif kitle tespit edilmiştir. İstatistiksel sapmaların makul sınırların dışına çıkma eğilimi göstermesi sebebiyle bütçe optimizasyonunda bu fire oranının hesaba katılması önerilir. "
+    else: ai_summary += f"Bot ve manipülasyon riski (%{bot_pct:.1f}) sektör standartlarının altında olup, oldukça güvenilir bir seviyededir. Gönderiler arası geçişler insan doğasına uygun ve manipülasyondan uzaktır. "
 
-    if er >= benchmark_er:
-        ai_summary += f"Ayrıca profil, bulunduğu segmentteki %{benchmark_er:.2f}'lik standart etkileşim beklentisini aşarak %{er:.2f} oranında güçlü bir performans sergilemektedir."
-    else:
-        ai_summary += f"Buna karşın, profilin gösterdiği net etkileşim oranı (%{er:.2f}), bulunduğu takipçi büyüklüğü için beklenen pazar standardının (%{benchmark_er:.2f}) altında kalmaktadır."
+    if er >= benchmark_er: ai_summary += f"Ayrıca profil, bulunduğu segmentteki %{benchmark_er:.2f}'lik standart etkileşim beklentisini aşarak %{er:.2f} oranında güçlü bir performans sergilemektedir."
+    else: ai_summary += f"Buna karşın, profilin gösterdiği net etkileşim oranı (%{er:.2f}), bulunduğu takipçi büyüklüğü için beklenen pazar standardının (%{benchmark_er:.2f}) altında kalmaktadır."
 
-    # Marka Afinitesi ve NLP
     all_captions = ""
     mentions_list = []
     collab_keywords = ["#reklam", "#işbirliği", "#isbirligi", "#sponsorlu", "işbirliği", "partnership"]
@@ -295,7 +288,7 @@ def run_all_algorithms(followers: int, posts: list, budget: float = 0.0, usernam
     cpm = (budget / est_reach) * 1000.0 if est_reach > 0 else 0.0
 
     return {
-        "er": er, "avg_likes": avg_likes, "avg_comments": avg_comments, "total_eng": total_eng,
+        "followers": followers, "er": er, "avg_likes": avg_likes, "avg_comments": avg_comments, "total_eng": total_eng,
         "aqs_score": aqs_score, "er_score": er_score, "comment_score": comment_score, "stability_score": stability_score,
         "cv_value": cv, "comment_ratio": comment_ratio, "er_defect": er_defect,
         "credibility_score": credibility_score, "authentic_pct": authentic_pct, "est_reach": est_reach,
@@ -315,8 +308,9 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-tab_report, tab_demo, tab_finance, tab_compare = st.tabs([
+tab_report, tab_bulk, tab_demo, tab_finance, tab_compare = st.tabs([
     "• C-LEVEL DENETİM", 
+    "• TOPLU KAMPANYA (BULK)",
     "• İÇGÖRÜ & AFİNİTE",
     "• MALİYET & ROI", 
     "• ÇAPRAZ İSTİHBARAT"
@@ -368,7 +362,6 @@ with tab_report:
                 </div>
                 """, unsafe_allow_html=True)
 
-                # YAPAY ZEKA YÖNETİCİ ÖZETİ (YENİ)
                 st.markdown(f"""
                 <div class="ai-summary-box">
                     <div class="ai-summary-title">• Yapay Zeka Yönetici Özeti (AI Insights)</div>
@@ -414,14 +407,12 @@ with tab_report:
                 </div>
                 """, unsafe_allow_html=True)
 
-                # KURUMSAL METRİK KILAVUZU (YENİ)
                 st.markdown("<br>", unsafe_allow_html=True)
                 with st.expander("• METRİK SÖZLÜĞÜ VE TERMİNOLOJİ KILAVUZU"):
                     st.markdown("""
                     <div style='color:#cbd5e1; font-size:0.95rem; line-height:1.6;'>
                         <p><b>• AQS (Audience Quality Score):</b> Kitle Kalite Skoru. Profilin organik etkileşim gücü, beğeni/yorum dengesi ve botlardan arındırılmış saflık derecesini 100 üzerinden notlar. 70 ve üzeri yatırıma uygundur.</p>
                         <p><b>• Etkileşim Oranı (ER):</b> Toplam takipçi sayısına kıyasla, gönderi başına alınan ortalama beğeni ve yorumların yüzdesidir. Profilin kitlesiyle bağ kurma gücünü gösterir.</p>
-                        <p><b>• Sektör Standardı (Benchmark):</b> Aynı takipçi büyüklüğündeki küresel hesapların ortalama etkileşim oranıdır. Başarı ölçütü olarak referans alınır.</p>
                         <p><b>• İstatistiksel Varyans (CV):</b> Gönderilerin aldıkları etkileşimler arasındaki dalgalanma payıdır. İnsan davranışı doğası gereği dalgalıdır (Yüksek CV). Gönderilerin sürekli aynı sayılarda etkileşim alması (Düşük CV), algoritmamız tarafından sentetik paket bot müdahalesi olarak işaretlenir.</p>
                         <p><b>• Organik Kitle Kapasitesi:</b> Yapay zekanın tespit ettiği şüpheli, sahte veya tamamen pasif hesapların toplam takipçiden çıkartılmasıyla elde edilen "Gerçek ve Aktif İnsan" yüzdesidir.</p>
                         <p><b>• Sentetik (Bot) Riski:</b> Ucuz beğeni panelleri, yorum botları, takipçi hileleri veya etkileşim grupları (pod) ile şişirilmiş istatistiksel anomali taşıyan kitle oranıdır.</p>
@@ -432,7 +423,101 @@ with tab_report:
                 st.error("• Profil verisi çekilemedi veya API engeline takıldı.")
 
 # =========================================================
-# SEKME 2: İÇGÖRÜ & AFİNİTE
+# SEKME 2: TOPLU KAMPANYA FİZİBİLİTESİ (BULK SEARCH)
+# =========================================================
+with tab_bulk:
+    st.markdown("<h4 style='color:#f8fafc; font-weight:800; border-bottom:1px solid #1e293b; padding-bottom:10px;'>• TOPLU KAMPANYA FİZİBİLİTESİ (BULK SEARCH)</h4>", unsafe_allow_html=True)
+    st.markdown("<p style='color:#64748b; font-size:0.95rem; margin-bottom:20px;'>Ajans aday listesindeki profilleri alt alta veya virgülle ayırarak girin. Sistem tüm profilleri tarayarak kampanya bütçesi üzerinden toplu risk ve erişim raporu çıkartacaktır.</p>", unsafe_allow_html=True)
+    
+    _, col_bulk_center, _ = st.columns([1, 4, 1])
+    with col_bulk_center:
+        bulk_raw = st.text_area("Influencer Aday Listesi", placeholder="leyakirsan\nmerrtdmrcii\ntrendyol", height=150)
+        bulk_budget = st.number_input("Toplam Kampanya Bütçesi (₺)", min_value=1000, step=10000, value=250000)
+        btn_bulk = st.button("TÜM LİSTEYİ TARAYIP FİLTRELE", use_container_width=True)
+
+    if btn_bulk and bulk_raw:
+        usernames = [clean_username(u) for u in re.split(r'[,\n]+', bulk_raw) if u.strip()]
+        
+        if not usernames:
+            st.error("• Lütfen geçerli kullanıcı adları girin.")
+        else:
+            progress_text = "• Aday listesi taranıyor. Lütfen bekleyin..."
+            my_bar = st.progress(0, text=progress_text)
+            
+            results = []
+            failed_users = []
+            
+            for idx, user in enumerate(usernames):
+                p_data = fetch_apify_instagram_data(user, 24)
+                if p_data and "latestPosts" in p_data:
+                    f_count = int(clean_number(p_data.get("followersCount", p_data.get("followers", 0)), 1))
+                    m_data = run_all_algorithms(f_count, p_data.get("latestPosts", []), username=user)
+                    m_data['username'] = user
+                    results.append(m_data)
+                else:
+                    failed_users.append(user)
+                    
+                my_bar.progress((idx + 1) / len(usernames), text=f"• @{user} tarandı. İlerleyiş: {idx+1}/{len(usernames)}")
+                
+            time.sleep(1)
+            my_bar.empty()
+            
+            if failed_users:
+                st.warning(f"• Şu profillerin verisi çekilemedi veya API engeline takıldı: {', '.join(failed_users)}")
+                
+            if results:
+                total_reach = sum([r['est_reach'] for r in results])
+                avg_aqs = np.mean([r['aqs_score'] for r in results])
+                avg_bot = np.mean([r['bot_pct'] for r in results])
+                total_followers = sum([r['followers'] for r in results])
+                
+                cpm_bulk = (bulk_budget / total_reach) * 1000 if total_reach > 0 else 0
+                
+                st.markdown(f"""
+                <div class="exec-summary">
+                    <div>
+                        <p style="color:#64748b; font-size:0.85rem; font-weight:700; margin:0 0 5px 0; text-transform:uppercase;">Kampanya Özeti</p>
+                        <h2 style="margin: 0 0 5px 0; color: #f8fafc; font-size: 2.2rem; font-weight: 900; letter-spacing:-1px;">Toplam Erişim: {total_reach:,}</h2>
+                        <p style="color: #94a3b8; margin: 0; font-size: 0.95rem; font-weight: 500;">Havuzdaki Geçerli Profil Sayısı: {len(results)} • Toplam Takipçi Hacmi: {total_followers:,}</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <p style="color:#64748b; font-size:0.85rem; font-weight:700; margin:0 0 10px 0; text-transform:uppercase;">Ort. Kampanya Kalİtesİ (AQS)</p>
+                        <span class="badge-status" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); font-size:1.5rem;">• {int(avg_aqs)}</span>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # Riskli Profillerin Tespiti
+                toxic_profiles = [r for r in results if r['bot_pct'] > 20 or r['cv_value'] < 0.28 or r['aqs_score'] < 50]
+                
+                if toxic_profiles:
+                    st.markdown("<h5 style='color:#ef4444; font-weight:800;'>• KAMPANYAYI ZEHİRLEYEN RİSKLİ ADAYLAR</h5>", unsafe_allow_html=True)
+                    st.markdown("<p style='color:#94a3b8; font-size:0.9rem; margin-bottom:15px;'>Aşağıdaki profiller yüksek bot riski veya suni manipülasyon nedeniyle bütçe israfına yol açacaktır. Listeden çıkartılması önerilir.</p>", unsafe_allow_html=True)
+                    for tp in toxic_profiles:
+                        st.markdown(f"<div style='background:rgba(239, 68, 68, 0.05); border-left:3px solid #ef4444; padding:10px 15px; margin-bottom:10px; border-radius:4px;'><span style='color:#ef4444; font-weight:800;'>@{tp['username']}</span> — Bot Riski: <span style='color:#f8fafc;'>%{tp['bot_pct']:.1f}</span> | AQS Skoru: <span style='color:#f8fafc;'>{tp['aqs_score']}</span></div>", unsafe_allow_html=True)
+                else:
+                    st.markdown("<div style='background:rgba(16, 185, 129, 0.05); border-left:3px solid #10b981; padding:15px; margin-bottom:20px; border-radius:4px;'><span style='color:#10b981; font-weight:800;'>• LİSTE TEMİZ:</span> Aday havuzunda ağır ihlal veya yüksek bot oranına sahip profil tespit edilmedi.</div>", unsafe_allow_html=True)
+
+                st.markdown("<br><h5 style='color:#f8fafc; font-weight:800;'>• DETAYLI ADAY DÖKÜMÜ</h5>", unsafe_allow_html=True)
+                
+                df_results = pd.DataFrame([{
+                    "Kullanıcı Adı": f"@{r['username']}",
+                    "Takipçi": f"{r['followers']:,}",
+                    "AQS Skoru": r['aqs_score'],
+                    "Bot Riski (%)": f"%{r['bot_pct']:.1f}",
+                    "Etkileşim (ER)": f"%{r['er']:.2f}",
+                    "Tahmini Erişim": f"{r['est_reach']:,}"
+                } for r in results])
+                
+                st.dataframe(df_results, use_container_width=True, hide_index=True)
+                
+                st.markdown("<br>", unsafe_allow_html=True)
+                m1, m2 = st.columns(2)
+                m1.markdown(f"<div class='metric-card'><div class='metric-title'>Kampanya Ort. Bot Riski</div><div class='metric-value' style='color:#ef4444'>%{avg_bot:.1f}</div></div>", unsafe_allow_html=True)
+                m2.markdown(f"<div class='metric-card'><div class='metric-title'>Toplu CPM (1000 Gösterim Maliyeti)</div><div class='metric-value' style='color:#10b981'>₺{cpm_bulk:.2f}</div></div>", unsafe_allow_html=True)
+
+# =========================================================
+# SEKME 3: İÇGÖRÜ & AFİNİTE
 # =========================================================
 with tab_demo:
     if 'report_data' in st.session_state:
@@ -489,13 +574,13 @@ with tab_demo:
         st.info("• Analiz sonuçlarını görmek için lütfen önce 'C-LEVEL DENETİM' sekmesinden bir profili taratın.")
 
 # =========================================================
-# SEKME 3: MALİYET VE ROI ANALİZİ
+# SEKME 4: MALİYET VE ROI ANALİZİ
 # =========================================================
 with tab_finance:
     _, col_center_fin, _ = st.columns([1, 4, 1])
     with col_center_fin:
         fin_raw = st.text_input("Hedef Profil", placeholder="Örn: leyakirsan", key="fin_inp")
-        fin_budget = st.number_input("Planlanan Kampanya Bütçesi (₺)", min_value=1000, step=5000, value=50000, key="fin_budget")
+        fin_budget = st.number_input("Planlanan Kampanya Bütçesi (₺)", min_value=1000, step=5000, value=50000, key="fin_budget_single")
         btn_fin = st.button("FİNANSAL FİZİBİLİTEYİ HESAPLA", use_container_width=True, key="btn_fin")
 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -520,7 +605,7 @@ with tab_finance:
                 st.error("• Profil verisi çekilemedi.")
 
 # =========================================================
-# SEKME 4: ÇAPRAZ İSTİHBARAT
+# SEKME 5: ÇAPRAZ İSTİHBARAT
 # =========================================================
 with tab_compare:
     _, col_center_cmp, _ = st.columns([1, 4, 1])
