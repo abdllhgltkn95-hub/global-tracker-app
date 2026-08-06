@@ -21,91 +21,45 @@ st.set_page_config(
 APIFY_TOKEN = st.secrets.get("APIFY_TOKEN", "apify_api_gvh1Gqo99oDTmXqrb4CwCk24HGWmcN07zSRb")
 
 # ---------------------------------------------------------
-# 2. CSS STİLLERİ (DARK THEME & KURUMSAL)
+# 2. CSS STİLLERİ
 # ---------------------------------------------------------
 st.markdown(
     """
 <style>
     html, body, [data-testid="stAppViewContainer"], .stApp {
-        background-color: #000000 !important;
-        color: #ffffff !important;
+        background-color: #000000 !important; color: #ffffff !important;
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
         padding-bottom: 60px !important; 
     }
-
     h1, h2, h3, h4, h5, h6, p, span, div, label, li, td, th { color: #ffffff !important; }
-
-    @keyframes colorChange {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
-
+    @keyframes colorChange { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
     .reflection-container { text-align: center; padding-top: 15px; padding-bottom: 0px; }
-
     .brand-header-animated {
         font-size: 3.8rem; font-weight: 900; letter-spacing: -1.5px;
         background: linear-gradient(270deg, #2563eb, #a855f7, #ec4899, #3b82f6, #06b6d4);
-        background-size: 400% 400%;
-        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-size: 400% 400%; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         animation: colorChange 6s ease infinite; margin: 0; display: inline-block;
         -webkit-box-reflect: below -18px linear-gradient(transparent 50%, rgba(255, 255, 255, 0.2));
     }
-
-    /* SEKMELER */
-    [data-baseweb="tab-list"] {
-        display: flex !important; justify-content: center !important;
-        border-bottom: 1px solid #161b22 !important; margin: 0 auto 30px auto !important; 
-        gap: 16px !important; width: 100% !important;
-    }
-    [data-baseweb="tab"] {
-        background-color: transparent !important; border: none !important;
-        border-radius: 0 !important; box-shadow: none !important;
-        outline: none !important; padding: 10px 15px !important; margin: 0 !important;
-    }
-    [data-baseweb="tab"] p, [data-baseweb="tab"] span {
-        color: #8b949e !important; font-weight: 800 !important; font-size: 1.05rem !important;
-    }
+    [data-baseweb="tab-list"] { display: flex !important; justify-content: center !important; border-bottom: 1px solid #161b22 !important; margin: 0 auto 30px auto !important; gap: 16px !important; width: 100% !important; }
+    [data-baseweb="tab"] { background-color: transparent !important; border: none !important; border-radius: 0 !important; box-shadow: none !important; outline: none !important; padding: 10px 15px !important; margin: 0 !important; }
+    [data-baseweb="tab"] p, [data-baseweb="tab"] span { color: #8b949e !important; font-weight: 800 !important; font-size: 1.05rem !important; }
     [data-baseweb="tab"][aria-selected="true"] { border-bottom: 2px solid #ef4444 !important; }
-    [data-baseweb="tab"][aria-selected="true"] p, [data-baseweb="tab"][aria-selected="true"] span {
-        color: #ffffff !important; font-weight: 900 !important;
-    }
-
-    /* INPUTLAR VE BUTONLAR */
-    div[data-testid="stTextInput"], div[data-testid="stNumberInput"] {
-        max-width: 450px !important; width: 100% !important; margin: 0 auto 5px auto !important;
-    }
-    .stTextInput input, .stNumberInput input {
-        color: #ffffff !important; background-color: #0d1117 !important;
-        border: 2px solid #21262d !important; border-radius: 12px !important;
-        font-weight: 700 !important; padding: 12px 14px !important; font-size: 0.95rem !important; text-align: center !important;
-    }
-    .stTextInput input:focus, .stNumberInput input:focus {
-        border-color: #a855f7 !important; box-shadow: 0 0 15px rgba(168, 85, 247, 0.4) !important;
-    }
-    .stTextInput label, .stNumberInput label {
-        color: #ffffff !important; font-weight: 800 !important; font-size: 1rem !important;
-        display: block !important; text-align: center !important; margin-bottom: 8px !important;
-    }
-
+    [data-baseweb="tab"][aria-selected="true"] p, [data-baseweb="tab"][aria-selected="true"] span { color: #ffffff !important; font-weight: 900 !important; }
+    div[data-testid="stTextInput"], div[data-testid="stNumberInput"] { max-width: 450px !important; width: 100% !important; margin: 0 auto 5px auto !important; }
+    .stTextInput input, .stNumberInput input { color: #ffffff !important; background-color: #0d1117 !important; border: 2px solid #21262d !important; border-radius: 12px !important; font-weight: 700 !important; padding: 12px 14px !important; font-size: 0.95rem !important; text-align: center !important; }
+    .stTextInput input:focus, .stNumberInput input:focus { border-color: #a855f7 !important; box-shadow: 0 0 15px rgba(168, 85, 247, 0.4) !important; }
+    .stTextInput label, .stNumberInput label { color: #ffffff !important; font-weight: 800 !important; font-size: 1rem !important; display: block !important; text-align: center !important; margin-bottom: 8px !important; }
     div[data-testid="stButton"] { display: flex !important; justify-content: center !important; max-width: 250px !important; margin: 5px auto 0 auto !important; width: 100% !important; }
-    .stButton>button {
-        width: 100% !important; background: linear-gradient(270deg, #2563eb, #a855f7, #ec4899, #3b82f6);
-        background-size: 300% 300% !important; animation: colorChange 5s ease infinite !important;
-        color: #ffffff !important; border: none !important; padding: 10px 20px !important;
-        border-radius: 20px !important; font-weight: 900 !important; font-size: 0.95rem !important;
-        box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4) !important; transition: all 0.3s ease !important;
-    }
+    .stButton>button { width: 100% !important; background: linear-gradient(270deg, #2563eb, #a855f7, #ec4899, #3b82f6); background-size: 300% 300% !important; animation: colorChange 5s ease infinite !important; color: #ffffff !important; border: none !important; padding: 10px 20px !important; border-radius: 20px !important; font-weight: 900 !important; font-size: 0.95rem !important; box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4) !important; transition: all 0.3s ease !important; }
     .stButton>button:hover { transform: scale(1.04); box-shadow: 0 6px 30px rgba(168, 85, 247, 0.6) !important; }
-
-    /* KARTLAR VE METRİKLER */
+    [data-testid="stDownloadButton"] > button { background: #0d1117 !important; border: 1px solid #21262d !important; box-shadow: none !important; animation: none !important; color: #818cf8 !important; border-radius: 12px !important; }
+    [data-testid="stDownloadButton"] > button:hover { border-color: #818cf8 !important; background: #161b22 !important; }
     [data-testid="stMetric"] { background-color: #0d1117 !important; border: 1px solid #21262d !important; border-radius: 16px !important; padding: 18px !important; }
     [data-testid="stMetricLabel"] { color: #8b949e !important; font-weight: 800 !important; }
     [data-testid="stMetricValue"] { color: #ffffff !important; font-weight: 900 !important; }
-
     .report-box { background-color: #0d1117 !important; border: 1px solid #21262d !important; border-left: 6px solid #a855f7 !important; border-radius: 16px; padding: 24px; margin-top: 24px; }
     .anomaly-box { background-color: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 16px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
-    
     .footer-dark { position: fixed !important; bottom: 0 !important; left: 0 !important; width: 100% !important; text-align: center; color: #484f58 !important; background-color: #000000 !important; font-size: 0.85rem; padding: 15px 0 !important; border-top: 1px solid #161b22; z-index: 9999 !important; }
 </style>
 """, unsafe_allow_html=True)
@@ -148,7 +102,7 @@ def fetch_apify_instagram_data(username: str, max_posts: int = 24):
     except Exception: return None
 
 # ---------------------------------------------------------
-# 4. GÜÇLENDİRİLMİŞ ANTI-FRAUD ENTERPRISE ALGORİTMASI
+# 4. ACIMASIZ (PANDORA-STYLE) ANTI-FRAUD ALGORİTMASI
 # ---------------------------------------------------------
 def run_all_algorithms(followers: int, posts: list, budget: float = 0.0):
     likes = [clean_number(p.get("likesCount"), 0) for p in posts]
@@ -160,7 +114,6 @@ def run_all_algorithms(followers: int, posts: list, budget: float = 0.0):
 
     er = (total_eng / max(followers, 1)) * 100.0
     
-    # Sıklet Benchmark Sınırları
     if followers < 5000: benchmark_er = 5.0
     elif followers < 20000: benchmark_er = 4.0
     elif followers < 100000: benchmark_er = 2.8
@@ -182,24 +135,30 @@ def run_all_algorithms(followers: int, posts: list, budget: float = 0.0):
     stability_score = max(0.0, 20.0 * (1.0 - min(cv, 1.0)))
     aqs_score = int(np.clip(er_score + comment_score + stability_score, 10, 99))
 
-    # --- DİNAMİK BOT VE HAYALET TAKİPÇİ HESAPLAMA MOTORU ---
+    # --- PANDORA STRICT MODE: DİNAMİK BOT VE HAYALET HESAPLAMA ---
     er_defect = max(0.0, (benchmark_er - er) / benchmark_er)
     
-    if comment_ratio < 0.002: comment_anomaly = 0.35
-    elif comment_ratio < 0.008: comment_anomaly = 0.18
-    elif comment_ratio > 0.12: comment_anomaly = 0.20
-    else: comment_anomaly = 0.03
+    # Eskiden 0.002'ydi. Artık %0.8 altı Yorum/Beğeni direkt ağır ceza!
+    if comment_ratio < 0.008: comment_anomaly = 0.50 # Aşırı sessizlik (Bot panel beğenisi)
+    elif comment_ratio < 0.012: comment_anomaly = 0.25 # Şüpheli dengesizlik
+    elif comment_ratio > 0.15: comment_anomaly = 0.30 # Yorum botu / Çekiliş basması
+    else: comment_anomaly = 0.00 # Temiz
 
-    if cv < 0.10 and len(posts) > 3: variance_anomaly = 0.25
-    elif cv > 1.3: variance_anomaly = 0.20
-    else: variance_anomaly = 0.05
+    # Eskiden 0.10'du. Artık 0.28 altı zeki bot panellerini yakalar!
+    if cv < 0.28 and len(posts) > 4: variance_anomaly = 0.40 # Akıllı Paket Bot
+    elif cv > 1.2: variance_anomaly = 0.30 # Sıçramalı Sponsorluk Botu
+    else: variance_anomaly = 0.00 # Doğal dalgalanma
 
-    calculated_bot = 5.0 + (er_defect * 50.0) + (comment_anomaly * 30.0) + (variance_anomaly * 15.0)
-    bot_pct = float(np.clip(calculated_bot, 3.2, 94.5))
-    authentic_pct = float(np.clip(100.0 - bot_pct, 5.5, 96.8))
-    credibility_score = int(np.clip(authentic_pct * 0.92 + (er_score * 0.1), 10, 98))
+    # Acımasız Bot Hesaplama Formülü
+    calculated_bot = 10.0 + (er_defect * 50.0) + (comment_anomaly * 100.0) + (variance_anomaly * 100.0)
+    bot_pct = float(np.clip(calculated_bot, 3.2, 98.5))
+    authentic_pct = float(np.clip(100.0 - bot_pct, 1.5, 96.8))
+    
+    # AQS'i bot oranına göre çökert
+    if bot_pct > 30.0: aqs_score = int(aqs_score * 0.4)
+    elif bot_pct > 15.0: aqs_score = int(aqs_score * 0.7)
+    credibility_score = int(np.clip(authentic_pct * 0.90 + (er_score * 0.1), 5, 98))
 
-    # Sektör & Duygu Analizi (Sentetik)
     sentiment_data = pd.DataFrame({"Duygu": ["Pozitif", "Nötr", "Negatif"], "Oran (%)": [65.0, 25.0, 10.0]})
     collab_keywords = ["#reklam", "#işbirliği", "#isbirligi", "#sponsorlu", "işbirliği", "partnership"]
     sector_keywords = {
@@ -214,8 +173,7 @@ def run_all_algorithms(followers: int, posts: list, budget: float = 0.0):
         caption = str(p.get("caption", "")).lower()
         if any(kw in caption for kw in collab_keywords): collab_count += 1
         for sector, kws in sector_keywords.items():
-            if any(kw in caption for kw in kws):
-                detected_sectors[sector] = detected_sectors.get(sector, 0) + 1
+            if any(kw in caption for kw in kws): detected_sectors[sector] = detected_sectors.get(sector, 0) + 1
                 
     collab_ratio = (collab_count / max(len(posts), 1)) * 100.0
     top_sectors = [s[0] for s in sorted(detected_sectors.items(), key=lambda item: item[1], reverse=True)[:2]]
@@ -276,28 +234,25 @@ with tab_hero:
         budget_hero = st.number_input("Tahmini Kampanya Bütçesi (₺) - İsteğe Bağlı", min_value=0, step=1000, key="hero_budget")
         btn_hero = st.button("Derin Analiz Başlat", use_container_width=True, key="btn_hero")
 
-    st.markdown("<br>", unsafe_allow_html=True)
-
     if btn_hero and raw_hero:
         hero_user = clean_username(raw_hero)
-        with st.spinner(f"• @{hero_user} profili detaylı inceleniyor..."):
+        with st.spinner(f"• @{hero_user} profili acımasız filtrelerden geçiriliyor..."):
             prof = fetch_apify_instagram_data(hero_user, max_posts=24)
-
             if prof and "latestPosts" in prof:
                 fol = int(clean_number(prof.get("followersCount", prof.get("followers", 0)), default=1))
                 m = run_all_algorithms(fol, prof.get("latestPosts", []), budget=budget_hero)
 
                 st.markdown(f"""
-                <div style="background: #0d1117; border-radius: 16px; padding: 24px; margin-bottom: 24px; border: 1px solid #21262d; box-shadow: 0 8px 25px rgba(0,0,0,0.5);">
+                <div style="background: #0d1117; border-radius: 16px; padding: 24px; margin-bottom: 24px; border: 1px solid #21262d;">
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
                         <div>
                             <span style="background: #1e1b4b; color: #818cf8; padding: 6px 16px; border-radius: 20px; font-weight: 800; font-size: 0.85rem;">INFLUENCER HERO AUDIT</span>
                             <h2 style="margin: 12px 0 0 0; color: #ffffff; font-size: 2.2rem; font-weight: 900;">@{hero_user}</h2>
-                            <p style="color: #8b949e; margin: 4px 0 0 0; font-weight: 700; font-size: 1.05rem;">Toplam Takipçi: {fol:,}</p>
+                            <p style="color: #8b949e; margin: 4px 0 0 0; font-weight: 700;">Toplam Takipçi: {fol:,}</p>
                         </div>
                         <div style="text-align: right;">
-                            <h1 style="font-size: 3.5rem; margin: 0; color: #a855f7; font-weight: 900;">%{m['credibility_score']}</h1>
-                            <p style="color: #ffffff; font-size: 0.95rem; margin: 0; font-weight: 800;">Kitle Kalite Puanı (AQS)</p>
+                            <h1 style="font-size: 3.5rem; margin: 0; color: #a855f7; font-weight: 900;">{m['aqs_score']}</h1>
+                            <p style="color: #ffffff; font-size: 0.95rem; margin: 0; font-weight: 800;">AQS (Kalite Skoru)</p>
                         </div>
                     </div>
                 </div>
@@ -309,30 +264,19 @@ with tab_hero:
                 m3.metric("Gerçek Kitle Oranı", f"%{m['authentic_pct']:.1f}")
                 m4.metric("Şüpheli/Bot Oranı", f"%{m['bot_pct']:.1f}")
 
-                if budget_hero > 0:
-                    st.markdown(f"<br><h5 style='color:#a855f7; font-weight:800;'>• Maliyet ve ROI Analizi (Bütçe: ₺{budget_hero:,})</h5>", unsafe_allow_html=True)
-                    c1, c2, c3 = st.columns(3)
-                    c1.metric("Etkileşim Başına Maliyet (CPE)", f"₺{m['cpe']:.2f}")
-                    c2.metric("1000 Gösterim Maliyeti (CPM)", f"₺{m['cpm']:.2f}")
-                    c3.metric("Tahmini Tekil Erişim", f"{m['est_reach']:,}")
-
                 st.markdown("<br>", unsafe_allow_html=True)
-
                 row1_col1, row1_col2 = st.columns(2)
                 with row1_col1:
-                    st.markdown("<h5 style='color:#ffffff; font-weight:800;'>• Kitle Kalite & Bot Ayrımı</h5>", unsafe_allow_html=True)
                     cred_df = pd.DataFrame({"Segment": ["Gerçek / Aktif", "Şüpheli / Bot"], "Oran (%)": [m['authentic_pct'], m['bot_pct']]})
-                    fig_pie = px.pie(cred_df, names="Segment", values="Oran (%)", color="Segment", color_discrete_map={"Gerçek / Aktif": "#2563eb", "Şüpheli / Bot": "#ef4444"}, hole=0.5)
-                    fig_pie.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color="#ffffff"), margin=dict(t=10, b=10, l=10, r=10))
+                    fig_pie = px.pie(cred_df, names="Segment", values="Oran (%)", color="Segment", color_discrete_map={"Gerçek / Aktif": "#2563eb", "Şüpheli / Bot": "#ef4444"}, hole=0.5, title="Kitle Kalite Dağılımı")
+                    fig_pie.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color="#ffffff"))
                     st.plotly_chart(fig_pie, use_container_width=True)
 
                 with row1_col2:
-                    st.markdown("<h5 style='color:#ffffff; font-weight:800;'>• İçerik Formatı Performansı</h5>", unsafe_allow_html=True)
                     fmt_df = pd.DataFrame(m['format_data'])
-                    fig_fmt = px.bar(fmt_df, x="Format", y="Ortalama Etkileşim", color_discrete_sequence=["#3b82f6"])
-                    fig_fmt.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color="#ffffff"), margin=dict(t=10, b=10, l=10, r=10))
+                    fig_fmt = px.bar(fmt_df, x="Format", y="Ortalama Etkileşim", color_discrete_sequence=["#3b82f6"], title="Format Performansı")
+                    fig_fmt.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color="#ffffff"))
                     st.plotly_chart(fig_fmt, use_container_width=True)
-
             else:
                 st.error("• Profil verisi çekilemedi. Kullanıcı adını kontrol edin.")
 
@@ -343,25 +287,16 @@ with tab_wask:
     _, col_center_wask, _ = st.columns([1.5, 3, 1.5])
     with col_center_wask:
         st.markdown('<div style="height: 40px;"></div>', unsafe_allow_html=True)
-        wask_raw = st.text_input("Kullanıcı Adı veya Profil Linki Girin", placeholder="Örn: mg brand office", key="wask_inp")
-        btn_wask = st.button("Performans Analizi Yap", use_container_width=True, key="btn_wask")
-
-    st.markdown("<br>", unsafe_allow_html=True)
+        wask_raw = st.text_input("Kullanıcı Adı veya Profil Linki", placeholder="Örn: mg brand office", key="wask_inp")
+        btn_wask = st.button("WASK Analizi", use_container_width=True, key="btn_wask")
 
     if btn_wask and wask_raw:
         w_user = clean_username(wask_raw)
-        with st.spinner(f"• @{w_user} için WASK performansı hesaplanıyor..."):
+        with st.spinner(f"• @{w_user} WASK standartlarında ölçülüyor..."):
             p = fetch_apify_instagram_data(w_user, max_posts=24)
             if p and "latestPosts" in p:
                 f = int(clean_number(p.get("followersCount", p.get("followers", 0)), 1))
                 m_wask = run_all_algorithms(f, p.get("latestPosts", []))
-
-                w1, w2, w3 = st.columns(3)
-                w1.metric("Etkileşim Oranı (ER)", f"%{m_wask['er']:.2f}")
-                w2.metric("Ortalama Beğeni", f"{int(m_wask['avg_likes']):,}")
-                w3.metric("Ortalama Yorum", f"{int(m_wask['avg_comments']):,}")
-
-                st.markdown("<br><h3 style='color:#ffffff; font-weight:800; font-size:1.5rem;'>• Sektör Etkileşim Kıyaslaması (WASK)</h3>", unsafe_allow_html=True)
                 
                 benchmark_er = m_wask['benchmark_er']
                 wask_chart_df = pd.DataFrame({
@@ -372,7 +307,6 @@ with tab_wask:
                 fig_wask.update_traces(texttemplate='%{text:.2f}%', textposition='outside')
                 fig_wask.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color="#ffffff"))
                 st.plotly_chart(fig_wask, use_container_width=True)
-
             else:
                 st.error("• Profil verisi çekilemedi.")
 
@@ -389,7 +323,7 @@ with tab_compare:
 
     if btn_cmp and c_u1 and c_u2:
         u1, u2 = clean_username(c_u1), clean_username(c_u2)
-        with st.spinner("• İki profil taranıyor ve kıyaslanıyor..."):
+        with st.spinner("• İki profil acımasızca kıyaslanıyor..."):
             p1, p2 = fetch_apify_instagram_data(u1, 24), fetch_apify_instagram_data(u2, 24)
             if p1 and p2:
                 f1 = int(clean_number(p1.get("followersCount", p1.get("followers", 0)), 1))
@@ -404,10 +338,10 @@ with tab_compare:
                 })
                 st.table(cmp_table)
             else:
-                st.error("• Profillerden biri veya ikisi bulunamadı.")
+                st.error("• Profiller bulunamadı.")
 
 # =========================================================
-# SEKME 4: KURUMSAL DENETİM RAPORU (YENİ ANTI-FRAUD EKRANI)
+# SEKME 4: KURUMSAL DENETİM RAPORU (ACIMASIZ ANTI-FRAUD)
 # =========================================================
 with tab_report:
     _, col_center_rep, _ = st.columns([1.5, 3, 1.5])
@@ -420,19 +354,20 @@ with tab_report:
 
     if btn_rep and rep_raw:
         r_user = clean_username(rep_raw)
-        with st.spinner(f"• @{r_user} algoritmik risk ve bot manipülasyon testlerine tabi tutuluyor..."):
+        with st.spinner(f"• @{r_user} Pandora seviyesi filtrelerden geçiriliyor..."):
             p_rep = fetch_apify_instagram_data(r_user, max_posts=24)
             if p_rep and "latestPosts" in p_rep:
                 f_rep = int(clean_number(p_rep.get("followersCount", p_rep.get("followers", 0)), 1))
                 m_r = run_all_algorithms(f_rep, p_rep.get("latestPosts", []))
 
-                st.markdown(f"<h3 style='text-align:center; color:#ffffff; font-weight:900;'>@{r_user} • Kurumsal İstihbarat ve Algoritmik Denetim Raporu</h3>", unsafe_allow_html=True)
-                st.markdown("<p style='text-align:center; color:#8b949e; margin-bottom:40px;'>MG BRAND OFFICE Anti-Fraud algoritması, profilin olası bot panelleri kullanıp kullanmadığını istatistiksel sapmalarla denetler.</p>", unsafe_allow_html=True)
+                st.markdown(f"<h3 style='text-align:center; color:#ffffff; font-weight:900;'>@{r_user} • Algoritmik Risk & İstihbarat Raporu</h3>", unsafe_allow_html=True)
+                st.markdown("<p style='text-align:center; color:#8b949e; margin-bottom:40px;'>MG BRAND OFFICE Enterprise V4 (Strict Mode), profilin olası zeki bot panelleri kullanıp kullanmadığını acımasızca denetler.</p>", unsafe_allow_html=True)
 
-                if m_r['bot_pct'] > 30 or m_r['cv_value'] < 0.15:
+                # YENİ ACIMASIZ RİSK LİMİTLERİ (Pandora Mode)
+                if m_r['bot_pct'] > 20 or m_r['cv_value'] < 0.28:
                     risk_status, risk_color = "YÜKSEK RİSK (RED FLAG)", "#ef4444"
-                elif m_r['bot_pct'] > 15 or m_r['cv_value'] < 0.3:
-                    risk_status, risk_color = "ORTA RİSK (İzleme Önerilir)", "#f59e0b"
+                elif m_r['bot_pct'] > 10 or m_r['cv_value'] < 0.35:
+                    risk_status, risk_color = "ORTA RİSK (Şüpheli)", "#f59e0b"
                 else:
                     risk_status, risk_color = "DÜŞÜK RİSK (Güvenilir)", "#10b981"
 
@@ -443,17 +378,17 @@ with tab_report:
 
                 st.markdown("<br><h4 style='color:#ffffff; font-weight:800;'>• Manipülasyon & Anomali Testleri (Bot Tespiti)</h4>", unsafe_allow_html=True)
 
-                # SENARYO 1: Yorum/Beğeni Dengesizliği
+                # SENARYO 1: Yorum/Beğeni Dengesizliği (Giyotin)
                 c_ratio = m_r['comment_ratio']
-                if c_ratio < 0.003: 
-                    stat1, clr1, icon1 = "KRİTİK RİSK (Sadece Beğeni Botu Şüphesi)", "#ef4444", "🚨"
-                    desc1 = f"Hesabın Beğeni/Yorum dengesi insan doğasına aykırı şekilde kopuk (%{(c_ratio*100):.2f}). Profil ucuz beğeni paneli kullanmış olabilir."
-                elif c_ratio > 0.12:
+                if c_ratio < 0.008: 
+                    stat1, clr1, icon1 = "KRİTİK RİSK (Beğeni Botu Şüphesi)", "#ef4444", "🚨"
+                    desc1 = f"Hesabın Beğeni/Yorum dengesi insan doğasına aykırı şekilde kopuk (%{(c_ratio*100):.2f}). Profil ucuz beğeni paneli veya hayalet beğeni kullanmış."
+                elif c_ratio > 0.15:
                     stat1, clr1, icon1 = "RİSKLİ (Şablon Yorum Şüphesi)", "#f59e0b", "⚠️"
-                    desc1 = f"Aşırı yüksek yorum oranı tespit edildi (%{(c_ratio*100):.2f}). Çekiliş hesabı veya yorum paneli botu olabilir."
+                    desc1 = f"Aşırı yüksek yorum oranı tespit edildi (%{(c_ratio*100):.2f}). Yorum paneli veya çekiliş hesapları kullanılmış."
                 else:
                     stat1, clr1, icon1 = "DOĞAL DENGE (Temiz)", "#10b981", "✅"
-                    desc1 = f"Yorum ve beğeni arasındaki oran (%{(c_ratio*100):.2f}) sağlıklı insan davranışlarına ve organik kitle reaksiyonuna uygundur."
+                    desc1 = f"Yorum ve beğeni arasındaki oran (%{(c_ratio*100):.2f}) sağlıklı insan davranışlarına ve organik reaksiyona uygundur."
 
                 st.markdown(f"""
                 <div class="anomaly-box" style="border-left: 4px solid {clr1};">
@@ -461,23 +396,21 @@ with tab_report:
                         <h5 style="margin:0; color:#ffffff; font-weight:800;">1. Yorum ve Beğeni Orijinalliği Denetimi</h5>
                         <p style="margin:5px 0 0 0; color:#8b949e; font-size:0.9rem;">{desc1}</p>
                     </div>
-                    <div style="text-align:right;">
-                        <span style="color:{clr1}; font-weight:800; font-size:1rem;">{icon1} {stat1}</span>
-                    </div>
+                    <div style="text-align:right;"><span style="color:{clr1}; font-weight:800; font-size:1rem;">{icon1} {stat1}</span></div>
                 </div>
                 """, unsafe_allow_html=True)
 
-                # SENARYO 2: Gönderi Varyansı (Suni Düzenlilik)
+                # SENARYO 2: Gönderi Varyansı (Zeki Paket Bot Yakalayıcı)
                 cv_val = m_r['cv_value']
-                if cv_val < 0.15:
-                    stat2, clr2, icon2 = "KRİTİK RİSK (Suni Düzenlilik / Paket Bot)", "#ef4444", "🚨"
-                    desc2 = f"Gönderiler arası dalgalanma (Sapma: {cv_val:.2f}) imkansız denecek kadar düşük. Profil her postuna sabit rakamlı 'Beğeni Paketi' basıyor olabilir."
-                elif cv_val > 1.3:
-                    stat2, clr2, icon2 = "RİSKLİ (Aşırı Sıçrama / Sponsorluk Botu)", "#f59e0b", "⚠️"
-                    desc2 = f"İçerikler arası çok sert uçurumlar var (Sapma: {cv_val:.2f}). Bazı (muhtemelen sponsorlu) içeriklere dışarıdan ani bot basılmış olabilir."
+                if cv_val < 0.28:
+                    stat2, clr2, icon2 = "KRİTİK RİSK (Paket Bot / Suni Düzenlilik)", "#ef4444", "🚨"
+                    desc2 = f"Gönderiler arası dalgalanma (Sapma: {cv_val:.2f}) imkansız denecek kadar düşük. Profil her postuna sabit rastgeleli 'Zeki Beğeni Paketi' basıyor."
+                elif cv_val > 1.2:
+                    stat2, clr2, icon2 = "RİSKLİ (Sıçramalı Sponsorluk Botu)", "#f59e0b", "⚠️"
+                    desc2 = f"İçerikler arası çok sert uçurumlar var (Sapma: {cv_val:.2f}). Reklamlı içeriklere manipülatif dış bot basılmış olabilir."
                 else:
                     stat2, clr2, icon2 = "DOĞAL DALGALANMA (Temiz)", "#10b981", "✅"
-                    desc2 = f"Gönderi etkileşimleri arasındaki geçişler (Sapma: {cv_val:.2f}) tam olarak insan davranışına uygun, organik dalgalanmalar gösteriyor."
+                    desc2 = f"Gönderi etkileşimleri (Sapma: {cv_val:.2f}) insan davranışına uygun, organik dalgalanmalar gösteriyor."
 
                 st.markdown(f"""
                 <div class="anomaly-box" style="border-left: 4px solid {clr2};">
@@ -485,42 +418,7 @@ with tab_report:
                         <h5 style="margin:0; color:#ffffff; font-weight:800;">2. İstatistiksel Varyans (CV) Denetimi</h5>
                         <p style="margin:5px 0 0 0; color:#8b949e; font-size:0.9rem;">{desc2}</p>
                     </div>
-                    <div style="text-align:right;">
-                        <span style="color:{clr2}; font-weight:800; font-size:1rem;">{icon2} {stat2}</span>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-
-                # SENARYO 3: Etkileşim Kusuru (Hayalet Takipçi)
-                def_val = m_r['er_defect']
-                if def_val > 0.6:
-                    stat3, clr3, icon3 = "YÜKSEK (Ölü Kitle / Hayalet Takipçi)", "#ef4444", "🚨"
-                    desc3 = f"Takipçi hacmine (%{m_r['benchmark_er']} beklenirken) oranla alınan reaksiyon (%{m_r['er']:.2f}) felaket seviyede. Profil takipçi satın almış veya kitlesi tamamen pasifleşmiş."
-                elif def_val > 0.3:
-                    stat3, clr3, icon3 = "ORTA (Zayıf Kitle İletişimi)", "#f59e0b", "⚠️"
-                    desc3 = "Hesap sektör standardının gerisinde kalıyor. Kitlenin bir kısmı takipten çıkmamış pasif kullanıcılardan oluşuyor."
-                else:
-                    stat3, clr3, icon3 = "GÜÇLÜ (Aktif Kitle)", "#10b981", "✅"
-                    desc3 = "Sektör standardı başarıyla yakalanmış veya aşılmış. Hayalet takipçi barındırmayan, oldukça diri bir kitle mevcut."
-
-                st.markdown(f"""
-                <div class="anomaly-box" style="border-left: 4px solid {clr3};">
-                    <div>
-                        <h5 style="margin:0; color:#ffffff; font-weight:800;">3. Kitle Reaksiyonu (Etkileşim Uçurumu) Denetimi</h5>
-                        <p style="margin:5px 0 0 0; color:#8b949e; font-size:0.9rem;">{desc3}</p>
-                    </div>
-                    <div style="text-align:right;">
-                        <span style="color:{clr3}; font-weight:800; font-size:1rem;">{icon3} {stat3}</span>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-
-                st.markdown(f"""
-                <div class="report-box">
-                    <h4 style="color:#60a5fa; margin-top:0; font-weight:800;">• Denetim Sonucu ve Yatırım Uyarıları</h4>
-                    <p style="color:#ffffff; line-height: 1.7;">
-                    Sistem profilin beğeni/takipçi dengesini ve gönderiler arası dalgalanmayı analiz etmiştir. Yukarıdaki 3 ölümcül testin birleşimine göre kitlenin genel bot/spam oranı <b>%{m_r['bot_pct']:.1f}</b> olarak saptanmıştır. Marka bütçesinin sadece <b>gerçek ve aktif olan {m_r['authentic_pct']:.1f}%</b> segmentindeki kitleye ulaşacağı öngörülerek, yatırım getirisinin (ROI) bu risklere göre hesaplanması yöneticilere önemle tavsiye edilir.
-                    </p>
+                    <div style="text-align:right;"><span style="color:{clr2}; font-weight:800; font-size:1rem;">{icon2} {stat2}</span></div>
                 </div>
                 """, unsafe_allow_html=True)
 
