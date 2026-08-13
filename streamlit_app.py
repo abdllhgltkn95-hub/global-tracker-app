@@ -115,6 +115,18 @@ def fetch_tiktok_data_simulated(username: str):
     time.sleep(1.5)
     return {"followersCount": 450000, "latestPosts": [{"likesCount": 8500, "commentsCount": 150, "viewsCount": 1500000, "caption": "Trend #fyp"}, {"likesCount": 92000, "commentsCount": 1200, "viewsCount": 950000, "caption": "Vlog"}, {"likesCount": 88000, "commentsCount": 1100, "viewsCount": 890000, "caption": "Dans @zara @trendyol"}]}
 
+def fetch_youtube_data_simulated(username: str):
+    """YouTube motoru için simülasyon (Gerçek API bağlanana kadar)"""
+    time.sleep(1.8)
+    return {
+        "followersCount": 1250000, # Abone Sayısı
+        "latestPosts": [
+            {"likesCount": 45000, "commentsCount": 3200, "viewsCount": 850000, "caption": "Yeni teknoloji incelemesi harika oldu!"}, 
+            {"likesCount": 38000, "commentsCount": 2100, "viewsCount": 720000, "caption": "Kamera testi ve Vlog stili çekim."}, 
+            {"likesCount": 65000, "commentsCount": 4800, "viewsCount": 1200000, "caption": "Büyük ödüllü yarışma duyurusu #shorts"}
+        ]
+    }
+
 # ---------------------------------------------------------
 # 4. GÖRSEL ÇİZİM FONKSİYONLARI 
 # ---------------------------------------------------------
@@ -175,7 +187,21 @@ def run_all_algorithms(followers: int, posts: list, platform: str = "• Instagr
     
     er = (total_eng / max(followers, 1)) * 100.0
 
-    if "TikTok" in platform:
+    if "YouTube" in platform:
+        benchmark_er = 4.0 if followers < 500000 else 2.5
+        avg_views = np.mean(views) if views else 0
+        
+        # YouTube ER hesaplaması İzlenme (Views) üzerinden yapılır
+        if avg_views > 0: er = (total_eng / avg_views) * 100.0
+        
+        lvr = np.mean(likes) / max(avg_views, 1.0)
+        com_anom = 0.60 if lvr < 0.01 else (0.50 if lvr > 0.15 else 0.0) # View bot < %1, Like bot > %15
+        
+        cv_val = float(np.std(views)) / avg_views if len(posts)>1 and avg_views>0 else 1.0
+        var_anom = 0.60 if cv_val < 0.05 and len(posts)>2 else 0.0 # YouTube dalgalıdır, aşırı stabilite bottur
+        est_reach = avg_views
+
+    elif "TikTok" in platform:
         benchmark_er = 10.0 if followers < 100000 else 8.0
         avg_views = np.mean(views) if views else 0
         if avg_views > 0: er = (total_eng / max(avg_views, 1.0)) * 100.0
@@ -184,7 +210,8 @@ def run_all_algorithms(followers: int, posts: list, platform: str = "• Instagr
         cv_val = float(np.std(views)) / avg_views if len(posts)>1 and avg_views>0 else 1.0
         var_anom = 0.60 if cv_val < 0.15 and len(posts)>2 else 0.0
         est_reach = avg_views
-    else:
+        
+    else: # Instagram
         benchmark_er = 3.0 if followers < 100000 else 1.8
         comment_ratio = np.mean(comments) / max(np.mean(likes), 1.0)
         com_anom = 0.50 if comment_ratio < 0.008 else (0.25 if comment_ratio < 0.012 else (0.30 if comment_ratio > 0.15 else 0.0))
@@ -203,10 +230,16 @@ def run_all_algorithms(followers: int, posts: list, platform: str = "• Instagr
     aqs = int(np.clip(er_score + (40.0 * (1 - com_anom)) + stability_score, 10, 99))
     if bot_pct > 30.0: aqs = int(aqs * 0.4)
 
-    dna = [min(100, (er / benchmark_er) * 100), stability_score * 5, auth_pct, min(100, (est_reach / followers) * 100), 85]
+    # YouTube için Abone (Followers) kıyaslamalı Viral Skor
+    viral_reach = est_reach / max(followers, 1.0)
+    dna = [min(100, (er / benchmark_er) * 100), stability_score * 5, auth_pct, min(100, viral_reach * 100), 85]
     
     ai_sum = f"Sistem, @{username} ({platform}) profilini analiz etti. Kitle hacminin %{auth_pct:.1f}'lik kısmının tamamen organik reaksiyon verdiği hesaplanmıştır. "
-    if bot_pct > 20: ai_sum += f"Ancak etkileşim anormallikleri sebebiyle %{bot_pct:.1f} oranında manipülasyon (bot) tespit edilmiştir. "
+    
+    if "YouTube" in platform and viral_reach > 0.5:
+        ai_sum += "Kanal kendi abone tabanının ötesine geçebilen güçlü bir organik keşfet/arama hacmine (SEO) sahip. "
+        
+    if bot_pct > 20: ai_sum += f"Etkileşim anormallikleri sebebiyle %{bot_pct:.1f} oranında manipülasyon (bot) tespit edilmiştir. "
     else: ai_sum += "Profil davranışları platform doğasına uygundur, suni müdahale izine rastlanmamıştır. "
 
     cpe = budget / total_eng if total_eng > 0 else 0.0
@@ -225,12 +258,17 @@ def run_all_algorithms(followers: int, posts: list, platform: str = "• Instagr
 
     gender_data = {"Kadın": 65, "Erkek": 35}
     age_data = {"13-17": 15, "18-24": 40, "25-34": 30, "35+": 15}
+    
+    f1_desc = "Suni reaksiyon tespit edildi." if com_anom > 0 else "Doğal reaksiyon akışı."
+    f2_desc = "Paket hizmet şüphesi." if var_anom > 0 else "İstikrarlı büyüme."
+    if "YouTube" in platform:
+        f1_desc = "Mantıksız LVR (Beğeni/İzlenme) oranı. Bot şüphesi." if com_anom > 0 else "Doğal LVR oranı."
+        f2_desc = "Aşırı stabil izlenmeler. Paket view bot şüphesi." if var_anom > 0 else "YouTube SEO/Algoritma dalgalanması organik."
 
     return {
         "followers": followers, "er": er, "aqs": aqs, "bot_pct": bot_pct, "auth_pct": auth_pct, "est_reach": est_reach, 
         "ai_sum": ai_sum, "dna": dna, "trend": eng_trend, "likes": total_likes, "comments": total_comments,
-        "f1_desc": "Suni reaksiyon tespit edildi." if com_anom > 0 else "Doğal reaksiyon akışı.",
-        "f2_desc": "Paket hizmet şüphesi." if var_anom > 0 else "İstikrarlı büyüme.",
+        "f1_desc": f1_desc, "f2_desc": f2_desc,
         "gender": gender_data, "age": age_data, "mentions": top_mentions, "words": word_counts,
         "cpe": cpe, "cpm": cpm, "platform": platform, "username": username
     }
@@ -247,7 +285,8 @@ st.markdown("""
 
 _, c_m, _ = st.columns([1, 4, 1])
 with c_m:
-    plat = st.radio("", ["• Instagram", "• TikTok"], horizontal=True, label_visibility="collapsed")
+    # YOUTUBE EKLENDİ
+    plat = st.radio("", ["• Instagram", "• TikTok", "• YouTube"], horizontal=True, label_visibility="collapsed")
     u_inp = st.text_input("", placeholder=f"{plat.replace('• ', '')} Hedef Profil (Örn: leyakirsan)")
     budget_inp = st.number_input("Planlanan Kampanya Bütçesi (₺)", min_value=1000, value=50000, step=5000)
     b_run = st.button("TÜM VERİLERİ ÇEK VE GÖRSELLEŞTİR")
@@ -255,9 +294,10 @@ with c_m:
 if b_run and u_inp:
     r_usr = clean_username(u_inp)
     
-    with st.spinner("• Derin veri madenciliği ve görselleştirme motoru çalışıyor... Lütfen bekleyin."):
+    with st.spinner(f"• Derin veri madenciliği ve {plat.replace('• ', '')} motoru çalışıyor... Lütfen bekleyin."):
         if plat == "• Instagram": p_dat = fetch_apify_instagram_data(r_usr)
-        else: p_dat = fetch_tiktok_data_simulated(r_usr)
+        elif plat == "• TikTok": p_dat = fetch_tiktok_data_simulated(r_usr)
+        else: p_dat = fetch_youtube_data_simulated(r_usr) # YOUTUBE MOTORU TETİKLENİR
             
         if p_dat and "latestPosts" in p_dat:
             followers_count = int(clean_number(p_dat.get("followersCount", 0), 1))
@@ -266,11 +306,13 @@ if b_run and u_inp:
             b_clr = "#ef4444" if m_r['bot_pct'] > 20 else ("#f59e0b" if m_r['bot_pct'] > 10 else "#10b981")
             b_text = 'RİSKLİ' if m_r['bot_pct'] > 20 else 'GÜVENİLİR'
             
+            follower_label = "Abone" if plat == "• YouTube" else "Takipçi"
+            
             st.markdown(f"""
             <div class='exec-summary'>
                 <div>
                     <h2 style='margin:0;'>@{r_usr}</h2>
-                    <p style='color:#94a3b8;margin:0;font-size:1.1rem;'>{m_r['followers']:,} Takipçi ({plat.replace('• ','')})</p>
+                    <p style='color:#94a3b8;margin:0;font-size:1.1rem;'>{m_r['followers']:,} {follower_label} ({plat.replace('• ','')})</p>
                 </div>
                 <div>
                     <span class='badge-status' style='background:{b_clr}; color:#000000; border: none;'>• {b_text}</span>
@@ -288,7 +330,7 @@ if b_run and u_inp:
             st.markdown("<div class='section-header'>• ETKİLEŞİM DİNAMİKLERİ VE TREND</div>", unsafe_allow_html=True)
             t1, t2 = st.columns([2, 1])
             with t1:
-                st.markdown("<div style='text-align:center; color:#94a3b8; font-weight:800; font-size:16px; margin-bottom:10px;'>SON GÖNDERİ PERFORMANSLARI</div>", unsafe_allow_html=True)
+                st.markdown("<div style='text-align:center; color:#94a3b8; font-weight:800; font-size:16px; margin-bottom:10px;'>SON GÖNDERİ/VİDEO PERFORMANSLARI</div>", unsafe_allow_html=True)
                 st.plotly_chart(draw_trend_line(m_r['trend']), use_container_width=True)
             with t2:
                 st.plotly_chart(draw_donut(["Beğeni", "Yorum"], [m_r['likes'], m_r['comments']], "Reaksiyon Dağılımı", ["#8b5cf6", "#ec4899"]), use_container_width=True)
@@ -340,7 +382,7 @@ if b_run and u_inp:
             st.error("• Veri çekilemedi. APIFY limitinizi kontrol edin veya profilin açık olduğundan emin olun.")
 
 # ---------------------------------------------------------
-# 7. MAĞAZA LOGOLARI (SADECE APPLE STORE)
+# 7. MAĞAZA LOGOLARI VE COPYRIGHT FOOTER (MG BRAND 2026)
 # ---------------------------------------------------------
 st.markdown("""
 <div style="text-align: center; padding: 50px 0 40px 0; margin-top: 60px; border-top: 1px solid rgba(255,255,255,0.05);">
@@ -351,6 +393,9 @@ st.markdown("""
         <a href="#" target="_blank" style="text-decoration: none; border: none; background: transparent; padding: 0; margin: 0; outline: none;">
             <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store" style="height: 48px; display: block; border-radius: 8px;">
         </a>
+    </div>
+    <div style="margin-top: 30px; font-size: 0.85rem; color: #475569; letter-spacing: 2px; font-weight: 700;">
+        © 2026 MG BRAND OFFICE. TÜM HAKLARI SAKLIDIR.
     </div>
 </div>
 """, unsafe_allow_html=True)
