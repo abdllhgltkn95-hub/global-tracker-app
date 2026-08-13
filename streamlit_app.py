@@ -25,7 +25,7 @@ if 'credits' not in st.session_state:
     st.session_state['credits'] = 100
 
 # ---------------------------------------------------------
-# 2. CSS STİLLERİ (PITCH BLACK TEMA)
+# 2. CSS STİLLERİ (STREAMLIT'İ TAMAMEN EZEN KODLAR)
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -53,22 +53,26 @@ st.markdown("""
     }
     .stTextInput input:focus { border-color: #3b82f6 !important; }
     
-    /* BUTON REZALETİNİ ÇÖZEN NÜKLEER KOD */
-    div[data-testid="stButton"] { 
-        display: flex !important; justify-content: center !important; 
-        max-width: 400px !important; margin: 15px auto 0 auto !important; width: 100% !important; 
-    }
-    div[data-testid="stButton"] button { 
+    /* BUTON REZALETİNİ ÇÖZEN KOD: SADECE PRIMARY BUTONU HEDEFLER */
+    button[kind="primary"] { 
         background-color: #ffffff !important; 
         border: 2px solid #ffffff !important; 
         border-radius: 10px !important; 
-        padding: 15px 30px !important; 
+        padding: 15px 30px !important;
+        width: 100% !important;
+        max-width: 400px !important;
+        display: block !important;
+        margin: 15px auto 0 auto !important;
+        transition: transform 0.2s ease !important;
     }
-    div[data-testid="stButton"] button * { 
+    button[kind="primary"] * { 
         color: #000000 !important; 
         font-weight: 900 !important; 
         font-size: 1.1rem !important; 
         letter-spacing: 1px !important;
+    }
+    button[kind="primary"]:hover {
+        transform: scale(1.02) !important;
     }
 
     /* KART TASARIMLARI */
@@ -80,13 +84,6 @@ st.markdown("""
     .ai-summary-box { background-color: rgba(15, 15, 15, 0.8); border-left: 5px solid #ffffff; border-radius: 10px; padding: 25px; margin-bottom: 30px; line-height: 1.8; color: #e2e8f0; font-size: 1.1rem; }
     .fraud-box { background-color: rgba(15, 15, 15, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 22px; margin-bottom: 15px; display: flex; align-items: flex-start; gap: 15px; border-left-width: 5px;}
     .section-header { font-size: 1.4rem; font-weight: 900; color: #ffffff; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 12px; margin-top: 40px; margin-bottom: 25px; text-transform: uppercase; }
-
-    /* RENK DEĞİŞTİREN NEON EFEKT - GLOBAL TANIMLAMA */
-    @keyframes ColorAnimation {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -249,18 +246,18 @@ def run_all_algorithms(followers: int, posts: list, platform: str = "• Instagr
     }
 
 # ---------------------------------------------------------
-# 6. UYGULAMA PANELİ RENDER (HTML İLE ZORLAMA EFEKTLER)
+# 6. UYGULAMA PANELİ RENDER
 # ---------------------------------------------------------
+
+# Animasyonlu HTML/CSS Başlığı yerine Mac/Safari'de asla bozulmayan "Sabit Ultra-Premium Gradient" kullanıyoruz.
 st.markdown("""
 <div style="text-align: center; padding: 50px 0 30px 0; margin-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.05);">
     <h1 style="
-        font-size: 5.5rem; 
+        font-size: 5rem; 
         font-weight: 900; 
-        background: linear-gradient(270deg, #3b82f6, #a855f7, #ec4899, #3b82f6); 
-        background-size: 400% 400%; 
+        background: linear-gradient(90deg, #3b82f6 0%, #a855f7 50%, #ec4899 100%); 
         -webkit-background-clip: text; 
         -webkit-text-fill-color: transparent; 
-        animation: ColorAnimation 5s ease infinite; 
         margin: 0; 
         letter-spacing: -2px;
     ">MG BRAND OFFICE</h1>
@@ -273,7 +270,9 @@ with c_m:
     plat = st.radio("", ["• Instagram", "• TikTok"], horizontal=True, label_visibility="collapsed")
     u_inp = st.text_input("", placeholder=f"{plat.replace('• ', '')} Hedef Profil (Örn: leyakirsan)")
     budget_inp = st.number_input("Planlanan Kampanya Bütçesi (₺)", min_value=1000, value=50000, step=5000)
-    b_run = st.button("TÜM VERİLERİ ÇEK VE GÖRSELLEŞTİR")
+    
+    # BUTONU TİP OLARAK "PRIMARY" YAPIYORUZ, YUKARIDAKI CSS SADECE BUNU VURACAK
+    b_run = st.button("TÜM VERİLERİ ÇEK VE GÖRSELLEŞTİR", type="primary")
 
 if b_run and u_inp:
     r_usr = clean_username(u_inp)
@@ -366,19 +365,20 @@ if b_run and u_inp:
             st.error("• Veri çekilemedi. APIFY limitinizi kontrol edin veya profilin açık olduğundan emin olun.")
 
 # ---------------------------------------------------------
-# 7. MAĞAZA LOGOLARI (NÜKLEER HTML HİZALAMA)
+# 7. MAĞAZA LOGOLARI (CLIP-PATH İLE KESİN ÇÖZÜM)
 # ---------------------------------------------------------
 st.markdown("""
 <div style="text-align: center; padding: 50px 0 40px 0; margin-top: 60px; border-top: 1px solid rgba(255,255,255,0.05);">
     <div style="color: #64748b; font-size: 0.95rem; font-weight: 800; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 20px;">
         Mobil Uygulamamızı İndirin
     </div>
-    <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
-        <a href="#" style="text-decoration: none; border: none; background: transparent; padding: 0; margin: 0;">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store" style="height: 46px; display: block; border-radius: 8px;">
+    <div style="display: flex; justify-content: center; align-items: center; gap: 15px; height: 50px;">
+        <a href="#" style="text-decoration: none;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" style="height: 40px; border-radius: 6px; display: block;">
         </a>
-        <a href="#" style="text-decoration: none; border: none; background: transparent; padding: 0; margin: 0;">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play" style="height: 68px; display: block; margin-top: -1px; transform: scale(1.05);">
+        <a href="#" style="text-decoration: none;">
+            <!-- CSS clip-path ile Google'ın boşluklarını makasla kestik -->
+            <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" style="height: 58px; display: block; clip-path: inset(8% 4% 8% 4%);">
         </a>
     </div>
 </div>
