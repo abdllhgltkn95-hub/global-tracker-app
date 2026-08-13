@@ -24,48 +24,103 @@ APIFY_TOKEN = st.secrets.get("APIFY_TOKEN", "apify_api_gvh1Gqo99oDTmXqrb4CwCk24H
 if 'credits' not in st.session_state: st.session_state['credits'] = 100
 
 # ---------------------------------------------------------
-# 2. CSS STİLLERİ (SİMSİYAH TEMA & YANSIMA EFEKTİ)
+# 2. CSS STİLLERİ (BÜYÜTÜLMÜŞ FONTLAR & MAĞAZA LOGOLARI)
 # ---------------------------------------------------------
 st.markdown("""
 <style>
-    /* SİMSİYAH (PITCH BLACK) ARKA PLAN */
-    .stApp { background-color: #000000 !important; background-image: none !important; background-attachment: fixed !important; color: #e2e8f0 !important; font-family: 'Inter', sans-serif !important; }
+    /* SİMSİYAH (PITCH BLACK) ARKA PLAN VE GENEL BÜYÜTME */
+    html, body, [data-testid="stAppViewContainer"], .stApp { 
+        background-color: #000000 !important; 
+        background-image: none !important; 
+        background-attachment: fixed !important; 
+        color: #e2e8f0 !important; 
+        font-family: 'Inter', sans-serif !important; 
+        font-size: 16px !important; 
+    }
     h1, h2, h3, h4, h5, h6, p, span, div, label, li, td, th { color: #e2e8f0 !important; }
     
-    /* YANSIMALI (REFLECTION) HERO BAŞLIK */
-    .hero-container { text-align: center; padding: 50px 0 20px 0; margin-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    /* YANSIMASI KALDIRILMIŞ, DEĞİŞKEN EFEKTLİ DEV HERO BAŞLIK */
+    .hero-container { text-align: center; padding: 50px 0 30px 0; margin-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.05); }
     .hero-title { 
-        font-size: 4.5rem; 
+        font-size: 5.5rem; 
         font-weight: 900; 
-        color: #ffffff; 
+        background: linear-gradient(270deg, #3b82f6, #a855f7, #ec4899, #3b82f6); 
+        background-size: 300% auto; 
+        -webkit-background-clip: text; 
+        -webkit-text-fill-color: transparent; 
+        animation: gradient-glow 5s linear infinite; 
         margin: 0; 
-        letter-spacing: -1.5px; 
-        text-shadow: 0 0 25px rgba(255, 255, 255, 0.4);
-        -webkit-box-reflect: below -15px linear-gradient(transparent, rgba(0,0,0,0.6));
+        letter-spacing: -2px; 
     }
-    .hero-subtitle { color: #64748b; font-size: 0.95rem; letter-spacing: 6px; font-weight: 700; text-transform: uppercase; margin-top: 45px;}
+    .hero-subtitle { color: #94a3b8; font-size: 1.1rem; letter-spacing: 6px; font-weight: 800; text-transform: uppercase; margin-top: 10px;}
     
-    /* SİYAH CAM KARTLAR (DARK GLASSMORPHISM) */
-    div[data-testid="stTextInput"], div[data-testid="stNumberInput"] { max-width: 600px !important; width: 100% !important; margin: 0 auto 10px auto !important; }
-    .stTextInput input, .stNumberInput input { background-color: rgba(20, 20, 20, 0.8) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 8px !important; font-weight: 600 !important; padding: 14px 16px !important; font-size: 1rem !important; color: #ffffff !important; backdrop-filter: blur(10px); text-align: center; transition: 0.3s; }
+    @keyframes gradient-glow {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    
+    /* INPUT VE BUTONLAR (BÜYÜTÜLDÜ) */
+    div[data-testid="stTextInput"], div[data-testid="stNumberInput"] { max-width: 700px !important; width: 100% !important; margin: 0 auto 15px auto !important; }
+    .stTextInput input, .stNumberInput input { background-color: rgba(20, 20, 20, 0.8) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 10px !important; font-weight: 700 !important; padding: 18px 20px !important; font-size: 1.2rem !important; color: #ffffff !important; backdrop-filter: blur(10px); text-align: center; transition: 0.3s; }
     .stTextInput input:focus { border-color: #ffffff !important; box-shadow: 0 0 0 2px rgba(255,255,255,0.2) !important; }
     
-    div[data-testid="stButton"] { display: flex !important; justify-content: center !important; max-width: 350px !important; margin: 10px auto 0 auto !important; width: 100% !important; }
-    .stButton>button { background: #ffffff !important; color: #000000 !important; border: none !important; border-radius: 8px !important; font-weight: 800 !important; font-size: 0.95rem !important; transition: 0.3s; }
-    .stButton>button:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255, 255, 255, 0.2); }
+    div[data-testid="stButton"] { display: flex !important; justify-content: center !important; max-width: 400px !important; margin: 15px auto 0 auto !important; width: 100% !important; }
+    .stButton>button { background: #ffffff !important; color: #000000 !important; border: none !important; border-radius: 10px !important; font-weight: 900 !important; font-size: 1.1rem !important; padding: 15px 30px !important; transition: 0.3s; letter-spacing: 1px;}
+    .stButton>button:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(255, 255, 255, 0.25); }
 
-    .metric-card { background-color: rgba(15, 15, 15, 0.7); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 20px; text-align: center; height: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.5); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); transition: border 0.3s; }
+    /* METRİK KARTLARI VE YAZILAR (BÜYÜTÜLDÜ) */
+    .metric-card { background-color: rgba(15, 15, 15, 0.7); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 14px; padding: 25px; text-align: center; height: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.5); backdrop-filter: blur(12px); transition: border 0.3s; }
     .metric-card:hover { border: 1px solid rgba(255, 255, 255, 0.15); }
-    .metric-title { color: #94a3b8; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
-    .metric-value { color: #ffffff; font-size: 1.8rem; font-weight: 900; margin: 0; text-shadow: 0 0 10px rgba(255,255,255,0.1); }
+    .metric-title { color: #94a3b8; font-size: 1rem; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px;}
+    .metric-value { color: #ffffff; font-size: 2.4rem; font-weight: 900; margin: 0; text-shadow: 0 0 10px rgba(255,255,255,0.1); }
+    .metric-sub { font-size: 0.9rem; margin-top: 5px; font-weight: 600; color: #64748b; }
     
-    .exec-summary { background: linear-gradient(145deg, rgba(20, 20, 20, 0.9), rgba(5, 5, 5, 0.9)); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 25px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(15px); }
-    .badge-status { padding: 6px 14px; border-radius: 6px; font-weight: 800; font-size: 0.85rem; color: #000000 !important; }
-    .ai-summary-box { background-color: rgba(15, 15, 15, 0.7); border-left: 4px solid #ffffff; border-radius: 8px; padding: 20px; margin-bottom: 25px; line-height: 1.7; color: #cbd5e1; font-size: 0.95rem; backdrop-filter: blur(12px); }
-    .fraud-box { background-color: rgba(15, 15, 15, 0.7); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 18px; margin-bottom: 15px; display: flex; align-items: flex-start; gap: 15px; border-left-width: 4px; backdrop-filter: blur(12px);}
+    .exec-summary { background: linear-gradient(145deg, rgba(20, 20, 20, 0.9), rgba(5, 5, 5, 0.9)); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 30px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(15px); }
+    .exec-summary h2 { font-size: 2.5rem !important; }
+    .badge-status { padding: 8px 18px; border-radius: 8px; font-weight: 900; font-size: 1rem; color: #000000 !important; letter-spacing: 1px; }
     
-    /* Section Headers */
-    .section-header { font-size: 1.1rem; font-weight: 800; color: #ffffff; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 10px; margin-top: 30px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+    .ai-summary-box { background-color: rgba(15, 15, 15, 0.7); border-left: 5px solid #ffffff; border-radius: 10px; padding: 25px; margin-bottom: 30px; line-height: 1.8; color: #e2e8f0; font-size: 1.1rem; backdrop-filter: blur(12px); font-weight: 500;}
+    .fraud-box { background-color: rgba(15, 15, 15, 0.7); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 22px; margin-bottom: 15px; display: flex; align-items: flex-start; gap: 15px; border-left-width: 5px; backdrop-filter: blur(12px);}
+    .fraud-content h5 { font-size: 1.2rem !important; }
+    .fraud-content p { font-size: 1rem !important; }
+    
+    .section-header { font-size: 1.4rem; font-weight: 900; color: #ffffff; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 12px; margin-top: 40px; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px; }
+
+    /* MAĞAZA LOGOLARI (APP STORE & PLAY STORE) */
+    .store-footer {
+        text-align: center;
+        padding: 50px 0 30px 0;
+        margin-top: 60px;
+        border-top: 1px solid rgba(255,255,255,0.05);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+    .store-footer-text {
+        color: #94a3b8;
+        font-size: 1.1rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+    .store-badges {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    .store-badges img {
+        height: 55px;
+        cursor: pointer;
+        transition: transform 0.2s, opacity 0.2s;
+        opacity: 0.9;
+    }
+    .store-badges img:hover {
+        transform: scale(1.05);
+        opacity: 1;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -101,13 +156,13 @@ def fetch_tiktok_data_simulated(username):
     return {"followersCount": 450000, "latestPosts": [{"likesCount": 8500, "commentsCount": 150, "viewsCount": 1500000, "caption": "Trend #fyp"}, {"likesCount": 92000, "commentsCount": 1200, "viewsCount": 950000, "caption": "Vlog"}, {"likesCount": 88000, "commentsCount": 1100, "viewsCount": 890000, "caption": "Dans @zara @trendyol"}]}
 
 # ---------------------------------------------------------
-# 4. GÖRSEL ÇİZİM FONKSİYONLARI (PITCH BLACK UYUMLU)
+# 4. GÖRSEL ÇİZİM FONKSİYONLARI 
 # ---------------------------------------------------------
 def draw_aqs_gauge(score):
     fig = go.Figure(go.Indicator(
         mode = "gauge+number", value = score,
-        title = {'text': "KİTLE KALİTE SKORU (AQS)", 'font': {'color': '#94a3b8', 'size': 12}},
-        number = {'font': {'color': '#ffffff', 'size': 45, 'weight': 'bold'}},
+        title = {'text': "KİTLE KALİTE SKORU (AQS)", 'font': {'color': '#94a3b8', 'size': 14}},
+        number = {'font': {'color': '#ffffff', 'size': 50, 'weight': 'bold'}},
         gauge = {
             'axis': {'range': [0, 100], 'tickwidth': 1, 'tickcolor': "rgba(255,255,255,0.1)"},
             'bar': {'color': "#ffffff"}, 'bgcolor': "rgba(20, 20, 20, 0.5)",
@@ -115,7 +170,7 @@ def draw_aqs_gauge(score):
             'steps': [{'range': [0, 40], 'color': "rgba(239, 68, 68, 0.4)"}, {'range': [40, 70], 'color': "rgba(245, 158, 11, 0.4)"}, {'range': [70, 100], 'color': "rgba(16, 185, 129, 0.4)"}],
             'threshold': {'line': {'color': "white", 'width': 4}, 'thickness': 0.75, 'value': score}
         }))
-    fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", font={'color': "#f8fafc"}, height=280, margin=dict(l=20, r=20, t=30, b=10))
+    fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", font={'color': "#f8fafc"}, height=320, margin=dict(l=20, r=20, t=30, b=10))
     return fig
 
 def draw_dna_radar(dna_scores):
@@ -127,16 +182,16 @@ def draw_dna_radar(dna_scores):
     ))
     fig.update_layout(
         polar=dict(radialaxis=dict(visible=False, range=[0, 100]), bgcolor='rgba(15,15,15,0.5)'),
-        paper_bgcolor="rgba(0,0,0,0)", font=dict(color="#94a3b8", size=12), height=280, margin=dict(l=40, r=40, t=20, b=20)
+        paper_bgcolor="rgba(0,0,0,0)", font=dict(color="#94a3b8", size=14), height=320, margin=dict(l=40, r=40, t=20, b=20)
     )
     return fig
 
 def draw_donut(labels, values, title, colors):
     fig = px.pie(values=values, names=labels, hole=0.7, color_discrete_sequence=colors)
     fig.update_layout(
-        title=dict(text=title, font=dict(color="#ffffff", size=14), x=0.5, xanchor='center'),
+        title=dict(text=title, font=dict(color="#ffffff", size=16), x=0.5, xanchor='center'),
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", 
-        font=dict(color="#94a3b8"), height=250, margin=dict(l=10, r=10, t=40, b=10), showlegend=False
+        font=dict(color="#94a3b8"), height=300, margin=dict(l=10, r=10, t=40, b=10), showlegend=False
     )
     fig.update_traces(textposition='outside', textinfo='percent+label', marker=dict(line=dict(color='#000000', width=2)))
     return fig
@@ -146,9 +201,9 @@ def draw_bar(x, y, title, color):
     fig = px.bar(df, x="X", y="Y")
     fig.update_traces(marker_color=color, marker_line_color='#000000', marker_line_width=1.5)
     fig.update_layout(
-        title=dict(text=title, font=dict(color="#ffffff", size=14), x=0.5, xanchor='center'),
+        title=dict(text=title, font=dict(color="#ffffff", size=16), x=0.5, xanchor='center'),
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", 
-        font=dict(color="#94a3b8"), height=250, margin=dict(l=10, r=10, t=40, b=10),
+        font=dict(color="#94a3b8"), height=300, margin=dict(l=10, r=10, t=40, b=10),
         xaxis_title=None, yaxis_title=None, xaxis=dict(showgrid=False), yaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.05)")
     )
     return fig
@@ -159,7 +214,7 @@ def draw_trend_line(eng_list):
     fig.update_traces(line_color="#ffffff", fillcolor="rgba(255, 255, 255, 0.05)")
     fig.update_layout(
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#94a3b8"), 
-        height=220, margin=dict(l=0, r=0, t=10, b=0), xaxis=dict(showgrid=False), yaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.05)")
+        height=250, margin=dict(l=0, r=0, t=10, b=0), xaxis=dict(showgrid=False), yaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.05)")
     )
     return fig
 
@@ -230,7 +285,7 @@ def run_all_algorithms(followers, posts, platform="• Instagram", budget=50000.
             "cpe": cpe, "cpm": cpm, "platform": platform, "username": username}
 
 # ---------------------------------------------------------
-# 6. UYGULAMA PANELİ (THE OMNIPRESENT SHOWROOM)
+# 6. UYGULAMA PANELİ
 # ---------------------------------------------------------
 st.markdown("""
 <div class='hero-container'>
@@ -256,10 +311,10 @@ if b_run and u_inp:
             b_clr = "#ef4444" if m_r['bot_pct']>20 else ("#f59e0b" if m_r['bot_pct']>10 else "#10b981")
             
             # --- YÖNETİCİ ÖZETİ ---
-            st.markdown(f"<div class='exec-summary'><div><h2 style='margin:0;'>@{r_usr}</h2><p style='color:#94a3b8;margin:0;'>{m_r['followers']:,} Takipçi ({plat.replace('• ','')})</p></div><div><span class='badge-status' style='background:{b_clr}; color:#000000; border: none;'>• {'RİSKLİ' if m_r['bot_pct']>20 else 'GÜVENİLİR'}</span></div></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='exec-summary'><div><h2 style='margin:0;'>@{r_usr}</h2><p style='color:#94a3b8;margin:0;font-size:1.1rem;'>{m_r['followers']:,} Takipçi ({plat.replace('• ','')})</p></div><div><span class='badge-status' style='background:{b_clr}; color:#000000; border: none;'>• {'RİSKLİ' if m_r['bot_pct']>20 else 'GÜVENİLİR'}</span></div></div>", unsafe_allow_html=True)
             st.markdown(f"<div class='ai-summary-box'><b>🧠 AI Strateji Uzmanı:</b><br>{m_r['ai_sum']}</div>", unsafe_allow_html=True)
             
-            # --- 1. SATIR: CORE DNA ---
+            # --- 1. SATIR: CORE DNA (GAUGE, RADAR, DONUT) ---
             st.markdown("<div class='section-header'>• SİSTEM SKORLAMASI VE KİTLE SAFLIĞI</div>", unsafe_allow_html=True)
             v1, v2, v3 = st.columns(3)
             with v1: st.plotly_chart(draw_aqs_gauge(m_r['aqs']), use_container_width=True)
@@ -270,7 +325,7 @@ if b_run and u_inp:
             st.markdown("<div class='section-header'>• ETKİLEŞİM DİNAMİKLERİ VE TREND</div>", unsafe_allow_html=True)
             t1, t2 = st.columns([2, 1])
             with t1:
-                st.markdown("<div style='text-align:center; color:#94a3b8; font-weight:700; font-size:14px; margin-bottom:10px;'>SON GÖNDERİ PERFORMANSLARI</div>", unsafe_allow_html=True)
+                st.markdown("<div style='text-align:center; color:#94a3b8; font-weight:800; font-size:16px; margin-bottom:10px;'>SON GÖNDERİ PERFORMANSLARI</div>", unsafe_allow_html=True)
                 st.plotly_chart(draw_trend_line(m_r['trend']), use_container_width=True)
             with t2:
                 st.plotly_chart(draw_donut(["Beğeni", "Yorum"], [m_r['likes'], m_r['comments']], "Reaksiyon Dağılımı", ["#8b5cf6", "#ec4899"]), use_container_width=True)
@@ -286,7 +341,7 @@ if b_run and u_inp:
                     w_vals = [w[1] for w in m_r['words']]
                     st.plotly_chart(draw_bar(w_labels, w_vals, "Sık Kullanılan Kelimeler", "#a855f7"), use_container_width=True)
                 else:
-                    st.markdown("<div class='metric-card' style='height:250px; display:flex; align-items:center; justify-content:center;'><p style='color:#64748b;'>Kelime Verisi Yok</p></div>", unsafe_allow_html=True)
+                    st.markdown("<div class='metric-card' style='height:300px; display:flex; align-items:center; justify-content:center;'><p style='color:#64748b; font-size:1.1rem;'>Kelime Verisi Yok</p></div>", unsafe_allow_html=True)
 
             # --- 4. SATIR: FİNANS & AFİNİTE ---
             st.markdown("<div class='section-header'>• YATIRIM GETİRİSİ (ROI) & RAKİP RADARI</div>", unsafe_allow_html=True)
@@ -295,12 +350,12 @@ if b_run and u_inp:
             f2.markdown(f"<div class='metric-card'><div class='metric-title'>CPE (Etkileşim Başı)</div><div class='metric-value'>₺{m_r['cpe']:.2f}</div><div class='metric-sub'>Maliyet</div></div>", unsafe_allow_html=True)
             f3.markdown(f"<div class='metric-card'><div class='metric-title'>CPM (1000 Gösterim)</div><div class='metric-value'>₺{m_r['cpm']:.2f}</div><div class='metric-sub'>Maliyet</div></div>", unsafe_allow_html=True)
             with f4:
-                st.markdown("<div class='metric-card' style='padding:15px;'><div class='metric-title'>Sık Etiketlenenler</div>", unsafe_allow_html=True)
+                st.markdown("<div class='metric-card' style='padding:25px;'><div class='metric-title'>Sık Etiketlenenler</div>", unsafe_allow_html=True)
                 if m_r['mentions']:
                     for m, c in m_r['mentions'][:3]:
-                        st.markdown(f"<div style='font-size:0.9rem; color:#ffffff; font-weight:700; margin-bottom:5px;'>@{m} <span style='color:#64748b; font-weight:400; float:right;'>{c} kez</span></div>", unsafe_allow_html=True)
+                        st.markdown(f"<div style='font-size:1.1rem; color:#ffffff; font-weight:800; margin-bottom:8px;'>@{m} <span style='color:#64748b; font-weight:600; float:right;'>{c} kez</span></div>", unsafe_allow_html=True)
                 else:
-                    st.markdown("<p style='font-size:0.8rem; color:#64748b;'>Veri Bulunamadı.</p>", unsafe_allow_html=True)
+                    st.markdown("<p style='font-size:1rem; color:#64748b;'>Veri Bulunamadı.</p>", unsafe_allow_html=True)
                 st.markdown("</div>", unsafe_allow_html=True)
 
             # --- 5. SATIR: ANTI-FRAUD UYARILARI ---
@@ -312,3 +367,16 @@ if b_run and u_inp:
 
         else:
             st.error("• Veri çekilemedi. APIFY limitinizi kontrol edin veya profilin açık olduğundan emin olun.")
+
+# ---------------------------------------------------------
+# 7. MAĞAZA LOGOLARI (APP STORE & GOOGLE PLAY)
+# ---------------------------------------------------------
+st.markdown("""
+<div class="store-footer">
+    <div class="store-footer-text">Mobil Uygulamamızı İndirin</div>
+    <div class="store-badges">
+        <a href="#" target="_blank"><img src="https://developer.apple.com/app-store/marketing/guidelines/images/badge-download-on-the-app-store.svg" alt="Download on the App Store"></a>
+        <a href="#" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play"></a>
+    </div>
+</div>
+""", unsafe_allow_html=True)
