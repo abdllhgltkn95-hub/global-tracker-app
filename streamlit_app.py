@@ -25,7 +25,7 @@ if 'credits' not in st.session_state:
     st.session_state['credits'] = 100
 
 # ---------------------------------------------------------
-# 2. CSS STİLLERİ (PITCH BLACK & KUSURSUZ HİZALAMA)
+# 2. CSS STİLLERİ (STREAMLIT'İ TAMAMEN EZEN KODLAR)
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -33,133 +33,60 @@ st.markdown("""
     html, body, [data-testid="stAppViewContainer"], .stApp { 
         background-color: #000000 !important; 
         background-image: none !important; 
-        background-attachment: fixed !important; 
         color: #e2e8f0 !important; 
         font-family: 'Inter', sans-serif !important; 
     }
     
-    /* NEON BAŞLIK (RENK DEĞİŞTİREN) */
-    .hero-container { 
-        text-align: center; 
-        padding: 50px 0 30px 0; 
-        margin-bottom: 40px; 
-        border-bottom: 1px solid rgba(255,255,255,0.05); 
-    }
-    .hero-title { 
-        font-size: 5.5rem !important; 
-        font-weight: 900 !important; 
-        background: linear-gradient(270deg, #3b82f6, #a855f7, #ec4899, #3b82f6) !important; 
-        background-size: 300% auto !important; 
-        color: transparent !important;
-        -webkit-background-clip: text !important; 
-        background-clip: text !important;
-        -webkit-text-fill-color: transparent !important;
-        animation: gradient-glow 5s linear infinite !important; 
-        margin: 0 !important; 
-        letter-spacing: -2px !important; 
-    }
-    .hero-subtitle { 
-        color: #94a3b8 !important; 
-        font-size: 1.1rem !important; 
-        letter-spacing: 6px !important; 
-        font-weight: 800 !important; 
-        text-transform: uppercase !important; 
-        margin-top: 10px !important;
-    }
-    @keyframes gradient-glow {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
-    
-    /* INPUT KUTULARI */
+    /* INPUT KUTULARI (ZORUNLU STİL) */
     div[data-testid="stTextInput"], div[data-testid="stNumberInput"] { 
         max-width: 700px !important; width: 100% !important; margin: 0 auto 15px auto !important; 
     }
     .stTextInput input, .stNumberInput input { 
-        background-color: rgba(20, 20, 20, 0.8) !important; 
-        border: 1px solid rgba(255, 255, 255, 0.1) !important; 
-        border-radius: 10px !important; font-weight: 700 !important; padding: 18px 20px !important; 
-        font-size: 1.2rem !important; color: #ffffff !important; text-align: center !important; 
+        background-color: rgba(20, 20, 20, 0.9) !important; 
+        border: 1px solid rgba(255, 255, 255, 0.2) !important; 
+        border-radius: 10px !important; 
+        font-weight: 800 !important; 
+        padding: 18px 20px !important; 
+        font-size: 1.2rem !important; 
+        color: #ffffff !important; 
+        text-align: center !important; 
     }
+    .stTextInput input:focus { border-color: #3b82f6 !important; }
     
-    /* BUTON TASARIMI */
+    /* BUTON REZALETİNİ ÇÖZEN NÜKLEER KOD */
     div[data-testid="stButton"] { 
         display: flex !important; justify-content: center !important; 
         max-width: 400px !important; margin: 15px auto 0 auto !important; width: 100% !important; 
     }
     div[data-testid="stButton"] button { 
         background-color: #ffffff !important; 
-        border: none !important; border-radius: 10px !important; 
-        padding: 15px 30px !important; transition: 0.3s !important; 
+        border: 2px solid #ffffff !important; 
+        border-radius: 10px !important; 
+        padding: 15px 30px !important; 
     }
-    div[data-testid="stButton"] button p { 
+    /* Butonun içindeki HER ŞEYİ zorla siyah yapıyoruz */
+    div[data-testid="stButton"] button * { 
         color: #000000 !important; 
         font-weight: 900 !important; 
         font-size: 1.1rem !important; 
         letter-spacing: 1px !important;
-        margin: 0 !important;
-    }
-    div[data-testid="stButton"] button:hover { 
-        transform: translateY(-3px) !important; 
-        box-shadow: 0 10px 25px rgba(255, 255, 255, 0.25) !important; 
     }
 
     /* KART TASARIMLARI */
-    .metric-card { background-color: rgba(15, 15, 15, 0.7); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 14px; padding: 25px; text-align: center; height: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+    .metric-card { background-color: rgba(15, 15, 15, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 14px; padding: 25px; text-align: center; height: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
     .metric-title { color: #94a3b8; font-size: 1rem; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; }
-    .metric-value { color: #ffffff; font-size: 2.4rem; font-weight: 900; margin: 0; text-shadow: 0 0 10px rgba(255,255,255,0.1); }
-    .exec-summary { background: linear-gradient(145deg, rgba(20, 20, 20, 0.9), rgba(5, 5, 5, 0.9)); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 30px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
+    .metric-value { color: #ffffff; font-size: 2.4rem; font-weight: 900; margin: 0; }
+    .exec-summary { background: linear-gradient(145deg, rgba(25, 25, 25, 1), rgba(10, 10, 10, 1)); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 14px; padding: 30px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
     .badge-status { padding: 8px 18px; border-radius: 8px; font-weight: 900; font-size: 1rem; color: #000000 !important; letter-spacing: 1px; }
-    .ai-summary-box { background-color: rgba(15, 15, 15, 0.7); border-left: 5px solid #ffffff; border-radius: 10px; padding: 25px; margin-bottom: 30px; line-height: 1.8; color: #e2e8f0; font-size: 1.1rem; }
-    .fraud-box { background-color: rgba(15, 15, 15, 0.7); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 22px; margin-bottom: 15px; display: flex; align-items: flex-start; gap: 15px; border-left-width: 5px;}
+    .ai-summary-box { background-color: rgba(15, 15, 15, 0.8); border-left: 5px solid #ffffff; border-radius: 10px; padding: 25px; margin-bottom: 30px; line-height: 1.8; color: #e2e8f0; font-size: 1.1rem; }
+    .fraud-box { background-color: rgba(15, 15, 15, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 22px; margin-bottom: 15px; display: flex; align-items: flex-start; gap: 15px; border-left-width: 5px;}
     .section-header { font-size: 1.4rem; font-weight: 900; color: #ffffff; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 12px; margin-top: 40px; margin-bottom: 25px; text-transform: uppercase; }
 
-    /* MAĞAZA LOGOLARI - MILIMETRIK HIZALAMA */
-    .store-footer { 
-        text-align: center; 
-        padding: 50px 0 40px 0; 
-        margin-top: 60px; 
-        border-top: 1px solid rgba(255,255,255,0.05); 
-    }
-    .store-footer-text { 
-        color: #64748b; 
-        font-size: 0.95rem; 
-        font-weight: 800; 
-        text-transform: uppercase; 
-        letter-spacing: 3px; 
-        margin-bottom: 20px; 
-    }
-    .store-badges { 
-        display: flex; 
-        justify-content: center; 
-        align-items: center; /* Tam merkezden hizalama */
-        gap: 20px; 
-    }
-    .store-badges a { 
-        background: transparent !important; 
-        border: none !important; 
-        box-shadow: none !important; 
-        transition: 0.2s; 
-        padding: 0 !important; 
-        margin: 0 !important;
-        display: flex;
-        align-items: center;
-        text-decoration: none !important;
-        outline: none !important;
-    }
-    .store-badges a:hover { transform: scale(1.05); }
-    .store-badges a svg { display: none !important; } 
-    
-    /* Boyut ve hizalama ayarları */
-    .apple-badge { 
-        height: 48px !important; 
-        width: auto !important; 
-    }
-    .google-badge { 
-        height: 72px !important; 
-        width: auto !important; 
-        transform: translateY(1px) !important; /* Apple logosuyla aynı seviyeye çekmek için milimetrik ayar */
+    /* RENK DEĞİŞTİREN NEON EFEKT - GLOBAL TANIMLAMA */
+    @keyframes ColorAnimation {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
     }
 </style>
 """, unsafe_allow_html=True)
@@ -323,12 +250,24 @@ def run_all_algorithms(followers: int, posts: list, platform: str = "• Instagr
     }
 
 # ---------------------------------------------------------
-# 6. UYGULAMA PANELİ
+# 6. UYGULAMA PANELİ RENDER (HTML İLE ZORLAMA EFEKTLER)
 # ---------------------------------------------------------
+
+# Streamlit'in CSS'i yutmasını engellemek için doğrudan DIV içine inline yazılmış Neon Animasyon ve Başlık
 st.markdown("""
-<div class='hero-container'>
-    <h1 class='hero-title'>MG BRAND OFFICE</h1>
-    <p class='hero-subtitle'>EXECUTIVE INTELLIGENCE SUITE</p>
+<div style="text-align: center; padding: 50px 0 30px 0; margin-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+    <h1 style="
+        font-size: 5.5rem; 
+        font-weight: 900; 
+        background: linear-gradient(270deg, #3b82f6, #a855f7, #ec4899, #3b82f6); 
+        background-size: 400% 400%; 
+        -webkit-background-clip: text; 
+        -webkit-text-fill-color: transparent; 
+        animation: ColorAnimation 5s ease infinite; 
+        margin: 0; 
+        letter-spacing: -2px;
+    ">MG BRAND OFFICE</h1>
+    <p style="color: #94a3b8; font-size: 1.1rem; letter-spacing: 6px; font-weight: 800; text-transform: uppercase; margin-top: 10px;">EXECUTIVE INTELLIGENCE SUITE</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -343,8 +282,11 @@ if b_run and u_inp:
     r_usr = clean_username(u_inp)
     
     with st.spinner("• Derin veri madenciliği ve görselleştirme motoru çalışıyor... Lütfen bekleyin."):
-        if plat == "• Instagram": p_dat = fetch_apify_instagram_data(r_usr)
-        else: p_dat = fetch_tiktok_data_simulated(r_usr)
+        
+        if plat == "• Instagram":
+            p_dat = fetch_apify_instagram_data(r_usr)
+        else:
+            p_dat = fetch_tiktok_data_simulated(r_usr)
             
         if p_dat and "latestPosts" in p_dat:
             followers_count = int(clean_number(p_dat.get("followersCount", 0), 1))
@@ -360,7 +302,7 @@ if b_run and u_inp:
                     <p style='color:#94a3b8;margin:0;font-size:1.1rem;'>{m_r['followers']:,} Takipçi ({plat.replace('• ','')})</p>
                 </div>
                 <div>
-                    <span class='badge-status' style='background:{b_clr};'>• {b_text}</span>
+                    <span class='badge-status' style='background:{b_clr}; color:#000000; border: none;'>• {b_text}</span>
                 </div>
             </div>
             <div class='ai-summary-box'><b>🧠 AI Strateji Uzmanı:</b><br>{m_r['ai_sum']}</div>
@@ -427,17 +369,19 @@ if b_run and u_inp:
             st.error("• Veri çekilemedi. APIFY limitinizi kontrol edin veya profilin açık olduğundan emin olun.")
 
 # ---------------------------------------------------------
-# 7. MAĞAZA LOGOLARI (MİLİMETRİK HİZALAMA)
+# 7. MAĞAZA LOGOLARI (NÜKLEER HTML HİZALAMA)
 # ---------------------------------------------------------
 st.markdown("""
-<div class="store-footer">
-    <div class="store-footer-text">Mobil Uygulamamızı İndirin</div>
-    <div class="store-badges">
-        <a href="#" target="_blank">
-            <img class="apple-badge" src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store">
+<div style="text-align: center; padding: 50px 0 40px 0; margin-top: 60px; border-top: 1px solid rgba(255,255,255,0.05);">
+    <div style="color: #64748b; font-size: 0.95rem; font-weight: 800; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 20px;">
+        Mobil Uygulamamızı İndirin
+    </div>
+    <div style="display: flex; justify-content: center; align-items: center; gap: 15px;">
+        <a href="#" style="text-decoration: none; border: none; background: transparent;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store" style="height: 44px; display: block; border-radius: 8px;">
         </a>
-        <a href="#" target="_blank">
-            <img class="google-badge" src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play">
+        <a href="#" style="text-decoration: none; border: none; background: transparent;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play" style="height: 64px; display: block; margin-top: -2px;">
         </a>
     </div>
 </div>
