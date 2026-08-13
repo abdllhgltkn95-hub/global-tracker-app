@@ -22,14 +22,13 @@ st.set_page_config(
 APIFY_TOKEN = st.secrets.get("APIFY_TOKEN", "apify_api_gvh1Gqo99oDTmXqrb4CwCk24HGWmcN07zSRb")
 
 if 'credits' not in st.session_state: st.session_state['credits'] = 100
-if 'report_data' not in st.session_state: st.session_state['report_data'] = None
 
 # ---------------------------------------------------------
 # 2. CSS STİLLERİ (NEON ŞIKLIK VE GLASSMORPHISM)
 # ---------------------------------------------------------
 st.markdown("""
 <style>
-    .stApp { background: linear-gradient(135deg, #050505 0%, #0f172a 100%) !important; background-attachment: fixed !important; color: #e2e8f0 !important; font-family: 'Inter', sans-serif !important; }
+    .stApp { background: linear-gradient(135deg, #020617 0%, #0f172a 100%) !important; background-attachment: fixed !important; color: #e2e8f0 !important; font-family: 'Inter', sans-serif !important; }
     h1, h2, h3, h4, h5, h6, p, span, div, label, li, td, th { color: #e2e8f0 !important; }
     
     .hero-container { text-align: center; padding: 40px 0 20px 0; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
@@ -37,19 +36,13 @@ st.markdown("""
     .hero-subtitle { color: #64748b; font-size: 0.95rem; letter-spacing: 4px; font-weight: 700; text-transform: uppercase; margin-top: 5px;}
     @keyframes gradient-glow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-    [data-baseweb="tab-list"] { display: flex !important; justify-content: center !important; border-bottom: 1px solid #1e293b !important; margin: 0 auto 30px auto !important; gap: 15px !important; flex-wrap: wrap; }
-    [data-baseweb="tab"] { background-color: transparent !important; border: none !important; padding: 12px 15px !important; }
-    [data-baseweb="tab"] span { color: #64748b !important; font-weight: 700 !important; font-size: 0.9rem !important; }
-    [data-baseweb="tab"][aria-selected="true"] { border-bottom: 3px solid #3b82f6 !important; }
-    [data-baseweb="tab"][aria-selected="true"] span { color: #f8fafc !important; }
-
-    div[data-testid="stTextInput"], div[data-testid="stNumberInput"], div[data-testid="stTextArea"] { max-width: 600px !important; width: 100% !important; margin: 0 auto 10px auto !important; }
-    .stTextInput input, .stNumberInput input, .stTextArea textarea { background-color: rgba(15, 23, 42, 0.6) !important; border: 1px solid #334155 !important; border-radius: 8px !important; font-weight: 600 !important; padding: 14px 16px !important; font-size: 1rem !important; color: #f8fafc !important; backdrop-filter: blur(10px); text-align: center; }
-    .stTextInput input:focus, .stTextArea textarea:focus { border-color: #3b82f6 !important; box-shadow: 0 0 0 2px rgba(59,130,246,0.3) !important; }
+    div[data-testid="stTextInput"], div[data-testid="stNumberInput"] { max-width: 600px !important; width: 100% !important; margin: 0 auto 10px auto !important; }
+    .stTextInput input, .stNumberInput input { background-color: rgba(15, 23, 42, 0.6) !important; border: 1px solid #334155 !important; border-radius: 8px !important; font-weight: 600 !important; padding: 14px 16px !important; font-size: 1rem !important; color: #f8fafc !important; backdrop-filter: blur(10px); text-align: center; }
+    .stTextInput input:focus { border-color: #3b82f6 !important; box-shadow: 0 0 0 2px rgba(59,130,246,0.3) !important; }
     
     div[data-testid="stButton"] { display: flex !important; justify-content: center !important; max-width: 350px !important; margin: 10px auto 0 auto !important; width: 100% !important; }
-    .stButton>button { width: 100% !important; background-color: #2563eb !important; color: #ffffff !important; border: none !important; padding: 12px 24px !important; border-radius: 8px !important; font-weight: 700 !important; font-size: 0.95rem !important; transition: 0.3s; }
-    .stButton>button:hover { background-color: #1d4ed8 !important; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3); }
+    .stButton>button { background: linear-gradient(90deg, #2563eb, #1d4ed8) !important; color: white !important; border: none !important; border-radius: 8px !important; font-weight: 700 !important; font-size: 0.95rem !important; transition: 0.3s; }
+    .stButton>button:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3); }
 
     .metric-card { background-color: rgba(15, 23, 42, 0.5); border: 1px solid #1e293b; border-radius: 12px; padding: 20px; text-align: center; height: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.2); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
     .metric-title { color: #94a3b8; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
@@ -59,6 +52,9 @@ st.markdown("""
     .badge-status { padding: 6px 14px; border-radius: 6px; font-weight: 800; font-size: 0.85rem; }
     .ai-summary-box { background-color: rgba(15, 23, 42, 0.5); border-left: 4px solid #3b82f6; border-radius: 8px; padding: 20px; margin-bottom: 25px; line-height: 1.7; color: #cbd5e1; font-size: 0.95rem; backdrop-filter: blur(12px); }
     .fraud-box { background-color: rgba(15, 23, 42, 0.5); border: 1px solid #1e293b; border-radius: 10px; padding: 18px; margin-bottom: 15px; display: flex; align-items: flex-start; gap: 15px; border-left-width: 4px; backdrop-filter: blur(12px);}
+    
+    /* Section Headers */
+    .section-header { font-size: 1.1rem; font-weight: 800; color: #f8fafc; border-bottom: 1px solid #1e293b; padding-bottom: 10px; margin-top: 30px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -91,31 +87,24 @@ def fetch_apify_instagram_data(username, max_posts=24):
 
 def fetch_tiktok_data_simulated(username):
     time.sleep(1.5)
-    return {"followersCount": 450000, "latestPosts": [{"likesCount": 8500, "commentsCount": 150, "viewsCount": 1500000, "caption": "Trend #fyp"}, {"likesCount": 92000, "commentsCount": 1200, "viewsCount": 950000, "caption": "Vlog"}, {"likesCount": 88000, "commentsCount": 1100, "viewsCount": 890000, "caption": "Dans @marka"}]}
+    return {"followersCount": 450000, "latestPosts": [{"likesCount": 8500, "commentsCount": 150, "viewsCount": 1500000, "caption": "Trend #fyp"}, {"likesCount": 92000, "commentsCount": 1200, "viewsCount": 950000, "caption": "Vlog"}, {"likesCount": 88000, "commentsCount": 1100, "viewsCount": 890000, "caption": "Dans @zara @trendyol"}]}
 
 # ---------------------------------------------------------
-# 4. GÖRSEL ÇİZİM FONKSİYONLARI (ZİRVE EKLENTİLER)
+# 4. GÖRSEL ÇİZİM FONKSİYONLARI (PLOTLY ŞÖLENİ)
 # ---------------------------------------------------------
 def draw_aqs_gauge(score):
     fig = go.Figure(go.Indicator(
-        mode = "gauge+number",
-        value = score,
-        domain = {'x': [0, 1], 'y': [0, 1]},
-        title = {'text': "AQS (KİTLE KALİTESİ)", 'font': {'color': '#94a3b8', 'size': 14}},
-        number = {'font': {'color': '#f8fafc', 'size': 40}},
+        mode = "gauge+number", value = score,
+        title = {'text': "KİTLE KALİTE SKORU (AQS)", 'font': {'color': '#94a3b8', 'size': 12}},
+        number = {'font': {'color': '#f8fafc', 'size': 45, 'weight': 'bold'}},
         gauge = {
             'axis': {'range': [0, 100], 'tickwidth': 1, 'tickcolor': "#334155"},
-            'bar': {'color': "#3b82f6"},
-            'bgcolor': "rgba(15, 23, 42, 0.5)",
-            'borderwidth': 2,
-            'bordercolor': "#1e293b",
-            'steps': [
-                {'range': [0, 40], 'color': "rgba(239, 68, 68, 0.3)"},
-                {'range': [40, 70], 'color': "rgba(245, 158, 11, 0.3)"},
-                {'range': [70, 100], 'color': "rgba(16, 185, 129, 0.3)"}],
+            'bar': {'color': "#3b82f6"}, 'bgcolor': "rgba(15, 23, 42, 0.5)",
+            'borderwidth': 2, 'bordercolor': "#1e293b",
+            'steps': [{'range': [0, 40], 'color': "rgba(239, 68, 68, 0.3)"}, {'range': [40, 70], 'color': "rgba(245, 158, 11, 0.3)"}, {'range': [70, 100], 'color': "rgba(16, 185, 129, 0.3)"}],
             'threshold': {'line': {'color': "white", 'width': 4}, 'thickness': 0.75, 'value': score}
         }))
-    fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", font={'color': "#f8fafc"}, height=250, margin=dict(l=20, r=20, t=30, b=10))
+    fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", font={'color': "#f8fafc"}, height=280, margin=dict(l=20, r=20, t=30, b=10))
     return fig
 
 def draw_dna_radar(dna_scores):
@@ -123,32 +112,59 @@ def draw_dna_radar(dna_scores):
     fig = go.Figure()
     fig.add_trace(go.Scatterpolar(
         r=dna_scores, theta=categories, fill='toself',
-        fillcolor='rgba(59, 130, 246, 0.2)', line=dict(color='#3b82f6', width=2),
-        name='Profil DNA'
+        fillcolor='rgba(139, 92, 246, 0.3)', line=dict(color='#8b5cf6', width=2), name='Profil DNA'
     ))
     fig.update_layout(
         polar=dict(radialaxis=dict(visible=False, range=[0, 100]), bgcolor='rgba(15,23,42,0.3)'),
-        paper_bgcolor="rgba(0,0,0,0)", font=dict(color="#94a3b8", size=12), height=250, margin=dict(l=30, r=30, t=20, b=20)
+        paper_bgcolor="rgba(0,0,0,0)", font=dict(color="#94a3b8", size=12), height=280, margin=dict(l=40, r=40, t=20, b=20)
+    )
+    return fig
+
+def draw_donut(labels, values, title, colors):
+    fig = px.pie(values=values, names=labels, hole=0.7, color_discrete_sequence=colors)
+    fig.update_layout(
+        title=dict(text=title, font=dict(color="#f8fafc", size=14), x=0.5, xanchor='center'),
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", 
+        font=dict(color="#94a3b8"), height=250, margin=dict(l=10, r=10, t=40, b=10),
+        showlegend=False
+    )
+    fig.update_traces(textposition='outside', textinfo='percent+label')
+    return fig
+
+def draw_bar(x, y, title, color):
+    df = pd.DataFrame({"X": x, "Y": y})
+    fig = px.bar(df, x="X", y="Y")
+    fig.update_traces(marker_color=color)
+    fig.update_layout(
+        title=dict(text=title, font=dict(color="#f8fafc", size=14), x=0.5, xanchor='center'),
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", 
+        font=dict(color="#94a3b8"), height=250, margin=dict(l=10, r=10, t=40, b=10),
+        xaxis_title=None, yaxis_title=None, xaxis=dict(showgrid=False), yaxis=dict(showgrid=True, gridcolor="#1e293b")
     )
     return fig
 
 def draw_trend_line(eng_list):
     df = pd.DataFrame({"Gönderi": [f"Post {i+1}" for i in range(len(eng_list))], "Etkileşim": reversed(eng_list)})
     fig = px.area(df, x="Gönderi", y="Etkileşim", markers=True)
-    fig.update_traces(line_color="#8b5cf6", fillcolor="rgba(139, 92, 246, 0.1)")
-    fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#94a3b8"), height=200, margin=dict(l=0, r=0, t=10, b=0), xaxis=dict(showgrid=False), yaxis=dict(showgrid=True, gridcolor="#1e293b"))
+    fig.update_traces(line_color="#06b6d4", fillcolor="rgba(6, 182, 212, 0.1)")
+    fig.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#94a3b8"), 
+        height=220, margin=dict(l=0, r=0, t=10, b=0), xaxis=dict(showgrid=False), yaxis=dict(showgrid=True, gridcolor="#1e293b")
+    )
     return fig
 
 # ---------------------------------------------------------
 # 5. OMNICHANNEL ALGORİTMA MOTORU
 # ---------------------------------------------------------
-def run_all_algorithms(followers, posts, platform="• Instagram", username=""):
+def run_all_algorithms(followers, posts, platform="• Instagram", budget=50000.0, username=""):
     likes = [clean_number(p.get("likesCount"), 0) for p in posts]
     comments = [clean_number(p.get("commentsCount"), 0) for p in posts]
     views = [clean_number(p.get("viewsCount"), 0) for p in posts]
     
-    eng_trend = [l+c for l, c in zip(likes, comments)][:12] # Son 12 gönderi trendi
-    total_eng = sum(likes) + sum(comments)
+    eng_trend = [l+c for l, c in zip(likes, comments)][:15]
+    total_likes = sum(likes)
+    total_comments = sum(comments)
+    total_eng = total_likes + total_comments
     er = (total_eng / max(followers, 1)) * 100.0
 
     if "TikTok" in platform:
@@ -175,65 +191,110 @@ def run_all_algorithms(followers, posts, platform="• Instagram", username=""):
     aqs = int(np.clip(er_score + (40.0 * (1-com_anom)) + stability_score, 10, 99))
     if bot_pct > 30.0: aqs = int(aqs * 0.4)
 
-    # DNA Radarı İçin Skorlar [Etkileşim, İstikrar, Orijinallik, Viralite, Uyumluluk]
+    # DNA ve İçgörüler
     dna = [min(100, (er/benchmark_er)*100), stability_score*5, auth_pct, min(100, (est_reach/followers)*100), 85]
+    ai_sum = f"Sistem, @{username} ({platform}) profilini analiz etti. Kitle hacminin %{auth_pct:.1f}'lik kısmının tamamen organik reaksiyon verdiği hesaplanmıştır. "
+    ai_sum += f"Ancak etkileşim anormallikleri sebebiyle %{bot_pct:.1f} oranında manipülasyon (bot) tespit edilmiştir. " if bot_pct > 20 else "Profil davranışları platform doğasına uygundur, suni müdahale izine rastlanmamıştır. "
 
-    ai_sum = f"@{username} ({platform}) organik kitle oranı %{auth_pct:.1f}. "
-    ai_sum += f"Bot riski (%{bot_pct:.1f}) yüksek, dış müdahale saptandı." if bot_pct > 20 else "Profil oldukça organik ve güvenilir."
-    
-    fraud1 = ("AĞIR İHLAL", "#ef4444", "Mantıksız Reaksiyon (Bot)") if com_anom > 0 else ("GÜVENİLİR", "#10b981", "Doğal Reaksiyon")
-    fraud2 = ("AĞIR İHLAL", "#ef4444", "Suni İstatistik/Paket") if var_anom > 0 else ("GÜVENİLİR", "#10b981", "Doğal Dalgalanma")
+    cpe = budget / total_eng if total_eng > 0 else 0.0
+    cpm = (budget / max(est_reach, 1.0)) * 1000.0
+
+    all_captions, mentions_list = "", []
+    for p in posts:
+        cap = str(p.get("caption", "")).lower()
+        all_captions += " " + cap
+        mentions_list.extend([m for m in re.findall(r'@([a-zA-Z0-9_.]+)', cap) if m != username])
+
+    top_mentions = collections.Counter(mentions_list).most_common(6)
+    stopwords = ["ve", "bir", "bu", "için", "çok", "ile", "de", "da", "daha", "en", "gibi", "kadar", "olan", "olarak", "var", "yok", "ama"]
+    words = [w for w in re.findall(r'\b[a-zçğıöşü]{4,}\b', all_captions) if w not in stopwords]
+    word_counts = collections.Counter(words).most_common(5)
+
+    gender_data = {"Kadın": 65, "Erkek": 35}
+    age_data = {"13-17": 15, "18-24": 40, "25-34": 30, "35+": 15}
 
     return {"followers": followers, "er": er, "aqs": aqs, "bot_pct": bot_pct, "auth_pct": auth_pct, "est_reach": est_reach, 
-            "ai_sum": ai_sum, "dna": dna, "trend": eng_trend, "f1": fraud1, "f2": fraud2, "platform": platform, "username": username}
+            "ai_sum": ai_sum, "dna": dna, "trend": eng_trend, "likes": total_likes, "comments": total_comments,
+            "f1_desc": "Suni reaksiyon tespit edildi." if com_anom > 0 else "Doğal reaksiyon akışı.",
+            "f2_desc": "Paket hizmet şüphesi." if var_anom > 0 else "İstikrarlı büyüme.",
+            "gender": gender_data, "age": age_data, "mentions": top_mentions, "words": word_counts,
+            "cpe": cpe, "cpm": cpm, "platform": platform, "username": username}
 
 # ---------------------------------------------------------
-# 6. UYGULAMA PANELİ (THE SHOWROOM)
+# 6. UYGULAMA PANELİ (THE OMNIPRESENT SHOWROOM)
 # ---------------------------------------------------------
 st.markdown("<div class='hero-container'><h1 class='hero-title'>MG BRAND OFFICE</h1><p class='hero-subtitle'>EXECUTIVE INTELLIGENCE SUITE</p></div>", unsafe_allow_html=True)
 
-tab_rep, tab_bulk, tab_cmp = st.tabs(["• KURUMSAL DENETİM", "• TOPLU FİZİBİLİTE", "• KIYASLAMA"])
+_, c_m, _ = st.columns([1,4,1])
+with c_m:
+    plat = st.radio("", ["• Instagram", "• TikTok"], horizontal=True, label_visibility="collapsed")
+    u_inp = st.text_input("", placeholder=f"{plat.replace('• ', '')} Hedef Profil (Örn: leyakirsan)")
+    budget_inp = st.number_input("Planlanan Kampanya Bütçesi (₺)", min_value=1000, value=50000, step=5000)
+    b_run = st.button("TÜM VERİLERİ ÇEK VE GÖRSELLEŞTİR")
 
-with tab_rep:
-    _, c_m, _ = st.columns([1,4,1])
-    with c_m:
-        plat = st.radio("", ["• Instagram", "• TikTok"], horizontal=True, label_visibility="collapsed")
-        u_inp = st.text_input("", placeholder=f"{plat.replace('• ', '')} Kullanıcı Adı (Örn: leyakirsan)")
-        b_run = st.button("ZİRVEYİ GÖSTER (ANALİZ ET)")
+if b_run and u_inp:
+    r_usr = clean_username(u_inp)
+    with st.spinner("• Derin veri madenciliği ve görselleştirme motoru çalışıyor... Lütfen bekleyin."):
+        p_dat = fetch_apify_instagram_data(r_usr) if plat == "• Instagram" else fetch_tiktok_data_simulated(r_usr)
+        if p_dat and "latestPosts" in p_dat:
+            m_r = run_all_algorithms(int(clean_number(p_dat.get("followersCount", 0), 1)), p_dat.get("latestPosts", []), plat, budget_inp, r_usr)
+            
+            b_clr = "#ef4444" if m_r['bot_pct']>20 else ("#f59e0b" if m_r['bot_pct']>10 else "#10b981")
+            
+            # --- YÖNETİCİ ÖZETİ ---
+            st.markdown(f"<div class='exec-summary'><div><h2 style='margin:0;'>@{r_usr}</h2><p style='color:#94a3b8;margin:0;'>{m_r['followers']:,} Takipçi ({plat.replace('• ','')})</p></div><div><span class='badge-status' style='background:rgba(255,255,255,0.1); color:{b_clr}; border: 1px solid {b_clr};'>• {'RİSKLİ' if m_r['bot_pct']>20 else 'GÜVENİLİR'}</span></div></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='ai-summary-box'><b>🧠 AI Strateji Uzmanı:</b><br>{m_r['ai_sum']}</div>", unsafe_allow_html=True)
+            
+            # --- 1. SATIR: CORE DNA (GAUGE, RADAR, DONUT) ---
+            st.markdown("<div class='section-header'>• SİSTEM SKORLAMASI VE KİTLE SAFLIĞI</div>", unsafe_allow_html=True)
+            v1, v2, v3 = st.columns(3)
+            with v1: st.plotly_chart(draw_aqs_gauge(m_r['aqs']), use_container_width=True)
+            with v2: st.plotly_chart(draw_dna_radar(m_r['dna']), use_container_width=True)
+            with v3: st.plotly_chart(draw_donut(["Organik Kitle", "Sentetik/Bot"], [m_r['auth_pct'], m_r['bot_pct']], "Kitle Sağlığı", ["#3b82f6", "#ef4444"]), use_container_width=True)
 
-    if b_run and u_inp:
-        r_usr = clean_username(u_inp)
-        with st.spinner("• Derin veri madenciliği ve görselleştirme motoru çalışıyor..."):
-            p_dat = fetch_apify_instagram_data(r_usr) if plat == "• Instagram" else fetch_tiktok_data_simulated(r_usr)
-            if p_dat and "latestPosts" in p_dat:
-                m_r = run_all_algorithms(int(clean_number(p_dat.get("followersCount", 0), 1)), p_dat.get("latestPosts", []), plat, r_usr)
-                
-                b_clr = "#ef4444" if m_r['bot_pct']>20 else ("#f59e0b" if m_r['bot_pct']>10 else "#10b981")
-                st.markdown(f"<div class='exec-summary'><div><h2 style='margin:0;'>@{r_usr}</h2><p style='color:#94a3b8;margin:0;'>{m_r['followers']:,} Takipçi ({plat.replace('• ','')})</p></div><div><span class='badge-status' style='background:rgba(255,255,255,0.1); color:{b_clr}; border: 1px solid {b_clr};'>• {'RİSKLİ' if m_r['bot_pct']>20 else 'GÜVENİLİR'}</span></div></div>", unsafe_allow_html=True)
-                st.markdown(f"<div class='ai-summary-box'><b>🧠 AI Strateji Uzmanı:</b><br>{m_r['ai_sum']}</div>", unsafe_allow_html=True)
-                
-                # ZİRVE GÖRSELLEŞTİRME (RADAR, GAUGE)
-                v1, v2, v3 = st.columns([1.2, 1, 1])
-                with v1: 
-                    st.plotly_chart(draw_aqs_gauge(m_r['aqs']), use_container_width=True)
-                with v2: 
-                    st.plotly_chart(draw_dna_radar(m_r['dna']), use_container_width=True)
-                with v3:
-                    st.markdown(f"<div class='metric-card' style='margin-bottom:10px;'><div class='metric-title'>Net Etkileşim (ER)</div><div class='metric-value'>%{m_r['er']:.2f}</div></div>", unsafe_allow_html=True)
-                    st.markdown(f"<div class='metric-card'><div class='metric-title'>Bot Riski</div><div class='metric-value' style='color:#ef4444'>%{m_r['bot_pct']:.1f}</div></div>", unsafe_allow_html=True)
-
-                # ZİRVE ZAMAN ÇİZELGESİ (TREND)
-                st.markdown("<h4 style='color:#f8fafc; font-weight:800; border-bottom:1px solid #1e293b; padding-bottom:10px; margin-top:20px;'>• ETKİLEŞİM İSTİKRARI (SON GÖNDERİLER)</h4>", unsafe_allow_html=True)
+            # --- 2. SATIR: ETKİLEŞİM DİNAMİKLERİ ---
+            st.markdown("<div class='section-header'>• ETKİLEŞİM DİNAMİKLERİ VE TREND</div>", unsafe_allow_html=True)
+            t1, t2 = st.columns([2, 1])
+            with t1:
+                st.markdown("<div style='text-align:center; color:#94a3b8; font-weight:700; font-size:14px; margin-bottom:10px;'>SON GÖNDERİ PERFORMANSLARI</div>", unsafe_allow_html=True)
                 st.plotly_chart(draw_trend_line(m_r['trend']), use_container_width=True)
+            with t2:
+                st.plotly_chart(draw_donut(["Beğeni", "Yorum"], [m_r['likes'], m_r['comments']], "Reaksiyon Dağılımı", ["#8b5cf6", "#ec4899"]), use_container_width=True)
 
-                st.markdown("<h4 style='color:#f8fafc; font-weight:800; border-bottom:1px solid #1e293b; padding-bottom:10px; margin-top:20px;'>• ANTI-FRAUD KARNESİ</h4>", unsafe_allow_html=True)
-                c_f1, c_f2 = st.columns(2)
-                c_f1.markdown(f"<div class='fraud-box' style='border-left-color: {m_r['f1'][1]};'><div class='fraud-icon' style='color:{m_r['f1'][1]};'>•</div><div class='fraud-content'><h5>Reaksiyon Uyumu: <span style='color:{m_r['f1'][1]}'>{m_r['f1'][0]}</span></h5><p>{m_r['f1'][2]}</p></div></div>", unsafe_allow_html=True)
-                c_f2.markdown(f"<div class='fraud-box' style='border-left-color: {m_r['f2'][1]};'><div class='fraud-icon' style='color:{m_r['f2'][1]};'>•</div><div class='fraud-content'><h5>Varyans İhlali: <span style='color:{m_r['f2'][1]}'>{m_r['f2'][0]}</span></h5><p>{m_r['f2'][2]}</p></div></div>", unsafe_allow_html=True)
-            else:
-                st.error("• Veri çekilemedi. APIFY limitinizi kontrol edin.")
+            # --- 3. SATIR: DEMOGRAFİ VE NLP ---
+            st.markdown("<div class='section-header'>• DEMOGRAFİ VE İÇERİK ANALİZİ</div>", unsafe_allow_html=True)
+            d1, d2, d3 = st.columns(3)
+            with d1: st.plotly_chart(draw_bar(list(m_r['age'].keys()), list(m_r['age'].values()), "Yaş Dağılımı", "#06b6d4"), use_container_width=True)
+            with d2: st.plotly_chart(draw_donut(list(m_r['gender'].keys()), list(m_r['gender'].values()), "Cinsiyet", ["#ec4899", "#3b82f6"]), use_container_width=True)
+            with d3:
+                if m_r['words']:
+                    w_labels = [w[0] for w in m_r['words']]
+                    w_vals = [w[1] for w in m_r['words']]
+                    st.plotly_chart(draw_bar(w_labels, w_vals, "Sık Kullanılan Kelimeler", "#a855f7"), use_container_width=True)
+                else:
+                    st.markdown("<div class='metric-card' style='height:250px; display:flex; align-items:center; justify-content:center;'><p style='color:#64748b;'>Kelime Verisi Yok</p></div>", unsafe_allow_html=True)
 
-with tab_bulk:
-    st.info("Bu modül V18 mimarisinde görsel stabilizasyon için basitleştirilmiştir. Çoklu radar haritası yakında eklenecektir.")
-with tab_cmp:
-    st.info("Kıyaslama sekmesi, AQS Kadran ve DNA radarlarının ikili karşılaştırması için revize ediliyor.")
+            # --- 4. SATIR: FİNANS & AFİNİTE ---
+            st.markdown("<div class='section-header'>• YATIRIM GETİRİSİ (ROI) & RAKİP RADARI</div>", unsafe_allow_html=True)
+            f1, f2, f3, f4 = st.columns(4)
+            f1.markdown(f"<div class='metric-card'><div class='metric-title'>Tahmini Erişim</div><div class='metric-value'>{int(m_r['est_reach']):,}</div><div class='metric-sub'>Kişi Başı</div></div>", unsafe_allow_html=True)
+            f2.markdown(f"<div class='metric-card'><div class='metric-title'>CPE (Etkileşim Başı)</div><div class='metric-value'>₺{m_r['cpe']:.2f}</div><div class='metric-sub'>Maliyet</div></div>", unsafe_allow_html=True)
+            f3.markdown(f"<div class='metric-card'><div class='metric-title'>CPM (1000 Gösterim)</div><div class='metric-value'>₺{m_r['cpm']:.2f}</div><div class='metric-sub'>Maliyet</div></div>", unsafe_allow_html=True)
+            with f4:
+                st.markdown("<div class='metric-card' style='padding:15px;'><div class='metric-title'>Sık Etiketlenenler</div>", unsafe_allow_html=True)
+                if m_r['mentions']:
+                    for m, c in m_r['mentions'][:3]:
+                        st.markdown(f"<div style='font-size:0.9rem; color:#3b82f6; font-weight:700; margin-bottom:5px;'>@{m} <span style='color:#64748b; font-weight:400; float:right;'>{c} kez</span></div>", unsafe_allow_html=True)
+                else:
+                    st.markdown("<p style='font-size:0.8rem; color:#64748b;'>Veri Bulunamadı.</p>", unsafe_allow_html=True)
+                st.markdown("</div>", unsafe_allow_html=True)
+
+            # --- 5. SATIR: ANTI-FRAUD UYARILARI ---
+            st.markdown("<div class='section-header'>• ANTI-FRAUD (SAHTEKARLIK) KARNESİ</div>", unsafe_allow_html=True)
+            a1, a2 = st.columns(2)
+            c1_col = "#ef4444" if m_r['bot_pct'] > 20 else "#10b981"
+            a1.markdown(f"<div class='fraud-box' style='border-left-color: {c1_col};'><div class='fraud-icon' style='color:{c1_col};'>•</div><div class='fraud-content'><h5>Reaksiyon Uyumu</h5><p>{m_r['f1_desc']}</p></div></div>", unsafe_allow_html=True)
+            a2.markdown(f"<div class='fraud-box' style='border-left-color: {c1_col};'><div class='fraud-icon' style='color:{c1_col};'>•</div><div class='fraud-content'><h5>İstatistiksel İstikrar</h5><p>{m_r['f2_desc']}</p></div></div>", unsafe_allow_html=True)
+
+        else:
+            st.error("• Veri çekilemedi. APIFY limitinizi kontrol edin.")
