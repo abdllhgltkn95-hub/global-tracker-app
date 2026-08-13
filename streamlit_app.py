@@ -1,6 +1,59 @@
 import streamlit as st
 import time
-    /* SEKME VE INPUT TASARIMLARI */
+import math
+import re
+import collections
+import numpy as np
+import pandas as pd
+import plotly.express as px
+import requests
+
+# ---------------------------------------------------------
+# 1. SAYFA YAPILANDIRMASI VE SESSION STATE
+# ---------------------------------------------------------
+st.set_page_config(
+    page_title="MG BRAND OFFICE | Executive Intelligence",
+    page_icon="•",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+)
+
+# Kendi Apify anahtarını buraya girdiğinden emin ol
+APIFY_TOKEN = st.secrets.get("APIFY_TOKEN", "apify_api_gvh1Gqo99oDTmXqrb4CwCk24HGWmcN07zSRb")
+
+if 'credits' not in st.session_state: st.session_state['credits'] = 100
+if 'report_data' not in st.session_state: st.session_state['report_data'] = None
+if 'report_user' not in st.session_state: st.session_state['report_user'] = ""
+
+# ---------------------------------------------------------
+# 2. CSS STİLLERİ (HAREKETLİ BAŞLIK VE GLASSMORPHISM)
+# ---------------------------------------------------------
+st.markdown(
+    """
+<style>
+    .stApp { background: linear-gradient(135deg, #050505 0%, #0f172a 100%) !important; background-attachment: fixed !important; color: #e2e8f0 !important; font-family: 'Inter', sans-serif !important; }
+    h1, h2, h3, h4, h5, h6, p, span, div, label, li, td, th { color: #e2e8f0 !important; }
+    
+    .hero-container { text-align: center; padding: 40px 0 20px 0; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .hero-title { 
+        font-size: 3.8rem; 
+        font-weight: 900; 
+        background: linear-gradient(270deg, #3b82f6, #8b5cf6, #3b82f6); 
+        background-size: 200% auto; 
+        -webkit-background-clip: text; 
+        -webkit-text-fill-color: transparent; 
+        animation: gradient-glow 4s linear infinite; 
+        margin: 0; 
+        letter-spacing: -1.5px; 
+    }
+    .hero-subtitle { color: #64748b; font-size: 0.95rem; letter-spacing: 4px; font-weight: 700; text-transform: uppercase; margin-top: 5px;}
+    
+    @keyframes gradient-glow {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
     [data-baseweb="tab-list"] { display: flex !important; justify-content: center !important; border-bottom: 1px solid #1e293b !important; margin: 0 auto 30px auto !important; gap: 15px !important; flex-wrap: wrap; }
     [data-baseweb="tab"] { background-color: transparent !important; border: none !important; padding: 12px 15px !important; }
     [data-baseweb="tab"] span { color: #64748b !important; font-weight: 700 !important; font-size: 0.9rem !important; }
@@ -16,7 +69,6 @@ import time
     .stButton>button { width: 100% !important; background-color: #2563eb !important; color: #ffffff !important; border: none !important; padding: 12px 24px !important; border-radius: 8px !important; font-weight: 700 !important; font-size: 0.95rem !important; transition: 0.3s; }
     .stButton>button:hover { background-color: #1d4ed8 !important; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3); }
 
-    /* METRİK KARTLARI (GLASSMORPHISM) */
     .metric-card { background-color: rgba(15, 23, 42, 0.5); border: 1px solid #1e293b; border-radius: 12px; padding: 20px; text-align: left; height: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.2); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
     .metric-title { color: #94a3b8; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
     .metric-value { color: #f8fafc; font-size: 1.8rem; font-weight: 900; margin: 0; }
@@ -27,11 +79,14 @@ import time
     
     .ai-summary-box { background-color: rgba(15, 23, 42, 0.5); border-left: 4px solid #3b82f6; border-radius: 8px; padding: 20px; margin-bottom: 25px; line-height: 1.7; color: #cbd5e1; font-size: 0.95rem; backdrop-filter: blur(12px); }
     .fraud-box { background-color: rgba(15, 23, 42, 0.5); border: 1px solid #1e293b; border-radius: 10px; padding: 18px; margin-bottom: 15px; display: flex; align-items: flex-start; gap: 15px; border-left-width: 4px; backdrop-filter: blur(12px);}
+    
+    /* Progress Bar Style */
+    .stProgress .st-bo { background-color: #3b82f6; }
 </style>
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 3. YARDIMCI FONKSİYONLAR VE GERÇEK API (APIFY)
+# 3. YARDIMCI FONKSİYONLAR VE GERÇEK API (APIFY TIMEOUT FIX)
 # ---------------------------------------------------------
 def clean_username(input_text):
     if not input_text: return ""
@@ -48,25 +103,58 @@ def clean_number(value, default=0.0):
 
 @st.cache_data(ttl=1800, show_spinner=False)
 def fetch_apify_instagram_data(username, max_posts=24):
+    """Apify üzerinden veri çeker, timeout limitleri ve hata yakalama esnetildi."""
     actor_id = "apify~instagram-profile-scraper"
     run_url = f"https://api.apify.com/v2/acts/{actor_id}/runs?token={APIFY_TOKEN}"
     payload = {"usernames": [username], "resultsLimit": int(max_posts)}
+    
+    # İlerleme Çubuğu İçin Streamlit Container
+    progress_container = st.empty()
+    bar = progress_container.progress(0, text="• Apify motoru başlatılıyor...")
+    
     try:
-        response = requests.post(run_url, json=payload, timeout=25)
-        if response.status_code not in [200, 201]: return None
+        # POST İsteği (Timeout artırıldı)
+        response = requests.post(run_url, json=payload, timeout=30) 
+        if response.status_code not in [200, 201]: 
+            progress_container.empty()
+            st.error(f"• API Başlatma Hatası: HTTP {response.status_code}")
+            return None
+            
         run_data = response.json().get("data", {})
         dataset_id = run_data.get("defaultDatasetId")
-        if not dataset_id: return None
+        if not dataset_id: 
+            progress_container.empty()
+            return None
         
         dataset_url = f"https://api.apify.com/v2/datasets/{dataset_id}/items?token={APIFY_TOKEN}"
-        for _ in range(30):
-            time.sleep(2)
-            res = requests.get(dataset_url, timeout=15)
-            if res.status_code == 200:
-                items = res.json()
-                if items and len(items) > 0: return items[0]
+        
+        # Polling (Veri Bekleme) Döngüsü - Toplam ~60 saniye bekleyebilir
+        max_attempts = 30
+        for i in range(max_attempts):
+            bar.progress((i + 1) / max_attempts, text=f"• Instagram verileri analiz ediliyor (Adım {i+1}/{max_attempts}). Lütfen bekleyin...")
+            time.sleep(2) # Her adımda 2 saniye bekle
+            
+            try:
+                res = requests.get(dataset_url, timeout=15)
+                if res.status_code == 200:
+                    items = res.json()
+                    if items and len(items) > 0: 
+                        progress_container.empty() # İşlem bitince barı temizle
+                        return items[0]
+            except requests.exceptions.RequestException:
+                pass # Get isteği zaman aşımına uğrarsa döngüye devam et
+                
+        progress_container.empty()
+        st.warning("• Veri çekme işlemi çok uzun sürdü. Instagram güvenlik duvarına takılmış olabilir veya hesap gizlidir.")
         return None
-    except:
+        
+    except requests.exceptions.Timeout:
+        progress_container.empty()
+        st.error("• API Bağlantısı Zaman Aşımına Uğradı. Lütfen tekrar deneyin.")
+        return None
+    except Exception as e:
+        progress_container.empty()
+        st.error(f"• Beklenmeyen Bir Hata Oluştu: {str(e)}")
         return None
 
 def generate_html_report(user, data):
@@ -197,52 +285,50 @@ with tab_rep:
     st.markdown("<br>", unsafe_allow_html=True)
 
     if b_run and u_inp:
-        if st.session_state['credits'] <= 0: st.error("• Analiz kotası dolmuştur.")
+        r_usr = clean_username(u_inp)
+        
+        # SPINNER VE YENİ İLERLEME ÇUBUĞU ENTEGRE EDİLDİ
+        p_dat = fetch_apify_instagram_data(r_usr)
+        
+        if p_dat and "latestPosts" in p_dat:
+            f_count = int(clean_number(p_dat.get("followersCount", p_dat.get("followers", 0)), 1))
+            m_r = run_all_algorithms(f_count, p_dat.get("latestPosts", []), username=r_usr)
+            
+            st.session_state['report_data'] = m_r
+            st.session_state['report_user'] = r_usr
+            
+            html_rep = generate_html_report(r_usr, m_r)
+            st.download_button("• RAPORU İNDİR", data=html_rep, file_name=f"{r_usr}_denetim.html", mime="text/html")
+            
+            b_clr = "#ef4444" if m_r['bot_pct']>20 else ("#f59e0b" if m_r['bot_pct']>10 else "#10b981")
+            b_txt = "RİSKLİ" if m_r['bot_pct']>20 else ("ŞÜPHELİ" if m_r['bot_pct']>10 else "GÜVENİLİR")
+            
+            st.markdown(f"""
+            <div class="exec-summary">
+                <div><h2 style="margin:0;">@{r_usr}</h2><p style="color:#94a3b8;margin:0;">{f_count:,} Gerçek Takipçi • Sektör: {", ".join(m_r['top_sectors'])}</p></div>
+                <div><span class="badge-status" style="background:rgba(255,255,255,0.1); color:{b_clr}; border: 1px solid {b_clr};">• {b_txt}</span></div>
+            </div>
+            <div class="ai-summary-box"><b>• Yapay Zeka Yönetici Özeti:</b><br>{m_r['ai_summary']}</div>
+            """, unsafe_allow_html=True)
+            
+            c1, c2, c3, c4 = st.columns(4)
+            c1.markdown(f"<div class='metric-card'><div class='metric-title'>AQS Skoru</div><div class='metric-value'>{m_r['aqs_score']} <span style='font-size:1rem;color:#64748b'>/ 100</span></div></div>", unsafe_allow_html=True)
+            c2.markdown(f"<div class='metric-card'><div class='metric-title'>Etkileşim (ER)</div><div class='metric-value'>%{m_r['er']:.2f}</div></div>", unsafe_allow_html=True)
+            c3.markdown(f"<div class='metric-card'><div class='metric-title'>Tahmini Erişim</div><div class='metric-value'>{m_r['est_reach']:,}</div></div>", unsafe_allow_html=True)
+            c4.markdown(f"<div class='metric-card'><div class='metric-title'>Bot Riski</div><div class='metric-value' style='color:#ef4444'>%{m_r['bot_pct']:.1f}</div></div>", unsafe_allow_html=True)
+
+            st.markdown("<br><h4 style='color:#f8fafc; font-weight:800; border-bottom:1px solid #1e293b; padding-bottom:10px;'>• ANTI-FRAUD KARNESİ</h4>", unsafe_allow_html=True)
+            
+            c_ratio = m_r['comment_ratio']
+            s1, c1, d1 = ("AĞIR İHLAL", "#ef4444", "Yorum/Beğeni dengesi mantıksız.") if c_ratio < 0.008 else ("ŞÜPHELİ", "#f59e0b", "Aşırı yüksek yorum oranı.") if c_ratio > 0.15 else ("GÜVENİLİR", "#10b981", "Denge organik standartlarda.")
+            st.markdown(f"<div class='fraud-box' style='border-left-color: {c1};'><div class='fraud-icon' style='color:{c1};'>•</div><div class='fraud-content'><h5>Reaksiyon Dengesi - <span style='color:{c1}'>{s1}</span></h5><p>{d1}</p></div></div>", unsafe_allow_html=True)
+
+            cv_val = m_r['cv_value']
+            s2, c2, d2 = ("AĞIR İHLAL", "#ef4444", "Gönderiler arası etkileşim stabilitesi suni.") if cv_val < 0.28 else ("ŞÜPHELİ", "#f59e0b", "İçerikler arası uçurumlar var.") if cv_val > 1.2 else ("GÜVENİLİR", "#10b981", "Doğal dalgalanma gösteriyor.")
+            st.markdown(f"<div class='fraud-box' style='border-left-color: {c2};'><div class='fraud-icon' style='color:{c2};'>•</div><div class='fraud-content'><h5>İstatistiksel Varyans (CV) - <span style='color:{c2}'>{s2}</span></h5><p>{d2}</p></div></div>", unsafe_allow_html=True)
+        
         else:
-            st.session_state['credits'] -= 1
-            r_usr = clean_username(u_inp)
-            with st.spinner(f"• @{r_usr} profilinin gerçek verileri Apify üzerinden çekiliyor (10-30 saniye)..."):
-                p_dat = fetch_apify_instagram_data(r_usr)
-                
-                if p_dat and "latestPosts" in p_dat:
-                    f_count = int(clean_number(p_dat.get("followersCount", p_dat.get("followers", 0)), 1))
-                    m_r = run_all_algorithms(f_count, p_dat.get("latestPosts", []), username=r_usr)
-                    
-                    st.session_state['report_data'] = m_r
-                    st.session_state['report_user'] = r_usr
-                    
-                    html_rep = generate_html_report(r_usr, m_r)
-                    st.download_button("• RAPORU İNDİR", data=html_rep, file_name=f"{r_usr}_denetim.html", mime="text/html")
-                    
-                    b_clr = "#ef4444" if m_r['bot_pct']>20 else ("#f59e0b" if m_r['bot_pct']>10 else "#10b981")
-                    b_txt = "RİSKLİ" if m_r['bot_pct']>20 else ("ŞÜPHELİ" if m_r['bot_pct']>10 else "GÜVENİLİR")
-                    
-                    st.markdown(f"""
-                    <div class="exec-summary">
-                        <div><h2 style="margin:0;">@{r_usr}</h2><p style="color:#94a3b8;margin:0;">{f_count:,} Gerçek Takipçi • Sektör: {", ".join(m_r['top_sectors'])}</p></div>
-                        <div><span class="badge-status" style="background:rgba(255,255,255,0.1); color:{b_clr}; border: 1px solid {b_clr};">• {b_txt}</span></div>
-                    </div>
-                    <div class="ai-summary-box"><b>• Yapay Zeka Yönetici Özeti:</b><br>{m_r['ai_summary']}</div>
-                    """, unsafe_allow_html=True)
-                    
-                    c1, c2, c3, c4 = st.columns(4)
-                    c1.markdown(f"<div class='metric-card'><div class='metric-title'>AQS Skoru</div><div class='metric-value'>{m_r['aqs_score']} <span style='font-size:1rem;color:#64748b'>/ 100</span></div></div>", unsafe_allow_html=True)
-                    c2.markdown(f"<div class='metric-card'><div class='metric-title'>Etkileşim (ER)</div><div class='metric-value'>%{m_r['er']:.2f}</div></div>", unsafe_allow_html=True)
-                    c3.markdown(f"<div class='metric-card'><div class='metric-title'>Tahmini Erişim</div><div class='metric-value'>{m_r['est_reach']:,}</div></div>", unsafe_allow_html=True)
-                    c4.markdown(f"<div class='metric-card'><div class='metric-title'>Bot Riski</div><div class='metric-value' style='color:#ef4444'>%{m_r['bot_pct']:.1f}</div></div>", unsafe_allow_html=True)
-
-                    st.markdown("<br><h4 style='color:#f8fafc; font-weight:800; border-bottom:1px solid #1e293b; padding-bottom:10px;'>• ANTI-FRAUD KARNESİ</h4>", unsafe_allow_html=True)
-                    
-                    c_ratio = m_r['comment_ratio']
-                    s1, c1, d1 = ("AĞIR İHLAL", "#ef4444", "Yorum/Beğeni dengesi mantıksız.") if c_ratio < 0.008 else ("ŞÜPHELİ", "#f59e0b", "Aşırı yüksek yorum oranı.") if c_ratio > 0.15 else ("GÜVENİLİR", "#10b981", "Denge organik standartlarda.")
-                    st.markdown(f"<div class='fraud-box' style='border-left-color: {c1};'><div class='fraud-icon' style='color:{c1};'>•</div><div class='fraud-content'><h5>Reaksiyon Dengesi - <span style='color:{c1}'>{s1}</span></h5><p>{d1}</p></div></div>", unsafe_allow_html=True)
-
-                    cv_val = m_r['cv_value']
-                    s2, c2, d2 = ("AĞIR İHLAL", "#ef4444", "Gönderiler arası etkileşim stabilitesi suni.") if cv_val < 0.28 else ("ŞÜPHELİ", "#f59e0b", "İçerikler arası uçurumlar var.") if cv_val > 1.2 else ("GÜVENİLİR", "#10b981", "Doğal dalgalanma gösteriyor.")
-                    st.markdown(f"<div class='fraud-box' style='border-left-color: {c2};'><div class='fraud-icon' style='color:{c2};'>•</div><div class='fraud-content'><h5>İstatistiksel Varyans (CV) - <span style='color:{c2}'>{s2}</span></h5><p>{d2}</p></div></div>", unsafe_allow_html=True)
-                
-                else:
-                    st.error("• Veri çekilemedi. Lütfen APIFY_TOKEN'ın geçerli olduğundan veya hedefin gizli profil olmadığından emin olun.")
+            st.error("• Veri çekilemedi. Bu durum hesabın gizli olmasından veya APIFY kotanızın dolmasından kaynaklanabilir.")
 
 with tab_bulk:
     st.markdown("<h4 style='color:#f8fafc; font-weight:800; border-bottom:1px solid #1e293b; padding-bottom:10px;'>• TOPLU KAMPANYA FİZİBİLİTESİ</h4>", unsafe_allow_html=True)
