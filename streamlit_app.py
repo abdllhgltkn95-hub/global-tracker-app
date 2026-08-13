@@ -25,7 +25,7 @@ if 'credits' not in st.session_state:
     st.session_state['credits'] = 100
 
 # ---------------------------------------------------------
-# 2. CSS STİLLERİ (STREAMLIT'İ EZEN BALYOZ KODLAR)
+# 2. CSS STİLLERİ (PITCH BLACK & KUSURSUZ HİZALAMA)
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -38,7 +38,7 @@ st.markdown("""
         font-family: 'Inter', sans-serif !important; 
     }
     
-    /* NEON BAŞLIK (MAC/SAFARI UYUMLU KESİN ÇÖZÜM) */
+    /* NEON BAŞLIK (RENK DEĞİŞTİREN) */
     .hero-container { 
         text-align: center; 
         padding: 50px 0 30px 0; 
@@ -48,12 +48,13 @@ st.markdown("""
     .hero-title { 
         font-size: 5.5rem !important; 
         font-weight: 900 !important; 
-        background: linear-gradient(to right, #3b82f6, #a855f7, #ec4899, #3b82f6) !important; 
-        background-size: 200% auto !important; 
+        background: linear-gradient(270deg, #3b82f6, #a855f7, #ec4899, #3b82f6) !important; 
+        background-size: 300% auto !important; 
         color: transparent !important;
         -webkit-background-clip: text !important; 
         background-clip: text !important;
-        animation: gradient-glow 4s linear infinite !important; 
+        -webkit-text-fill-color: transparent !important;
+        animation: gradient-glow 5s linear infinite !important; 
         margin: 0 !important; 
         letter-spacing: -2px !important; 
     }
@@ -82,7 +83,7 @@ st.markdown("""
         font-size: 1.2rem !important; color: #ffffff !important; text-align: center !important; 
     }
     
-    /* BUTON VE GÖRÜNMEYEN YAZI İÇİN KESİN ÇÖZÜM */
+    /* BUTON TASARIMI */
     div[data-testid="stButton"] { 
         display: flex !important; justify-content: center !important; 
         max-width: 400px !important; margin: 15px auto 0 auto !important; width: 100% !important; 
@@ -92,7 +93,6 @@ st.markdown("""
         border: none !important; border-radius: 10px !important; 
         padding: 15px 30px !important; transition: 0.3s !important; 
     }
-    /* Streamlit'in <p> etiketini ezip yazıyı SİYAH yapıyoruz */
     div[data-testid="stButton"] button p { 
         color: #000000 !important; 
         font-weight: 900 !important; 
@@ -116,17 +116,51 @@ st.markdown("""
     .section-header { font-size: 1.4rem; font-weight: 900; color: #ffffff; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 12px; margin-top: 40px; margin-bottom: 25px; text-transform: uppercase; }
 
     /* MAĞAZA LOGOLARI - MILIMETRIK HIZALAMA */
-    .store-footer { text-align: center; padding: 50px 0 40px 0; margin-top: 60px; border-top: 1px solid rgba(255,255,255,0.05); }
-    .store-footer-text { color: #64748b; font-size: 0.95rem; font-weight: 800; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 20px; }
-    .store-badges { display: flex; justify-content: center; align-items: center; }
-    
-    .store-badges a { background: transparent !important; border: none !important; box-shadow: none !important; transition: 0.2s; padding: 0 !important; margin: 0 10px !important;}
+    .store-footer { 
+        text-align: center; 
+        padding: 50px 0 40px 0; 
+        margin-top: 60px; 
+        border-top: 1px solid rgba(255,255,255,0.05); 
+    }
+    .store-footer-text { 
+        color: #64748b; 
+        font-size: 0.95rem; 
+        font-weight: 800; 
+        text-transform: uppercase; 
+        letter-spacing: 3px; 
+        margin-bottom: 20px; 
+    }
+    .store-badges { 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; /* Tam merkezden hizalama */
+        gap: 20px; 
+    }
+    .store-badges a { 
+        background: transparent !important; 
+        border: none !important; 
+        box-shadow: none !important; 
+        transition: 0.2s; 
+        padding: 0 !important; 
+        margin: 0 !important;
+        display: flex;
+        align-items: center;
+        text-decoration: none !important;
+        outline: none !important;
+    }
     .store-badges a:hover { transform: scale(1.05); }
     .store-badges a svg { display: none !important; } 
     
-    /* Google Play'in içindeki boşluğu telafi etmek için boyunu büyütüp margini ayarladık */
-    .apple-badge { height: 45px !important; width: auto !important; display: block; border-radius: 8px;}
-    .google-badge { height: 66px !important; width: auto !important; display: block; margin-top: -2px !important;}
+    /* Boyut ve hizalama ayarları */
+    .apple-badge { 
+        height: 48px !important; 
+        width: auto !important; 
+    }
+    .google-badge { 
+        height: 72px !important; 
+        width: auto !important; 
+        transform: translateY(1px) !important; /* Apple logosuyla aynı seviyeye çekmek için milimetrik ayar */
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -289,7 +323,7 @@ def run_all_algorithms(followers: int, posts: list, platform: str = "• Instagr
     }
 
 # ---------------------------------------------------------
-# 6. UYGULAMA PANELİ RENDER İŞLEMLERİ
+# 6. UYGULAMA PANELİ
 # ---------------------------------------------------------
 st.markdown("""
 <div class='hero-container'>
