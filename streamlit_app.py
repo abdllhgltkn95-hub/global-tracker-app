@@ -24,11 +24,11 @@ APIFY_TOKEN = st.secrets.get("APIFY_TOKEN", "apify_api_gvh1Gqo99oDTmXqrb4CwCk24H
 if 'credits' not in st.session_state: st.session_state['credits'] = 100
 
 # ---------------------------------------------------------
-# 2. CSS STİLLERİ (BÜYÜTÜLMÜŞ FONTLAR & MAĞAZA LOGOLARI)
+# 2. CSS STİLLERİ (BÜYÜTÜLMÜŞ FONTLAR & KUSURSUZ LOGOLAR)
 # ---------------------------------------------------------
 st.markdown("""
 <style>
-    /* SİMSİYAH (PITCH BLACK) ARKA PLAN VE GENEL BÜYÜTME */
+    /* SİMSİYAH (PITCH BLACK) ARKA PLAN */
     html, body, [data-testid="stAppViewContainer"], .stApp { 
         background-color: #000000 !important; 
         background-image: none !important; 
@@ -39,7 +39,7 @@ st.markdown("""
     }
     h1, h2, h3, h4, h5, h6, p, span, div, label, li, td, th { color: #e2e8f0 !important; }
     
-    /* YANSIMASI KALDIRILMIŞ, DEĞİŞKEN EFEKTLİ DEV HERO BAŞLIK */
+    /* HAREKETLİ DEV HERO BAŞLIK */
     .hero-container { text-align: center; padding: 50px 0 30px 0; margin-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.05); }
     .hero-title { 
         font-size: 5.5rem; 
@@ -60,7 +60,7 @@ st.markdown("""
         100% { background-position: 0% 50%; }
     }
     
-    /* INPUT VE BUTONLAR (BÜYÜTÜLDÜ) */
+    /* INPUT VE BUTONLAR */
     div[data-testid="stTextInput"], div[data-testid="stNumberInput"] { max-width: 700px !important; width: 100% !important; margin: 0 auto 15px auto !important; }
     .stTextInput input, .stNumberInput input { background-color: rgba(20, 20, 20, 0.8) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 10px !important; font-weight: 700 !important; padding: 18px 20px !important; font-size: 1.2rem !important; color: #ffffff !important; backdrop-filter: blur(10px); text-align: center; transition: 0.3s; }
     .stTextInput input:focus { border-color: #ffffff !important; box-shadow: 0 0 0 2px rgba(255,255,255,0.2) !important; }
@@ -69,7 +69,7 @@ st.markdown("""
     .stButton>button { background: #ffffff !important; color: #000000 !important; border: none !important; border-radius: 10px !important; font-weight: 900 !important; font-size: 1.1rem !important; padding: 15px 30px !important; transition: 0.3s; letter-spacing: 1px;}
     .stButton>button:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(255, 255, 255, 0.25); }
 
-    /* METRİK KARTLARI VE YAZILAR (BÜYÜTÜLDÜ) */
+    /* METRİK KARTLARI VE YAZILAR */
     .metric-card { background-color: rgba(15, 15, 15, 0.7); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 14px; padding: 25px; text-align: center; height: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.5); backdrop-filter: blur(12px); transition: border 0.3s; }
     .metric-card:hover { border: 1px solid rgba(255, 255, 255, 0.15); }
     .metric-title { color: #94a3b8; font-size: 1rem; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px;}
@@ -87,40 +87,14 @@ st.markdown("""
     
     .section-header { font-size: 1.4rem; font-weight: 900; color: #ffffff; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 12px; margin-top: 40px; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px; }
 
-    /* MAĞAZA LOGOLARI (APP STORE & PLAY STORE) */
-    .store-footer {
-        text-align: center;
-        padding: 50px 0 30px 0;
-        margin-top: 60px;
-        border-top: 1px solid rgba(255,255,255,0.05);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 20px;
-    }
-    .store-footer-text {
-        color: #94a3b8;
-        font-size: 1.1rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-    }
-    .store-badges {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        flex-wrap: wrap;
-    }
-    .store-badges img {
-        height: 55px;
-        cursor: pointer;
-        transition: transform 0.2s, opacity 0.2s;
-        opacity: 0.9;
-    }
-    .store-badges img:hover {
-        transform: scale(1.05);
-        opacity: 1;
-    }
+    /* MAĞAZA LOGOLARI - GÖRSEL EŞİTLİK VE TRANSPARANLIK ZORLAMASI */
+    .store-footer { text-align: center; padding: 50px 0 40px 0; margin-top: 60px; border-top: 1px solid rgba(255,255,255,0.05); }
+    .store-footer-text { color: #64748b; font-size: 0.95rem; font-weight: 800; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 20px; }
+    .store-badges { display: flex; justify-content: center; align-items: center; gap: 20px; flex-wrap: wrap; }
+    .store-badges a { background: transparent !important; border: none !important; text-decoration: none !important; padding: 0 !important; box-shadow: none !important; display: flex; align-items: center; transition: 0.2s; outline: none !important;}
+    .store-badges a:hover { transform: scale(1.05); }
+    .apple-badge { height: 44px; width: auto; border-radius: 6px; }
+    .google-badge { height: 64px; width: auto; } /* Google SVG içindeki gizli boşlukları telafi etmek için 20px daha yüksek */
 </style>
 """, unsafe_allow_html=True)
 
@@ -314,7 +288,7 @@ if b_run and u_inp:
             st.markdown(f"<div class='exec-summary'><div><h2 style='margin:0;'>@{r_usr}</h2><p style='color:#94a3b8;margin:0;font-size:1.1rem;'>{m_r['followers']:,} Takipçi ({plat.replace('• ','')})</p></div><div><span class='badge-status' style='background:{b_clr}; color:#000000; border: none;'>• {'RİSKLİ' if m_r['bot_pct']>20 else 'GÜVENİLİR'}</span></div></div>", unsafe_allow_html=True)
             st.markdown(f"<div class='ai-summary-box'><b>🧠 AI Strateji Uzmanı:</b><br>{m_r['ai_sum']}</div>", unsafe_allow_html=True)
             
-            # --- 1. SATIR: CORE DNA (GAUGE, RADAR, DONUT) ---
+            # --- 1. SATIR: CORE DNA ---
             st.markdown("<div class='section-header'>• SİSTEM SKORLAMASI VE KİTLE SAFLIĞI</div>", unsafe_allow_html=True)
             v1, v2, v3 = st.columns(3)
             with v1: st.plotly_chart(draw_aqs_gauge(m_r['aqs']), use_container_width=True)
@@ -369,14 +343,14 @@ if b_run and u_inp:
             st.error("• Veri çekilemedi. APIFY limitinizi kontrol edin veya profilin açık olduğundan emin olun.")
 
 # ---------------------------------------------------------
-# 7. MAĞAZA LOGOLARI (APP STORE & GOOGLE PLAY)
+# 7. MAĞAZA LOGOLARI (FOOTER)
 # ---------------------------------------------------------
 st.markdown("""
 <div class="store-footer">
     <div class="store-footer-text">Mobil Uygulamamızı İndirin</div>
     <div class="store-badges">
-        <a href="#" target="_blank"><img src="https://developer.apple.com/app-store/marketing/guidelines/images/badge-download-on-the-app-store.svg" alt="Download on the App Store"></a>
-        <a href="#" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play"></a>
+        <a href="#" target="_blank"><img class="apple-badge" src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store"></a>
+        <a href="#" target="_blank"><img class="google-badge" src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play"></a>
     </div>
 </div>
 """, unsafe_allow_html=True)
