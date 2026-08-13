@@ -25,7 +25,7 @@ if 'credits' not in st.session_state:
     st.session_state['credits'] = 100
 
 # ---------------------------------------------------------
-# 2. CSS STİLLERİ (STREAMLIT'İ TAMAMEN EZEN KODLAR)
+# 2. CSS STİLLERİ (PITCH BLACK TEMA)
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -64,7 +64,6 @@ st.markdown("""
         border-radius: 10px !important; 
         padding: 15px 30px !important; 
     }
-    /* Butonun içindeki HER ŞEYİ zorla siyah yapıyoruz */
     div[data-testid="stButton"] button * { 
         color: #000000 !important; 
         font-weight: 900 !important; 
@@ -252,8 +251,6 @@ def run_all_algorithms(followers: int, posts: list, platform: str = "• Instagr
 # ---------------------------------------------------------
 # 6. UYGULAMA PANELİ RENDER (HTML İLE ZORLAMA EFEKTLER)
 # ---------------------------------------------------------
-
-# Streamlit'in CSS'i yutmasını engellemek için doğrudan DIV içine inline yazılmış Neon Animasyon ve Başlık
 st.markdown("""
 <div style="text-align: center; padding: 50px 0 30px 0; margin-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.05);">
     <h1 style="
@@ -376,12 +373,12 @@ st.markdown("""
     <div style="color: #64748b; font-size: 0.95rem; font-weight: 800; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 20px;">
         Mobil Uygulamamızı İndirin
     </div>
-    <div style="display: flex; justify-content: center; align-items: center; gap: 15px;">
-        <a href="#" style="text-decoration: none; border: none; background: transparent;">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store" style="height: 44px; display: block; border-radius: 8px;">
+    <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+        <a href="#" style="text-decoration: none; border: none; background: transparent; padding: 0; margin: 0;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store" style="height: 46px; display: block; border-radius: 8px;">
         </a>
-        <a href="#" style="text-decoration: none; border: none; background: transparent;">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play" style="height: 64px; display: block; margin-top: -2px;">
+        <a href="#" style="text-decoration: none; border: none; background: transparent; padding: 0; margin: 0;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play" style="height: 68px; display: block; margin-top: -1px; transform: scale(1.05);">
         </a>
     </div>
 </div>
