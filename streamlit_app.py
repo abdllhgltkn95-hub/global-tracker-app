@@ -236,7 +236,7 @@ def run_all_algorithms(followers: int, posts: list, platform: str = "• Instagr
     }
 
 # ---------------------------------------------------------
-# 6. UYGULAMA PANELİ RENDER
+# 6. UYGULAMA PANELİ RENDER İŞLEMLERİ
 # ---------------------------------------------------------
 st.markdown("""
 <div class='hero-container'>
@@ -273,7 +273,7 @@ if b_run and u_inp:
                     <p style='color:#94a3b8;margin:0;font-size:1.1rem;'>{m_r['followers']:,} Takipçi ({plat.replace('• ','')})</p>
                 </div>
                 <div>
-                    <span class='badge-status' style='background:{b_clr};'>• {b_text}</span>
+                    <span class='badge-status' style='background:{b_clr}; color:#000000; border: none;'>• {b_text}</span>
                 </div>
             </div>
             <div class='ai-summary-box'><b>🧠 AI Strateji Uzmanı:</b><br>{m_r['ai_sum']}</div>
@@ -340,18 +340,16 @@ if b_run and u_inp:
             st.error("• Veri çekilemedi. APIFY limitinizi kontrol edin veya profilin açık olduğundan emin olun.")
 
 # ---------------------------------------------------------
-# 7. MAĞAZA LOGOLARI (HTML DOĞRUDAN HİZALAMA)
+# 7. MAĞAZA LOGOLARI (SADECE APPLE STORE)
 # ---------------------------------------------------------
 st.markdown("""
-<div style="text-align: center; padding: 50px 0 20px 0; margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.05);">
-    <p style="color: #64748b; font-size: 0.95rem; font-weight: 800; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 20px;">Mobil Uygulamamızı İndirin</p>
+<div style="text-align: center; padding: 50px 0 40px 0; margin-top: 60px; border-top: 1px solid rgba(255,255,255,0.05);">
+    <div style="color: #64748b; font-size: 0.95rem; font-weight: 800; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 20px;">
+        Mobil Uygulamamızı İndirin
+    </div>
     <div style="display: flex; justify-content: center; align-items: center;">
-        <a href="#" target="_blank" style="margin-right: 15px; text-decoration: none;">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" style="height: 40px; border-radius: 5px;">
-        </a>
-        <a href="#" target="_blank" style="text-decoration: none;">
-            <!-- Apple 40px iken Google 59px olarak oranlandı ve milimetrik olarak yukarı itildi -->
-            <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" style="height: 59px; margin-top: 1px;">
+        <a href="#" target="_blank" style="text-decoration: none; border: none; background: transparent; padding: 0; margin: 0; outline: none;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store" style="height: 48px; display: block; border-radius: 8px;">
         </a>
     </div>
 </div>
