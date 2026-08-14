@@ -19,13 +19,14 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
+# Elindeki Apify anahtarı tüm platformlar (IG, TikTok) için ortaktır.
 APIFY_TOKEN = st.secrets.get("APIFY_TOKEN", "apify_api_gvh1Gqo99oDTmXqrb4CwCk24HGWmcN07zSRb")
 
 if 'credits' not in st.session_state: 
     st.session_state['credits'] = 100
 
 # ---------------------------------------------------------
-# 2. CSS STİLLERİ (TAMAMEN GENİŞLETİLMİŞ VE DÜZENLİ)
+# 2. CSS STİLLERİ (PITCH BLACK & STABİL)
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -91,39 +92,34 @@ st.markdown("""
         text-align: center !important; 
     }
     
-    .stTextInput input:focus { 
+    .stTextInput input:focus, .stNumberInput input:focus { 
         border-color: #ffffff !important; 
         box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2) !important; 
     }
     
     /* BUTON */
-    div[data-testid="stButton"] { 
-        display: flex !important; 
-        justify-content: center !important; 
-        max-width: 400px !important; 
-        margin: 15px auto 0 auto !important; 
-        width: 100% !important; 
-    }
-    
-    div[data-testid="stButton"] button { 
+    button[kind="primary"] { 
         background-color: #ffffff !important; 
-        border: none !important; 
+        border: 2px solid #ffffff !important; 
         border-radius: 10px !important; 
         padding: 15px 30px !important; 
-        transition: 0.3s !important; 
+        width: 100% !important; 
+        max-width: 400px !important; 
+        display: block !important;
+        margin: 25px auto 0 auto !important; 
+        transition: transform 0.2s ease !important;
     }
     
-    div[data-testid="stButton"] button p { 
+    button[kind="primary"] * { 
         color: #000000 !important; 
         font-weight: 900 !important; 
         font-size: 1.1rem !important; 
         letter-spacing: 1px !important; 
-        margin: 0 !important; 
     }
     
-    div[data-testid="stButton"] button:hover { 
-        transform: translateY(-3px) !important; 
-        box-shadow: 0 10px 25px rgba(255, 255, 255, 0.25) !important; 
+    button[kind="primary"]:hover { 
+        transform: scale(1.03) !important; 
+        box-shadow: 0 10px 25px rgba(255, 255, 255, 0.3) !important; 
     }
 
     /* KART TASARIMLARI */
@@ -218,7 +214,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 3. YARDIMCI VE API FONKSİYONLARI
+# 3. YARDIMCI VE API FONKSİYONLARI (IG VE TIKTOK CANLI)
 # ---------------------------------------------------------
 def clean_username(text: str) -> str:
     if not text: 
@@ -239,8 +235,8 @@ def clean_number(value, default=0.0) -> float:
         return default
 
 @st.cache_data(ttl=1800, show_spinner=False)
-def fetch_apify_instagram_data(username: str, max_posts: int = 24):
-    """Instagram İçin Çalışan Gerçek Apify API"""
+def fetch_apify_instagram_data(username: str, max_posts: int = 15):
+    """Instagram için Gerçek Apify API Çağrısı"""
     run_url = f"https://api.apify.com/v2/acts/apify~instagram-profile-scraper/runs?token={APIFY_TOKEN}"
     payload = {
         "usernames": [username], 
@@ -258,7 +254,7 @@ def fetch_apify_instagram_data(username: str, max_posts: int = 24):
         
         dataset_url = f"https://api.apify.com/v2/datasets/{dataset_id}/items?token={APIFY_TOKEN}"
         
-        for _ in range(30):
+        for _ in range(25):
             time.sleep(2)
             d_res = requests.get(dataset_url, timeout=15)
             if d_res.status_code == 200 and d_res.json(): 
@@ -268,20 +264,75 @@ def fetch_apify_instagram_data(username: str, max_posts: int = 24):
     except Exception: 
         return None
 
-def fetch_tiktok_data_simulated(username: str):
-    """İLK YAZILAN, HATA VERMEYEN TIKTOK SİMÜLASYONU"""
-    time.sleep(1.5)
-    return {
-        "followersCount": 450000, 
-        "latestPosts": [
-            {"likesCount": 8500, "commentsCount": 150, "viewsCount": 1500000, "caption": "Trend #fyp"}, 
-            {"likesCount": 92000, "commentsCount": 1200, "viewsCount": 950000, "caption": "Vlog"}, 
-            {"likesCount": 88000, "commentsCount": 1100, "viewsCount": 890000, "caption": "Dans @zara @trendyol"}
-        ]
+@st.cache_data(ttl=1800, show_spinner=False)
+def fetch_apify_tiktok_data(username: str, max_posts: int = 15):
+    """TikTok için Gerçek Apify API Çağrısı ve Veri Çevirmeni"""
+    # Aynı Apify Token'ı kullanarak TikTok Scraper Actor'ını çağırıyoruz
+    run_url = f"https://api.apify.com/v2/acts/apify~tiktok-scraper/runs?token={APIFY_TOKEN}"
+    payload = {
+        "profiles": [username], 
+        "resultsPerPage": max_posts,
+        "shouldDownloadVideos": False
     }
+    
+    try:
+        res = requests.post(run_url, json=payload, timeout=30) 
+        if res.status_code not in [200, 201]: 
+            return None
+            
+        dataset_id = res.json().get("data", {}).get("defaultDatasetId")
+        if not dataset_id: 
+            return None
+        
+        dataset_url = f"https://api.apify.com/v2/datasets/{dataset_id}/items?token={APIFY_TOKEN}"
+        
+        raw_data = None
+        for _ in range(30):
+            time.sleep(2)
+            d_res = requests.get(dataset_url, timeout=15)
+            if d_res.status_code == 200:
+                json_data = d_res.json()
+                if len(json_data) > 0:
+                    raw_data = json_data
+                    break
+                    
+        if not raw_data: 
+            return None
+            
+        # TikTok Karmaşık Verisini, FluenceAI Algoritmasına Çeviriyoruz
+        
+        # 1. Takipçi sayısını bul
+        followers = 0
+        if "authorMeta" in raw_data[0]:
+            followers = raw_data[0]["authorMeta"].get("fans", 0)
+        elif "author" in raw_data[0]:
+            followers = raw_data[0]["author"].get("followerCount", 0)
+            
+        # 2. Gönderi etkileşimlerini topla
+        posts = []
+        for item in raw_data:
+            views = item.get("playCount", 0)
+            likes = item.get("diggCount", 0)
+            comments = item.get("commentCount", 0)
+            caption = item.get("text", "")
+            
+            posts.append({
+                "viewsCount": views,
+                "likesCount": likes,
+                "commentsCount": comments,
+                "caption": caption
+            })
+            
+        return {
+            "followersCount": followers,
+            "latestPosts": posts
+        }
+        
+    except Exception: 
+        return None
 
 def fetch_youtube_data_simulated(username: str):
-    """HATA VERMEYEN YOUTUBE SİMÜLASYONU"""
+    """YouTube henüz Apify'a bağlanmadığı için sabit simülasyonda tutulur."""
     time.sleep(1.8)
     return {
         "followersCount": 1250000, 
@@ -659,18 +710,27 @@ with c_m:
         step=5000
     )
     
-    b_run = st.button("TÜM VERİLERİ ÇEK VE GÖRSELLEŞTİR")
+    b_run = st.button("TÜM VERİLERİ ÇEK VE GÖRSELLEŞTİR", type="primary")
 
 if b_run and u_inp:
     r_usr = clean_username(u_inp)
     
     with st.spinner(f"• Derin veri madenciliği ve {plat.replace('• ', '')} motoru çalışıyor... Lütfen bekleyin."):
         
+        # GERÇEK ZAMANLI API MOTORLARI DEVREDE
         if plat == "• Instagram": 
             p_dat = fetch_apify_instagram_data(r_usr)
+            if not p_dat:
+                st.error("⚠️ Veri çekilemedi. Lütfen Apify limitinizi veya hesabın gizliliğini kontrol edin.")
+                
         elif plat == "• TikTok": 
-            p_dat = fetch_tiktok_data_simulated(r_usr)
+            # ARTIK TIKTOK İÇİN DE APIFY CANLI MOTORU KULLANILIYOR
+            p_dat = fetch_apify_tiktok_data(r_usr)
+            if not p_dat:
+                st.error("⚠️ TikTok verisi çekilemedi. Lütfen Apify hesabınızda TikTok Scraper kullanım limitini kontrol edin veya profilin doğruluğundan emin olun.")
+                
         else: 
+            # YouTube henüz Apify entegrasyonuna alınmadı
             p_dat = fetch_youtube_data_simulated(r_usr) 
             
         if p_dat and "latestPosts" in p_dat:
@@ -790,11 +850,8 @@ if b_run and u_inp:
             </div>
             """, unsafe_allow_html=True)
 
-        else:
-            st.error("• Veri çekilemedi. Bağlantıyı veya API limitlerinizi kontrol edin.")
-
 # ---------------------------------------------------------
-# 7. MAĞAZA LOGOLARI VE COPYRIGHT FOOTER 
+# 7. MAĞAZA LOGOLARI VE COPYRIGHT FOOTER
 # ---------------------------------------------------------
 st.markdown("""
 <div style="text-align: center; padding: 50px 0 40px 0; margin-top: 60px; border-top: 1px solid rgba(255,255,255,0.05);">
